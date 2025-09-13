@@ -1,4 +1,4 @@
-package com.biblioteca.entity;
+package com.biblioteca.domain.entities.livro;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -15,6 +15,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.biblioteca.domain.entities.autor.Autor;
+import com.biblioteca.domain.entities.editora.Editora;
 
 /**
  * Representa um livro no sistema de biblioteca.
@@ -67,10 +70,18 @@ public class Livro {
     @JoinColumn(name = "editora_id")
     private Editora editora;
 
+    /**
+     * Conjunto de autores associados ao livro.
+     * Relacionamento muitos-para-muitos mapeado pela tabela 'livro_autor'.
+     */
     @ManyToMany
     @JoinTable(name = "livro_autor", joinColumns = @JoinColumn(name = "livro_id"), inverseJoinColumns = @JoinColumn(name = "autor_id"))
     private HashSet<Autor> autores = new HashSet<>();
 
+    /**
+     * Conjunto de livros considerados semelhantes a este livro.
+     * Relacionamento muitos-para-muitos mapeado pela tabela 'livros_semelhantes'.
+     */
     @ManyToMany
     @JoinTable(name = "livros_semelhantes", joinColumns = @JoinColumn(name = "livro_id"), inverseJoinColumns = @JoinColumn(name = "semelhante_id"))
     private HashSet<Livro> livrosSemelhantes = new HashSet<>();
@@ -107,6 +118,15 @@ public class Livro {
         this.titulo = titulo;
         this.isbn = isbn;
         this.dataPublicacao = dataPublicacao;
+    }
+
+    /**
+     * Define o identificador único do livro.
+     *
+     * @param id o novo ID do livro
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
 
     /**
@@ -196,34 +216,74 @@ public class Livro {
         this.editora = editora;
     }
 
+    /**
+     * Retorna o conjunto de autores associados ao livro.
+     *
+     * @return conjunto de autores do livro
+     */
     public HashSet<Autor> getAutores() {
         return autores;
     }
 
+    /**
+     * Define o conjunto de autores associados ao livro.
+     *
+     * @param autores o novo conjunto de autores do livro
+     */
     public void setAutores(HashSet<Autor> autores) {
         this.autores = autores;
     }
 
+    /**
+     * Adiciona um autor ao conjunto de autores do livro.
+     *
+     * @param autor o autor a ser adicionado
+     */
     public void addAutor(Autor autor) {
         this.autores.add(autor);
     }
 
+    /**
+     * Remove um autor do conjunto de autores do livro.
+     *
+     * @param autor o autor a ser removido
+     */
     public void removeAutor(Autor autor) {
         this.autores.remove(autor);
     }
 
+    /**
+     * Retorna o conjunto de livros semelhantes a este livro.
+     *
+     * @return conjunto de livros semelhantes
+     */
     public HashSet<Livro> getLivrosSemelhantes() {
         return livrosSemelhantes;
     }
 
+    /**
+     * Define o conjunto de livros semelhantes a este livro.
+     *
+     * @param livros o novo conjunto de livros semelhantes
+     */
     public void setLivrosSemelhantes(HashSet<Livro> livros) {
         this.livrosSemelhantes = livros;
     }
 
+    /**
+     * Adiciona um livro ao conjunto de livros semelhantes.
+     *
+     * @param livro o livro a ser adicionado como semelhante
+     */
     public void addLivroSemelhante(Livro livro) {
         this.livrosSemelhantes.add(livro);
     }
 
+    /**
+     * Remove um livro do conjunto de livros semelhantes.
+     *
+     * @param livro o livro a ser removido dos semelhantes
+     */
     public void removeLivroSemelhante(Livro livro) {
         this.livrosSemelhantes.remove(livro);
     }

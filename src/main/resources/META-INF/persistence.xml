@@ -6,8 +6,6 @@
     <persistence-unit name="bibliotecaPU">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <class>com.biblioteca.domain.model.Livro</class> <!-- entidade exemplo -->
-
         <properties>
             <!-- Conexão -->
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
