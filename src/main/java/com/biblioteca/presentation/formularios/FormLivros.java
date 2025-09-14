@@ -1,20 +1,35 @@
 package com.biblioteca.presentation.formularios;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.text.MaskFormatter;
 
 import com.biblioteca.presentation.templates.FormPadrao;
 
 public class FormLivros extends FormPadrao {
-    private JTextField txtTitulo, txtIsbn, txtDataPublicacao, txtAutores, txtEditora, txtDescricao;
+        private JTextField txtTitulo, txtIsbn;
+    private JFormattedTextField txtDataPublicacao;
+    private JComboBox<String> cbAutores;
+    private JComboBox<String> cbEditora;
+    private JTable tabelaLivrosSemelhantes;
+    private DefaultTableModel modelLivrosSemelhantes;
+    private JButton btnRelacionar;
     private JButton btnBuscarPorIsbn;
 
     public FormLivros() {
@@ -36,73 +51,112 @@ public class FormLivros extends FormPadrao {
 
     @Override
     protected void configFormulario() {
-        JPanel painelPrincipal = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.anchor = GridBagConstraints.WEST;
+        JPanel painelFormulario = new JPanel(new GridBagLayout());
+        painelFormulario.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Dados do Livro"),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(4, 4, 10, 4);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Linha 0: Título
         gbc.gridx = 0;
         gbc.gridy = 0;
-        painelPrincipal.add(new JLabel("Título:"), gbc);
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        txtTitulo = new JTextField(30);
-        painelPrincipal.add(txtTitulo, gbc);
+        gbc.gridwidth = 2;
+        painelFormulario.add(new JLabel("Título:"), gbc);
 
+        gbc.gridy++;
+        txtTitulo = new JTextField();
+        painelFormulario.add(txtTitulo, gbc);
+
+        // Linha 1: ISBN e Data de Publicação
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        painelFormulario.add(new JLabel("ISBN:"), gbc);
+
+        gbc.gridx = 1;
+        painelFormulario.add(new JLabel("Data de Publicação:"), gbc);
+
+        gbc.gridy++;
         gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0;
-        painelPrincipal.add(new JLabel("ISBN:"), gbc);
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        JPanel painelIsbn = new JPanel(new BorderLayout());
-        txtIsbn = new JTextField();
-        btnBuscarPorIsbn = new JButton("Buscar");
-        btnBuscarPorIsbn.addActionListener(e -> buscarPorIsbn());
-        painelIsbn.add(txtIsbn, BorderLayout.CENTER);
-        painelIsbn.add(btnBuscarPorIsbn, BorderLayout.EAST);
-        painelPrincipal.add(painelIsbn, gbc);
+        gbc.weightx = 0.5;
+        txtIsbn = new JTextField(13);
+        painelFormulario.add(txtIsbn, gbc);
 
+        gbc.gridx = 1;
+        try {
+            MaskFormatter mascaraData = new MaskFormatter("##/##/####");
+            mascaraData.setPlaceholderCharacter('_');
+            txtDataPublicacao = new JFormattedTextField(mascaraData);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+            txtDataPublicacao = new JFormattedTextField(); // Fallback
+        }
+        painelFormulario.add(txtDataPublicacao, gbc);
+
+        // Linha 2: Editora
+        gbc.gridy++;
         gbc.gridx = 0;
-        gbc.gridy = 2;
-        painelPrincipal.add(new JLabel("Data de Publicação:"), gbc);
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridwidth = 2;
         gbc.weightx = 1.0;
-        txtDataPublicacao = new JTextField(30);
-        painelPrincipal.add(txtDataPublicacao, gbc);
+        painelFormulario.add(new JLabel("Editora:"), gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        painelPrincipal.add(new JLabel("Autores:"), gbc);
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        txtAutores = new JTextField(30);
-        painelPrincipal.add(txtAutores, gbc);
+        gbc.gridy++;
+        String[] editorasMock = { "Editora A", "Editora B", "Nova Fronteira" };
+        cbEditora = new JComboBox<>(editorasMock);
+        cbEditora.setEditable(true);
+        painelFormulario.add(cbEditora, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        painelPrincipal.add(new JLabel("Editora:"), gbc);
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        txtEditora = new JTextField(30);
-        painelPrincipal.add(txtEditora, gbc);
+        // Linha 3: Autores
+        gbc.gridy++;
+        painelFormulario.add(new JLabel("Autores:"), gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        painelPrincipal.add(new JLabel("Descrição:"), gbc);
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        txtDescricao = new JTextField(30);
-        painelPrincipal.add(txtDescricao, gbc);
+        gbc.gridy++;
+        String[] autoresMock = { "Machado de Assis", "J.K. Rowling", "George Orwell" };
+        cbAutores = new JComboBox<>(autoresMock);
+        cbAutores.setEditable(true);
+        painelFormulario.add(cbAutores, gbc);
 
-        add(painelPrincipal, BorderLayout.CENTER);
+        // --- Painel de Livros Semelhantes ---
+        JPanel painelLivrosSemelhantes = new JPanel(new BorderLayout(10, 10));
+        painelLivrosSemelhantes.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Livros Semelhantes"),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+
+        // Tabela para listar livros relacionados
+        String[] colunas = { "ID", "Título" };
+        modelLivrosSemelhantes = new DefaultTableModel(colunas, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tabelaLivrosSemelhantes = new JTable(modelLivrosSemelhantes);
+        painelLivrosSemelhantes.add(new JScrollPane(tabelaLivrosSemelhantes), BorderLayout.CENTER);
+
+        // Painel com botão para adicionar relação
+        JPanel painelBotoesRelacionar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        btnRelacionar = new JButton("Relacionar");
+        btnRelacionar.addActionListener(e -> abrirModalRelacionarLivros());
+        painelBotoesRelacionar.add(btnRelacionar);
+        painelLivrosSemelhantes.add(painelBotoesRelacionar, BorderLayout.SOUTH);
+
+        // --- Split Pane ---
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                new JScrollPane(painelFormulario),
+                painelLivrosSemelhantes);
+        splitPane.setResizeWeight(0.6); // 60% do espaço para o formulário
+
+        add(splitPane, BorderLayout.CENTER);
+    }
+
+    private void abrirModalRelacionarLivros() {
+        JOptionPane.showMessageDialog(this,
+                "Modal para busca e seleção de livros será implementado aqui.",
+                "Relacionar Livros",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void buscarPorIsbn() {
