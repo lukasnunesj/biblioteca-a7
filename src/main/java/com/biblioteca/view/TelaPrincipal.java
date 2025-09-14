@@ -1,21 +1,24 @@
 package com.biblioteca.view;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 
 public class TelaPrincipal {
 
-    private JFrame frame;
+    private final JFrame frame = new JFrame();
 
     public TelaPrincipal() {
         initComponents();
@@ -25,19 +28,26 @@ public class TelaPrincipal {
         configTela();
         configMenu();
 
+        // Criar desktop pane para janelas internas
+        JDesktopPane desktopPane = new JDesktopPane();
+        desktopPane.setBackground(new Color(240, 240, 240));
+        frame.add(desktopPane, BorderLayout.CENTER);
+
     }
 
     private void configTela() {
-        frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
         frame.setTitle("Biblioteca");
-        frame.setLocationRelativeTo(null);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // configFecharEvent();
+        frame.setResizable(false);
+        // frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         frame.setSize(new Dimension(1080, 720));
         frame.setMinimumSize(new Dimension(1080, 720));
         frame.setLayout(new BorderLayout());
+
+        frame.setLocationRelativeTo(null);
+
         frame.setVisible(true);
     }
 
@@ -45,7 +55,7 @@ public class TelaPrincipal {
         JMenuBar menuBar = new JMenuBar();
 
         // Início
-        JMenuItem menuInicio = new JMenuItem("Início");
+        JMenu menuInicio = new JMenu("Início");
         menuInicio.setMnemonic('I');
 
         // Menu Livros
@@ -72,6 +82,15 @@ public class TelaPrincipal {
 
         menuBar.add(menuInicio);
         frame.setJMenuBar(menuBar);
+    }
+
+    private void configFecharEvent() {
+        frame.addWindowFocusListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                sairAplicacao();
+            }
+        });
     }
 
     private void sairAplicacao() {
