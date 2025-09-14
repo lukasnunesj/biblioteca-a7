@@ -1,4 +1,4 @@
-package com.biblioteca.view;
+package com.biblioteca.presentation;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -14,13 +14,26 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import com.biblioteca.domain.entities.autor.interfaces.IAutorService;
+import com.biblioteca.domain.entities.editora.interfaces.IEditoraService;
+import com.biblioteca.domain.entities.livro.interfaces.ILivroService;
+import com.biblioteca.infrastructure.factory.DependencyFactory;
+import com.biblioteca.infrastructure.util.JPAUtil;
 import com.formdev.flatlaf.FlatDarculaLaf;
 
 public class TelaPrincipal {
 
     private final JFrame frame = new JFrame();
+    private JDesktopPane desktopPane;
+    private final ILivroService livroService;
+    private final IAutorService autorService;
+    private final IEditoraService editoraService;
 
     public TelaPrincipal() {
+        DependencyFactory factory = new DependencyFactory();
+        this.livroService = factory.createLivroService();
+        this.autorService = factory.createAutorService();
+        this.editoraService = factory.createEditoraService();
         initComponents();
     }
 
@@ -29,7 +42,7 @@ public class TelaPrincipal {
         configMenu();
 
         // Criar desktop pane para janelas internas
-        JDesktopPane desktopPane = new JDesktopPane();
+        desktopPane = new JDesktopPane();
         desktopPane.setBackground(new Color(240, 240, 240));
         frame.add(desktopPane, BorderLayout.CENTER);
 
@@ -37,8 +50,8 @@ public class TelaPrincipal {
 
     private void configTela() {
         frame.setTitle("Biblioteca");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // configFecharEvent();
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        configFecharEvent();
         frame.setResizable(false);
         // frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
@@ -61,31 +74,42 @@ public class TelaPrincipal {
         // Menu Livros
         JMenuItem menuItemLivros = new JMenuItem("Livros");
         menuItemLivros.setMnemonic('L');
+        menuItemLivros.addActionListener(e -> {
+            TelaListagemLivros telaListagemLivros = new TelaListagemLivros(livroService);
+            desktopPane.add(telaListagemLivros);
+            telaListagemLivros.setVisible(true);
+        });
 
         // Menu Autores
         JMenuItem menuItemAutores = new JMenuItem("Autores");
         menuItemAutores.setMnemonic('A');
+        menuItemAutores.addActionListener(e -> {
+            JOptionPane.showMessageDialog(frame, "Tela de Autores ainda não implementada.");
+        });
 
         // Menu Editoras
         JMenuItem menuItemEditoras = new JMenuItem("Editoras");
         menuItemEditoras.setMnemonic('E');
+        menuItemEditoras.addActionListener(e -> {
+            JOptionPane.showMessageDialog(frame, "Tela de Editoras ainda não implementada.");
+        });
 
         // Sair
         JMenuItem itemSair = new JMenuItem("Sair");
         itemSair.setMnemonic('S');
         itemSair.addActionListener(e -> sairAplicacao());
 
-        menuInicio.add(itemSair);
         menuInicio.add(menuItemLivros);
         menuInicio.add(menuItemAutores);
         menuInicio.add(menuItemEditoras);
+        menuInicio.add(itemSair);
 
         menuBar.add(menuInicio);
         frame.setJMenuBar(menuBar);
     }
 
     private void configFecharEvent() {
-        frame.addWindowFocusListener(new WindowAdapter() {
+        frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 sairAplicacao();
@@ -102,6 +126,7 @@ public class TelaPrincipal {
                 JOptionPane.QUESTION_MESSAGE);
 
         if (opcao == JOptionPane.YES_OPTION) {
+            JPAUtil.close();
             System.exit(0);
         }
     }

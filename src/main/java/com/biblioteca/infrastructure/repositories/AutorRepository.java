@@ -1,23 +1,23 @@
-package com.biblioteca.repositories;
+package com.biblioteca.infrastructure.repositories;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import com.biblioteca.domain.entities.autor.Autor;
 import com.biblioteca.domain.entities.autor.interfaces.IAutorRepository;
 
-@Stateless
 public class AutorRepository implements IAutorRepository {
 
     private static final Logger LOGGER = Logger.getLogger(AutorRepository.class.getName());
 
-    @PersistenceContext(unitName = "bibliotecaPU")
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    public AutorRepository(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public Autor salvar(Autor autor) {

@@ -1,23 +1,23 @@
-package com.biblioteca.repositories;
+package com.biblioteca.infrastructure.repositories;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import com.biblioteca.domain.entities.editora.Editora;
 import com.biblioteca.domain.entities.editora.interfaces.IEditoraRepository;
 
-@Stateless
 public class EditoraRepository implements IEditoraRepository {
 
     private static final Logger LOGGER = Logger.getLogger(EditoraRepository.class.getName());
 
-    @PersistenceContext(unitName = "bibliotecaPU")
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    public EditoraRepository(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public Editora salvar(Editora editora) {

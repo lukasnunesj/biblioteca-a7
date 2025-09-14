@@ -1,21 +1,21 @@
-package com.biblioteca.services;
+package com.biblioteca.application;
 
 import java.util.List;
 import java.util.Optional;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
 
 import com.biblioteca.domain.entities.editora.Editora;
 import com.biblioteca.domain.entities.editora.DTO.EditoraDTO;
 import com.biblioteca.domain.entities.editora.interfaces.IEditoraRepository;
 import com.biblioteca.domain.entities.editora.interfaces.IEditoraService;
 
-@Stateless
 public class EditoraService implements IEditoraService {
 
-    @Inject
-    private IEditoraRepository editoraRepository;
+    private final IEditoraRepository editoraRepository;
+
+    public EditoraService(IEditoraRepository editoraRepository) {
+        this.editoraRepository = editoraRepository;
+    }
 
     @Override
     public Editora salvar(EditoraDTO editoraDTO) {

@@ -1,8 +1,6 @@
-package com.biblioteca.repositories;
+package com.biblioteca.infrastructure.repositories;
 
-import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import com.biblioteca.domain.entities.livro.Livro;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroRepository;
@@ -21,7 +19,6 @@ import java.util.logging.Logger;
  * @author Biblioteca A7
  * @version 1.0
  */
-@Stateless
 public class LivroRepository implements ILivroRepository {
 
     /**
@@ -30,11 +27,14 @@ public class LivroRepository implements ILivroRepository {
     private static final Logger LOGGER = Logger.getLogger(LivroRepository.class.getName());
 
     /**
-     * Gerenciador de entidades JPA injetado pelo container.
+     * Gerenciador de entidades JPA.
      * Responsável por realizar as operações de persistência.
      */
-    @PersistenceContext(unitName = "bibliotecaPU")
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    public LivroRepository(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     /**
      * {@inheritDoc}

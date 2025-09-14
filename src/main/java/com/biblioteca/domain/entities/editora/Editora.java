@@ -1,6 +1,7 @@
 package com.biblioteca.domain.entities.editora;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Objects;
 
 import javax.persistence.CascadeType;
@@ -71,7 +72,7 @@ public class Editora {
      * Relacionamento um-para-muitos mapeado pelo atributo 'editora' na entidade Livro.
      */
     @OneToMany(mappedBy = "editora", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private HashSet<Livro> livros = new HashSet<Livro>();
+    private Set<Livro> livros = new HashSet<>();
 
     /**
      * Construtor padrão necessário para JPA.
@@ -205,7 +206,7 @@ public class Editora {
      *
      * @return conjunto de livros da editora
      */
-    public HashSet<Livro> getLivros() {
+    public Set<Livro> getLivros() {
         return livros;
     }
 
@@ -214,7 +215,7 @@ public class Editora {
      *
      * @param livros o novo conjunto de livros da editora
      */
-    public void setLivros(HashSet<Livro> livros) {
+    public void setLivros(Set<Livro> livros) {
         this.livros = livros;
     }
 

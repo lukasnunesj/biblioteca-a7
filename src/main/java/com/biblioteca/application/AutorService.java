@@ -1,21 +1,21 @@
-package com.biblioteca.services;
+package com.biblioteca.application;
 
 import java.util.List;
 import java.util.Optional;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
 
 import com.biblioteca.domain.entities.autor.Autor;
 import com.biblioteca.domain.entities.autor.DTO.AutorDTO;
 import com.biblioteca.domain.entities.autor.interfaces.IAutorRepository;
 import com.biblioteca.domain.entities.autor.interfaces.IAutorService;
 
-@Stateless
 public class AutorService implements IAutorService {
 
-    @Inject
-    private IAutorRepository autorRepository;
+    private final IAutorRepository autorRepository;
+
+    public AutorService(IAutorRepository autorRepository) {
+        this.autorRepository = autorRepository;
+    }
 
     @Override
     public Autor salvar(AutorDTO autorDTO) {

@@ -2,6 +2,7 @@ package com.biblioteca.domain.entities.livro;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -76,7 +77,7 @@ public class Livro {
      */
     @ManyToMany
     @JoinTable(name = "livro_autor", joinColumns = @JoinColumn(name = "livro_id"), inverseJoinColumns = @JoinColumn(name = "autor_id"))
-    private HashSet<Autor> autores = new HashSet<>();
+    private Set<Autor> autores = new HashSet<>();
 
     /**
      * Conjunto de livros considerados semelhantes a este livro.
@@ -84,7 +85,7 @@ public class Livro {
      */
     @ManyToMany
     @JoinTable(name = "livros_semelhantes", joinColumns = @JoinColumn(name = "livro_id"), inverseJoinColumns = @JoinColumn(name = "semelhante_id"))
-    private HashSet<Livro> livrosSemelhantes = new HashSet<>();
+    private Set<Livro> livrosSemelhantes = new HashSet<>();
 
     /**
      * Construtor padrão necessário para JPA.
@@ -221,7 +222,7 @@ public class Livro {
      *
      * @return conjunto de autores do livro
      */
-    public HashSet<Autor> getAutores() {
+    public Set<Autor> getAutores() {
         return autores;
     }
 
@@ -230,7 +231,7 @@ public class Livro {
      *
      * @param autores o novo conjunto de autores do livro
      */
-    public void setAutores(HashSet<Autor> autores) {
+    public void setAutores(Set<Autor> autores) {
         this.autores = autores;
     }
 
@@ -257,7 +258,7 @@ public class Livro {
      *
      * @return conjunto de livros semelhantes
      */
-    public HashSet<Livro> getLivrosSemelhantes() {
+    public Set<Livro> getLivrosSemelhantes() {
         return livrosSemelhantes;
     }
 
@@ -266,7 +267,7 @@ public class Livro {
      *
      * @param livros o novo conjunto de livros semelhantes
      */
-    public void setLivrosSemelhantes(HashSet<Livro> livros) {
+    public void setLivrosSemelhantes(Set<Livro> livros) {
         this.livrosSemelhantes = livros;
     }
 

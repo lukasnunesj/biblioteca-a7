@@ -1,6 +1,7 @@
 package com.biblioteca.domain.entities.autor;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Objects;
 
 import javax.persistence.CascadeType;
@@ -70,8 +71,8 @@ public class Autor {
      * Conjunto de livros associados a este autor.
      * Relacionamento muitos-para-muitos mapeado pelo atributo 'autor' na entidade Livro.
      */
-    @ManyToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private HashSet<Livro> livros = new HashSet<Livro>();
+    @ManyToMany(mappedBy = "autores", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Livro> livros = new HashSet<>();
 
     /**
      * Construtor padrão necessário para JPA.
@@ -204,7 +205,7 @@ public class Autor {
      *
      * @return conjunto de livros do autor
      */
-    public HashSet<Livro> getLivros() {
+    public Set<Livro> getLivros() {
         return livros;
     }
 
@@ -213,7 +214,7 @@ public class Autor {
      *
      * @param livros o novo conjunto de livros do autor
      */
-    public void setLivros(HashSet<Livro> livros) {
+    public void setLivros(Set<Livro> livros) {
         this.livros = livros;
     }
 

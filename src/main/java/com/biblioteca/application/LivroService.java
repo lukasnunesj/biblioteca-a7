@@ -1,11 +1,8 @@
-package com.biblioteca.services;
+package com.biblioteca.application;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-
-import javax.ejb.Stateless;
-import javax.inject.Inject;
 
 import com.biblioteca.domain.entities.autor.Autor;
 import com.biblioteca.domain.entities.autor.interfaces.IAutorRepository;
@@ -27,26 +24,18 @@ import com.biblioteca.domain.entities.livro.interfaces.ILivroService;
  * @author Biblioteca A7
  * @version 1.0
  */
-@Stateless
 public class LivroService implements ILivroService {
 
-    /**
-     * Repositório de livros injetado pelo container.
-     */
-    @Inject
-    private ILivroRepository livroRepository;
+    private final ILivroRepository livroRepository;
+    private final IEditoraRepository editoraRepository;
+    private final IAutorRepository autorRepository;
 
-    /**
-     * Repositório de editoras injetado pelo container.
-     */
-    @Inject
-    private IEditoraRepository editoraRepository;
-
-    /**
-     * Repositório de autores injetado pelo container.
-     */
-    @Inject
-    private IAutorRepository autorRepository;
+    public LivroService(ILivroRepository livroRepository, IEditoraRepository editoraRepository,
+            IAutorRepository autorRepository) {
+        this.livroRepository = livroRepository;
+        this.editoraRepository = editoraRepository;
+        this.autorRepository = autorRepository;
+    }
 
     /**
      * {@inheritDoc}
