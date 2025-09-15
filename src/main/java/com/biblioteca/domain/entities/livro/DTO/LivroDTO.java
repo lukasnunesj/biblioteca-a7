@@ -11,7 +11,8 @@ import com.biblioteca.domain.entities.livro.Livro;
 /**
  * Classe de Transferência de Dados (DTO) para a entidade Livro.
  * <p>
- * Esta classe é utilizada para transferir dados de livros entre camadas da aplicação,
+ * Esta classe é utilizada para transferir dados de livros entre camadas da
+ * aplicação,
  * sem expor detalhes da implementação da entidade. Contém apenas os atributos
  * necessários para operações de criação e atualização de livros.
  * </p>
@@ -21,27 +22,27 @@ public class LivroDTO {
      * Identificador único do livro.
      */
     private Long id;
-    
+
     /**
      * Título do livro.
      */
     private String titulo;
-    
+
     /**
      * Código ISBN do livro.
      */
     private String isbn;
-    
+
     /**
      * Data de publicação do livro.
      */
     private LocalDate dataPublicacao;
-    
+
     /**
      * Identificador da editora do livro.
      */
     private Long editoraId;
-    
+
     /**
      * Lista de identificadores dos autores do livro.
      */
@@ -193,5 +194,4 @@ public class LivroDTO {
         this.autoresIds = autoresIds;
     }
 
-    
 }

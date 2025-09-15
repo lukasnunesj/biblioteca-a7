@@ -91,16 +91,16 @@ public class Autor {
      * @throws IllegalArgumentException se algum dos parâmetros for nulo ou vazio
      */
     public Autor(String nome, String cpfcnpj, String telefone, String email) {
-        if (nome == null || nome.isEmpty()) {
+                if (nome == null || nome.isBlank()) {
             throw new IllegalArgumentException("Nome inválido");
         }
-        if (cpfcnpj == null || cpfcnpj.isEmpty()) {
+        if (cpfcnpj == null || cpfcnpj.isBlank()) {
             throw new IllegalArgumentException("CPF/CNPJ inválido");
         }
-        if (telefone == null || telefone.isEmpty()) {
+        if (telefone == null || telefone.isBlank()) {
             throw new IllegalArgumentException("Telefone inválido");
         }
-        if (email == null || email.isEmpty()) {
+        if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("Email inválido");
         }
 

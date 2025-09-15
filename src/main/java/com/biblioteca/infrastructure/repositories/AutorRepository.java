@@ -19,6 +19,9 @@ public class AutorRepository implements IAutorRepository {
         this.entityManager = entityManager;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Autor salvar(Autor autor) {
         try {
@@ -33,6 +36,9 @@ public class AutorRepository implements IAutorRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Autor> buscarPorId(Long id) {
         try {
@@ -44,17 +50,26 @@ public class AutorRepository implements IAutorRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Autor> buscarPorCpfcnpj(String cpfcnpj) {
         try {
             LOGGER.info("Buscando autor por cpfcnpj: " + cpfcnpj);
-            return Optional.ofNullable(entityManager.find(Autor.class, cpfcnpj));
+            return entityManager.createQuery("SELECT a FROM Autor a WHERE a.cpfcnpj = :cpfcnpj", Autor.class)
+                    .setParameter("cpfcnpj", cpfcnpj)
+                    .getResultStream()
+                    .findFirst();
         } catch (Exception e) {
             LOGGER.severe("Erro ao buscar autor por cpfcnpj: " + e.getMessage());
             throw new RuntimeException("Erro ao buscar autor por cpfcnpj: " + e.getMessage());
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Autor> buscarTodos() {
         try {
@@ -66,6 +81,9 @@ public class AutorRepository implements IAutorRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void remover(Autor autor) {
         try {

@@ -38,10 +38,6 @@ public class LivroRepository implements ILivroRepository {
 
     /**
      * {@inheritDoc}
-     * <p>
-     * Implementação que utiliza o método merge do EntityManager para
-     * persistir ou atualizar um livro no banco de dados.
-     * </p>
      */
     @Override
     public Livro salvar(Livro livro) {
@@ -59,10 +55,6 @@ public class LivroRepository implements ILivroRepository {
 
     /**
      * {@inheritDoc}
-     * <p>
-     * Implementação que utiliza o método find do EntityManager para
-     * buscar um livro pelo seu ID no banco de dados.
-     * </p>
      */
     @Override
     public Optional<Livro> buscarPorId(Long id) {
@@ -77,16 +69,15 @@ public class LivroRepository implements ILivroRepository {
 
     /**
      * {@inheritDoc}
-     * <p>
-     * Implementação que utiliza o método find do EntityManager para
-     * buscar um livro pelo seu ISBN no banco de dados.
-     * </p>
      */
     @Override
     public Optional<Livro> buscarPorIsbn(String isbn) {
         try {
             LOGGER.info("Buscando livro por isbn: " + isbn);
-            return Optional.ofNullable(entityManager.find(Livro.class, isbn));
+            return entityManager.createQuery("SELECT l FROM Livro l WHERE l.isbn = :isbn", Livro.class)
+                    .setParameter("isbn", isbn)
+                    .getResultStream()
+                    .findFirst();
         } catch (Exception e) {
             LOGGER.severe("Erro ao buscar livro por isbn: " + e.getMessage());
             throw new RuntimeException("Erro ao buscar livro por isbn: " + e.getMessage());
@@ -95,10 +86,6 @@ public class LivroRepository implements ILivroRepository {
 
     /**
      * {@inheritDoc}
-     * <p>
-     * Implementação que utiliza uma consulta JPQL para
-     * buscar todos os livros no banco de dados.
-     * </p>
      */
     @Override
     public List<Livro> buscarTodos() {
@@ -113,10 +100,6 @@ public class LivroRepository implements ILivroRepository {
 
     /**
      * {@inheritDoc}
-     * <p>
-     * Implementação que utiliza o método remove do EntityManager para
-     * remover um livro do banco de dados.
-     * </p>
      */
     @Override
     public void remover(Livro livro) {

@@ -17,30 +17,47 @@ public class AutorService implements IAutorService {
         this.autorRepository = autorRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Autor salvar(AutorDTO autorDTO) {
         Autor autor = autorDTO.toEntity();
         return autorRepository.salvar(autor);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Autor> buscarPorId(Long id) {
         return autorRepository.buscarPorId(id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Autor> buscarPorCpfcnpj(String cpfcnpj) {
         return autorRepository.buscarPorCpfcnpj(cpfcnpj);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Autor> buscarTodos() {
         return autorRepository.buscarTodos();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void remover(AutorDTO autorDTO) {
-        Autor autor = autorDTO.toEntity();
-        autorRepository.remover(autor);
+        Optional<Autor> autor = autorRepository.buscarPorId(autorDTO.getId());
+        if (autor.isPresent()) {
+            autorRepository.remover(autor.get());
+        }
     }
 }

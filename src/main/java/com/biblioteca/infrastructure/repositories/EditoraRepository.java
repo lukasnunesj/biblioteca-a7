@@ -19,6 +19,9 @@ public class EditoraRepository implements IEditoraRepository {
         this.entityManager = entityManager;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Editora salvar(Editora editora) {
         try {
@@ -33,6 +36,9 @@ public class EditoraRepository implements IEditoraRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Editora> buscarPorId(Long id) {
         try {
@@ -44,17 +50,26 @@ public class EditoraRepository implements IEditoraRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Editora> buscarPorCnpj(String cnpj) {
         try {
             LOGGER.info("Buscando editora por cnpj: " + cnpj);
-            return Optional.ofNullable(entityManager.find(Editora.class, cnpj));
+            return entityManager.createQuery("SELECT e FROM Editora e WHERE e.cnpj = :cnpj", Editora.class)
+                    .setParameter("cnpj", cnpj)
+                    .getResultStream()
+                    .findFirst();
         } catch (Exception e) {
             LOGGER.severe("Erro ao buscar editora por cnpj: " + e.getMessage());
             throw new RuntimeException("Erro ao buscar editora por cnpj: " + e.getMessage());
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Editora> buscarTodos() {
         try {
@@ -66,6 +81,9 @@ public class EditoraRepository implements IEditoraRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void remover(Editora editora) {
         try {

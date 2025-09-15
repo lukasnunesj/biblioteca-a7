@@ -2,8 +2,6 @@ package com.biblioteca.infrastructure.factory;
 
 import javax.persistence.EntityManager;
 
-import com.biblioteca.domain.entities.autor.interfaces.IAutorRepository;
-import com.biblioteca.domain.entities.editora.interfaces.IEditoraRepository;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroRepository;
 import com.biblioteca.application.AutorService;
 import com.biblioteca.application.EditoraService;
@@ -25,10 +23,10 @@ public class DependencyFactory {
     }
 
     public ILivroService createLivroService() {
-        IAutorRepository autorRepository = new AutorRepository(entityManager);
-        IEditoraRepository editoraRepository = new EditoraRepository(entityManager);
         ILivroRepository livroRepository = new LivroRepository(entityManager);
-        return new LivroService(livroRepository, editoraRepository, autorRepository);
+        IAutorService autorService = createAutorService();
+        IEditoraService editoraService = createEditoraService();
+        return new LivroService(livroRepository, editoraService, autorService);
     }
 
     public IAutorService createAutorService() {

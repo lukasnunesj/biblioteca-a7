@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import com.biblioteca.domain.entities.autor.Autor;
-import com.biblioteca.domain.entities.autor.interfaces.IAutorRepository;
+import com.biblioteca.domain.entities.autor.interfaces.IAutorService;
 import com.biblioteca.domain.entities.editora.Editora;
-import com.biblioteca.domain.entities.editora.interfaces.IEditoraRepository;
+import com.biblioteca.domain.entities.editora.interfaces.IEditoraService;
 import com.biblioteca.domain.entities.livro.Livro;
 import com.biblioteca.domain.entities.livro.DTO.LivroDTO;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroRepository;
@@ -27,41 +27,36 @@ import com.biblioteca.domain.entities.livro.interfaces.ILivroService;
 public class LivroService implements ILivroService {
 
     private final ILivroRepository livroRepository;
-    private final IEditoraRepository editoraRepository;
-    private final IAutorRepository autorRepository;
+    private final IEditoraService editoraService;
+    private final IAutorService autorService;
 
-    public LivroService(ILivroRepository livroRepository, IEditoraRepository editoraRepository,
-            IAutorRepository autorRepository) {
+    public LivroService(ILivroRepository livroRepository, IEditoraService editoraService,
+            IAutorService autorService) {
         this.livroRepository = livroRepository;
-        this.editoraRepository = editoraRepository;
-        this.autorRepository = autorRepository;
+        this.editoraService = editoraService;
+        this.autorService = autorService;
     }
 
     /**
      * {@inheritDoc}
-     * <p>
-     * Implementação que busca a editora e os autores associados ao livro
-     * antes de salvá-lo no repositório.
-     * </p>
      */
     @Override
     public Livro salvar(LivroDTO livroDTO) {
-        Optional<Editora> editora = editoraRepository.buscarPorId(livroDTO.getEditoraId());
+        Editora editora = editoraService.buscarPorId(livroDTO.getEditoraId())
+                .orElseThrow(() -> new IllegalArgumentException("Editora não encontrada!"));
 
         HashSet<Autor> autores = new HashSet<>();
         for (Long autorId : livroDTO.getAutoresIds()) {
-            autores.add(autorRepository.buscarPorId(autorId).get());
+            autores.add(autorService.buscarPorId(autorId)
+                    .orElseThrow(() -> new IllegalArgumentException("Autor não encontrado!")));
         }
 
-        Livro livro = livroDTO.toEntity(editora.get(), autores);
+        Livro livro = livroDTO.toEntity(editora, autores);
         return livroRepository.salvar(livro);
     }
 
     /**
      * {@inheritDoc}
-     * <p>
-     * Implementação que delega a busca ao repositório de livros.
-     * </p>
      */
     @Override
     public Optional<Livro> buscarPorId(Long id) {
@@ -70,9 +65,6 @@ public class LivroService implements ILivroService {
 
     /**
      * {@inheritDoc}
-     * <p>
-     * Implementação que delega a busca ao repositório de livros.
-     * </p>
      */
     @Override
     public Optional<Livro> buscarPorIsbn(String isbn) {
@@ -81,9 +73,6 @@ public class LivroService implements ILivroService {
 
     /**
      * {@inheritDoc}
-     * <p>
-     * Implementação que delega a busca ao repositório de livros.
-     * </p>
      */
     @Override
     public List<Livro> buscarTodos() {
@@ -92,15 +81,13 @@ public class LivroService implements ILivroService {
 
     /**
      * {@inheritDoc}
-     * <p>
-     * Implementação que converte o DTO para entidade e delega
-     * a remoção ao repositório de livros.
-     * </p>
      */
     @Override
     public void remover(LivroDTO livroDTO) {
-        Livro livro = livroDTO.toEntity(editoraRepository.buscarPorId(livroDTO.getEditoraId()).get(), new HashSet<>());
-        livroRepository.remover(livro);
+        Optional<Livro> livro = livroRepository.buscarPorId(livroDTO.getId());
+        if (livro.isPresent()) {
+            livroRepository.remover(livro.get());
+        }
     }
 
 }

@@ -17,30 +17,47 @@ public class EditoraService implements IEditoraService {
         this.editoraRepository = editoraRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Editora salvar(EditoraDTO editoraDTO) {
         Editora editora = editoraDTO.toEntity();
         return editoraRepository.salvar(editora);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Editora> buscarPorId(Long id) {
         return editoraRepository.buscarPorId(id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Editora> buscarPorCnpj(String cnpj) {
         return editoraRepository.buscarPorCnpj(cnpj);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Editora> buscarTodos() {
         return editoraRepository.buscarTodos();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void remover(EditoraDTO editoraDTO) {
-        Editora editora = editoraDTO.toEntity();
-        editoraRepository.remover(editora);
+        Optional<Editora> editora = editoraRepository.buscarPorId(editoraDTO.getId());
+        if (editora.isPresent()) {
+            editoraRepository.remover(editora.get());
+        }
     }
 }

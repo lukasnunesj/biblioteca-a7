@@ -70,4 +70,94 @@ public class AutorDTO {
         autor.setEmail(this.email);
         return autor;
     }
+    
+    /**
+     * Retorna o identificador único do autor.
+     *
+     * @return o ID do autor
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * Define o identificador do autor.
+     *
+     * @param id o novo ID do autor
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    /**
+     * Retorna o nome do autor.
+     *
+     * @return o nome do autor
+     */
+    public String getNome() {
+        return nome;
+    }
+
+    /**
+     * Define o nome do autor.
+     *
+     * @param nome o novo nome do autor
+     */
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+    
+    /**
+     * Retorna o CPF ou CNPJ do autor.
+     *
+     * @return o CPF ou CNPJ do autor
+     */
+    public String getCpfcnpj() {
+        return cpfcnpj;
+    }
+
+    /**
+     * Define o CPF/CNPJ do autor.
+     *
+     * @param cpfcnpj o novo CPF/CNPJ do autor
+     */
+    public void setCpfcnpj(String cpfcnpj) {
+        this.cpfcnpj = cpfcnpj;
+    }
+    
+    /**
+     * Retorna o telefone de contato do autor.
+     *
+     * @return o telefone do autor
+     */
+    public String getTelefone() {
+        return telefone;
+    }
+
+    /**
+     * Define o telefone de contato do autor.
+     *
+     * @param telefone o novo telefone do autor
+     */
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+    
+    /**
+     * Retorna o email de contato do autor.
+     *
+     * @return o email do autor
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * Define o email de contato do autor.
+     *
+     * @param email o novo email do autor
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

@@ -70,4 +70,94 @@ public class EditoraDTO {
         editora.setEmail(this.email);
         return editora;
     }
+    
+    /**
+     * Retorna o identificador único da editora.
+     *
+     * @return o ID da editora
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * Define o identificador da editora.
+     *
+     * @param id o novo ID da editora
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    /**
+     * Retorna o nome da editora.
+     *
+     * @return o nome da editora
+     */
+    public String getNome() {
+        return nome;
+    }
+
+    /**
+     * Define o nome da editora.
+     *
+     * @param nome o novo nome da editora
+     */
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+    
+    /**
+     * Retorna o CNPJ da editora.
+     *
+     * @return o CNPJ da editora
+     */
+    public String getCnpj() {
+        return cnpj;
+    }
+
+    /**
+     * Define o CNPJ da editora.
+     *
+     * @param cnpj o novo CNPJ da editora
+     */
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
+    }
+    
+    /**
+     * Retorna o telefone de contato da editora.
+     *
+     * @return o telefone da editora
+     */
+    public String getTelefone() {
+        return telefone;
+    }
+
+    /**
+     * Define o telefone de contato da editora.
+     *
+     * @param telefone o novo telefone da editora
+     */
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+    
+    /**
+     * Retorna o email de contato da editora.
+     *
+     * @return o email da editora
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * Define o email de contato da editora.
+     *
+     * @param email o novo email da editora
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }
