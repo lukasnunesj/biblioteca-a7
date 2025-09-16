@@ -1,4 +1,4 @@
-package com.biblioteca.presentation;
+package com.biblioteca.presentation.telasListagem;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JTable;

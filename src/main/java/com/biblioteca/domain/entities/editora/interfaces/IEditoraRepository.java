@@ -23,7 +23,8 @@ public interface IEditoraRepository {
      * Busca uma editora pelo seu identificador único.
      * 
      * @param id o ID da editora a ser buscada
-     * @return um Optional contendo a editora, se encontrada, ou vazio caso contrário
+     * @return um Optional contendo a editora, se encontrada, ou vazio caso
+     *         contrário
      */
     Optional<Editora> buscarPorId(Long id);
 
@@ -31,7 +32,8 @@ public interface IEditoraRepository {
      * Busca uma editora pelo seu CNPJ.
      * 
      * @param cnpj o CNPJ da editora a ser buscada
-     * @return um Optional contendo a editora, se encontrada, ou vazio caso contrário
+     * @return um Optional contendo a editora, se encontrada, ou vazio caso
+     *         contrário
      */
     Optional<Editora> buscarPorCnpj(String cnpj);
 

@@ -19,6 +19,9 @@ import com.biblioteca.domain.entities.editora.interfaces.IEditoraService;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroService;
 import com.biblioteca.infrastructure.factory.DependencyFactory;
 import com.biblioteca.infrastructure.util.JPAUtil;
+import com.biblioteca.presentation.telasListagem.TelaListagemAutores;
+import com.biblioteca.presentation.telasListagem.TelaListagemEditoras;
+import com.biblioteca.presentation.telasListagem.TelaListagemLivros;
 import com.formdev.flatlaf.FlatDarculaLaf;
 
 public class TelaPrincipal {
@@ -84,14 +87,18 @@ public class TelaPrincipal {
         JMenuItem menuItemAutores = new JMenuItem("Autores");
         menuItemAutores.setMnemonic('A');
         menuItemAutores.addActionListener(e -> {
-            JOptionPane.showMessageDialog(frame, "Tela de Autores ainda não implementada.");
+            TelaListagemAutores telaListagemAutores = new TelaListagemAutores(autorService);
+            desktopPane.add(telaListagemAutores);
+            telaListagemAutores.setVisible(true);
         });
 
         // Menu Editoras
         JMenuItem menuItemEditoras = new JMenuItem("Editoras");
         menuItemEditoras.setMnemonic('E');
         menuItemEditoras.addActionListener(e -> {
-            JOptionPane.showMessageDialog(frame, "Tela de Editoras ainda não implementada.");
+            TelaListagemEditoras telaListagemEditoras = new TelaListagemEditoras(editoraService);
+            desktopPane.add(telaListagemEditoras);
+            telaListagemEditoras.setVisible(true);
         });
 
         // Sair

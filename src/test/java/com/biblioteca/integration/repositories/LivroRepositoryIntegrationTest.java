@@ -34,14 +34,14 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
         // Arrange
         Editora editora = criarEditora();
         Autor autor = criarAutor();
-        
+
         Livro livro = new Livro("Dom Casmurro", "9788574801414", LocalDate.of(1899, 1, 1));
         livro.setEditora(editora);
         livro.addAutor(autor);
 
         // Act
         Livro livroSalvo = livroRepository.salvar(livro);
-        
+
         // Assert
         assertThat(livroSalvo.getId()).isNotNull();
         assertThat(livroSalvo.getTitulo()).isEqualTo("Dom Casmurro");
@@ -56,10 +56,10 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
     public void testBuscarPorId() {
         // Arrange
         Livro livro = criarLivroCompleto();
-        
+
         // Act
         Optional<Livro> resultado = livroRepository.buscarPorId(livro.getId());
-        
+
         // Assert
         assertThat(resultado).isPresent();
         assertThat(resultado.get().getTitulo()).isEqualTo("Dom Casmurro");
@@ -69,7 +69,7 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
     public void testBuscarPorIdNaoEncontrado() {
         // Act
         Optional<Livro> resultado = livroRepository.buscarPorId(999L);
-        
+
         // Assert
         assertThat(resultado).isEmpty();
     }
@@ -78,18 +78,18 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
     public void testBuscarTodos() {
         // Arrange
         Livro livro1 = criarLivroCompleto();
-        
+
         Editora editora = entityManager.find(Editora.class, livro1.getEditora().getId());
         Autor autor = entityManager.find(Autor.class, livro1.getAutores().iterator().next().getId());
-        
+
         Livro livro2 = new Livro("Memórias Póstumas de Brás Cubas", "9788535921182", LocalDate.of(1881, 1, 1));
         livro2.setEditora(editora);
         livro2.addAutor(autor);
         livroRepository.salvar(livro2);
-        
+
         // Act
         List<Livro> livros = livroRepository.buscarTodos();
-        
+
         // Assert
         assertThat(livros).hasSize(2);
         assertThat(livros).extracting("titulo").contains("Dom Casmurro", "Memórias Póstumas de Brás Cubas");
@@ -99,35 +99,36 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
     public void testRemover() {
         // Arrange
         Livro livro = criarLivroCompleto();
-        
+
         // Act
         livroRepository.remover(livro);
         Optional<Livro> resultado = livroRepository.buscarPorId(livro.getId());
-        
+
         // Assert
         assertThat(resultado).isEmpty();
     }
-    
+
     // Métodos auxiliares
-    
+
     private Editora criarEditora() {
-        Editora editora = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999", "contato@companhiadasletras.com");
+        Editora editora = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999",
+                "contato@companhiadasletras.com");
         return editoraRepository.salvar(editora);
     }
-    
+
     private Autor criarAutor() {
         Autor autor = new Autor("Machado de Assis", "123.456.789-00", "(21) 99999-9999", "machado@exemplo.com");
         return autorRepository.salvar(autor);
     }
-    
+
     private Livro criarLivroCompleto() {
         Editora editora = criarEditora();
         Autor autor = criarAutor();
-        
+
         Livro livro = new Livro("Dom Casmurro", "9788574801414", LocalDate.of(1899, 1, 1));
         livro.setEditora(editora);
         livro.addAutor(autor);
-        
+
         return livroRepository.salvar(livro);
     }
 }

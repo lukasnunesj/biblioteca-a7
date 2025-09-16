@@ -27,7 +27,7 @@ public class AutorRepositoryIntegrationTest extends IntegrationTestBase {
 
         // Act
         Autor autorSalvo = autorRepository.salvar(autor);
-        
+
         // Assert
         assertThat(autorSalvo.getId()).isNotNull();
         assertThat(autorSalvo.getNome()).isEqualTo("Carlos Drummond");
@@ -41,10 +41,10 @@ public class AutorRepositoryIntegrationTest extends IntegrationTestBase {
         // Arrange
         Autor autor = new Autor("Carlos Drummond", "123.456.789-00", "(31) 99999-9999", "carlos@exemplo.com");
         Autor autorSalvo = autorRepository.salvar(autor);
-        
+
         // Act
         Optional<Autor> resultado = autorRepository.buscarPorId(autorSalvo.getId());
-        
+
         // Assert
         assertThat(resultado).isPresent();
         assertThat(resultado.get().getNome()).isEqualTo("Carlos Drummond");
@@ -54,7 +54,7 @@ public class AutorRepositoryIntegrationTest extends IntegrationTestBase {
     public void testBuscarPorIdNaoEncontrado() {
         // Act
         Optional<Autor> resultado = autorRepository.buscarPorId(999L);
-        
+
         // Assert
         assertThat(resultado).isEmpty();
     }
@@ -64,13 +64,13 @@ public class AutorRepositoryIntegrationTest extends IntegrationTestBase {
         // Arrange
         Autor autor1 = new Autor("Carlos Drummond", "123.456.789-00", "(31) 99999-9999", "carlos@exemplo.com");
         Autor autor2 = new Autor("Machado de Assis", "987.654.321-00", "(21) 88888-8888", "machado@exemplo.com");
-        
+
         autorRepository.salvar(autor1);
         autorRepository.salvar(autor2);
-        
+
         // Act
         List<Autor> autores = autorRepository.buscarTodos();
-        
+
         // Assert
         assertThat(autores).hasSize(2);
         assertThat(autores).extracting("nome").contains("Carlos Drummond", "Machado de Assis");
@@ -81,11 +81,11 @@ public class AutorRepositoryIntegrationTest extends IntegrationTestBase {
         // Arrange
         Autor autor = new Autor("Carlos Drummond", "123.456.789-00", "(31) 99999-9999", "carlos@exemplo.com");
         Autor autorSalvo = autorRepository.salvar(autor);
-        
+
         // Act
         autorRepository.remover(autorSalvo);
         Optional<Autor> resultado = autorRepository.buscarPorId(autorSalvo.getId());
-        
+
         // Assert
         assertThat(resultado).isEmpty();
     }
