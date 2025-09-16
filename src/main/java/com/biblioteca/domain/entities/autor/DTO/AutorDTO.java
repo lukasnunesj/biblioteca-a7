@@ -1,6 +1,8 @@
 package com.biblioteca.domain.entities.autor.DTO;
 
 import com.biblioteca.domain.entities.autor.Autor;
+import com.biblioteca.domain.entities.common.DTO.BaseDTO;
+import com.biblioteca.infrastructure.exceptions.ValidacaoException;
 
 /**
  * Classe de Transferência de Dados (DTO) para a entidade Autor.
@@ -13,11 +15,10 @@ import com.biblioteca.domain.entities.autor.Autor;
  * @author Biblioteca A7
  * @version 1.0
  */
-public class AutorDTO {
+public class AutorDTO extends BaseDTO {
     /**
-     * Identificador único do autor.
+     * Nome do autor.
      */
-    private Long id;
     
     /**
      * Nome do autor.
@@ -40,6 +41,13 @@ public class AutorDTO {
     private String email;
 
     /**
+     * Construtor padrão.
+     */
+    public AutorDTO() {
+        super();
+    }
+    
+    /**
      * Construtor para criar um novo AutorDTO com todos os atributos.
      *
      * @param id       o identificador do autor
@@ -49,7 +57,7 @@ public class AutorDTO {
      * @param email    o email de contato do autor
      */
     public AutorDTO(Long id, String nome, String cpfcnpj, String telefone, String email) {
-        this.id = id;
+        super(id);
         this.nome = nome;
         this.cpfcnpj = cpfcnpj;
         this.telefone = telefone;
@@ -63,7 +71,7 @@ public class AutorDTO {
      */
     public Autor toEntity() {
         Autor autor = new Autor();
-        autor.setId(this.id);
+        autor.setId(this.getId());
         autor.setNome(this.nome);
         autor.setCpfcnpj(this.cpfcnpj);
         autor.setTelefone(this.telefone);
@@ -72,22 +80,24 @@ public class AutorDTO {
     }
     
     /**
-     * Retorna o identificador único do autor.
+     * Cria um DTO a partir de uma entidade Autor.
      *
-     * @return o ID do autor
+     * @param autor a entidade Autor
+     * @return um novo AutorDTO com os dados da entidade
      */
-    public Long getId() {
-        return id;
+    public static AutorDTO fromEntity(Autor autor) {
+        if (autor == null) {
+            return null;
+        }
+        return new AutorDTO(
+            autor.getId(),
+            autor.getNome(),
+            autor.getCpfcnpj(),
+            autor.getTelefone(),
+            autor.getEmail()
+        );
     }
-
-    /**
-     * Define o identificador do autor.
-     *
-     * @param id o novo ID do autor
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
+    
     
     /**
      * Retorna o nome do autor.
@@ -159,5 +169,33 @@ public class AutorDTO {
      */
     public void setEmail(String email) {
         this.email = email;
+    }
+    
+    /**
+     * Valida os dados do DTO.
+     * 
+     * @throws ValidacaoException se os dados forem inválidos
+     */
+    @Override
+    public void validar() {
+        if (nome == null || nome.isBlank()) {
+            throw new ValidacaoException("O nome do autor é obrigatório");
+        }
+        
+        if (cpfcnpj == null || cpfcnpj.isBlank()) {
+            throw new ValidacaoException("O CPF/CNPJ do autor é obrigatório");
+        }
+        
+        if (telefone == null || telefone.isBlank()) {
+            throw new ValidacaoException("O telefone do autor é obrigatório");
+        }
+        
+        if (email == null || email.isBlank()) {
+            throw new ValidacaoException("O email do autor é obrigatório");
+        }
+        
+        if (email != null && !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            throw new ValidacaoException("O email do autor é inválido");
+        }
     }
 }

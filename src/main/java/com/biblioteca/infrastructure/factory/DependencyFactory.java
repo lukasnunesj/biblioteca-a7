@@ -30,7 +30,7 @@ public class DependencyFactory {
     }
 
     public IAutorService createAutorService() {
-        return new AutorService(new AutorRepository(entityManager));
+        return new AutorService(new AutorRepository());
     }
 
     public IEditoraService createEditoraService() {

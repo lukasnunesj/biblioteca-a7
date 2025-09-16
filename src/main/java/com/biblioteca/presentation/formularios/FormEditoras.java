@@ -15,6 +15,8 @@ import javax.swing.text.MaskFormatter;
 
 import com.biblioteca.domain.entities.editora.DTO.EditoraDTO;
 import com.biblioteca.domain.entities.editora.interfaces.IEditoraService;
+import com.biblioteca.infrastructure.exceptions.ExceptionHandler;
+import com.biblioteca.infrastructure.util.ValidacaoUtil;
 import com.biblioteca.presentation.templates.FormPadrao;
 
 public class FormEditoras extends FormPadrao {
@@ -103,32 +105,30 @@ public class FormEditoras extends FormPadrao {
     @Override
     protected void salvar() {
         try {
+            // Validação centralizada dos campos do formulário
+            ValidacaoUtil.ValidadorFormulario validador = ValidacaoUtil.validador(this);
+            validador.campo(txtNome, "Nome").obrigatorio();
+            validador.campo(txtCnpj, "CNPJ").obrigatorio();
+            validador.campo(txtTelefone, "Telefone").obrigatorio();
+            validador.campo(txtEmail, "Email").obrigatorio().email();
+            
+            if (!validador.validar()) {
+                return;
+            }
+            
+            // Processamento dos dados após validação
             String nome = txtNome.getText();
             String cnpj = txtCnpj.getText().replaceAll("[^0-9]", "");
             String telefone = txtTelefone.getText().replaceAll("[^0-9]", "");
             String email = txtEmail.getText();
 
-            if (nome.isBlank()) {
-                JOptionPane.showMessageDialog(this, "O campo 'Nome' é obrigatório.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            if (cnpj.isBlank()) {
-                JOptionPane.showMessageDialog(this, "O campo 'CNPJ' é obrigatório.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            if (telefone.isBlank()) {
-                JOptionPane.showMessageDialog(this, "O campo 'Telefone' é obrigatório.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            if (email.isBlank()) {
-                JOptionPane.showMessageDialog(this, "O campo 'Email' é obrigatório.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
+            // Cria o DTO e valida os dados de negócio
             EditoraDTO editoraDTO = new EditoraDTO(null, nome, cnpj, telefone, email);
+            
+            // A validação de negócio é feita pelo próprio DTO
+            editoraDTO.validar();
+            
+            // Salva a editora no repositório
             editoraService.salvar(editoraDTO);
 
             JOptionPane.showMessageDialog(this, "Editora salva com sucesso!", "Sucesso",
@@ -136,8 +136,8 @@ public class FormEditoras extends FormPadrao {
             dispose();
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erro ao salvar a editora: " + e.getMessage(), "Erro",
-                    JOptionPane.ERROR_MESSAGE);
+            // Tratamento centralizado de exceções
+            ExceptionHandler.tratar(e, this);
         }
     }
 }

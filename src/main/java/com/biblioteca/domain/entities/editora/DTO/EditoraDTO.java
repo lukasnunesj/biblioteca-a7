@@ -1,6 +1,8 @@
 package com.biblioteca.domain.entities.editora.DTO;
 
 import com.biblioteca.domain.entities.editora.Editora;
+import com.biblioteca.domain.entities.common.DTO.BaseDTO;
+import com.biblioteca.infrastructure.exceptions.ValidacaoException;
 
 /**
  * Classe de Transferência de Dados (DTO) para a entidade Editora.
@@ -13,11 +15,10 @@ import com.biblioteca.domain.entities.editora.Editora;
  * @author Biblioteca A7
  * @version 1.0
  */
-public class EditoraDTO {
+public class EditoraDTO extends BaseDTO {
     /**
-     * Identificador único da editora.
+     * Nome da editora.
      */
-    private Long id;
     
     /**
      * Nome da editora.
@@ -40,6 +41,13 @@ public class EditoraDTO {
     private String email;
 
     /**
+     * Construtor padrão.
+     */
+    public EditoraDTO() {
+        super();
+    }
+    
+    /**
      * Construtor para criar um novo EditoraDTO com todos os atributos.
      *
      * @param id       o identificador da editora
@@ -49,7 +57,7 @@ public class EditoraDTO {
      * @param email    o email de contato da editora
      */
     public EditoraDTO(Long id, String nome, String cnpj, String telefone, String email) {
-        this.id = id;
+        super(id);
         this.nome = nome;
         this.cnpj = cnpj;
         this.telefone = telefone;
@@ -63,7 +71,7 @@ public class EditoraDTO {
      */
     public Editora toEntity() {
         Editora editora = new Editora();
-        editora.setId(this.id);
+        editora.setId(this.getId());
         editora.setNome(this.nome);
         editora.setCnpj(this.cnpj);
         editora.setTelefone(this.telefone);
@@ -72,22 +80,24 @@ public class EditoraDTO {
     }
     
     /**
-     * Retorna o identificador único da editora.
+     * Cria um DTO a partir de uma entidade Editora.
      *
-     * @return o ID da editora
+     * @param editora a entidade Editora
+     * @return um novo EditoraDTO com os dados da entidade
      */
-    public Long getId() {
-        return id;
+    public static EditoraDTO fromEntity(Editora editora) {
+        if (editora == null) {
+            return null;
+        }
+        return new EditoraDTO(
+            editora.getId(),
+            editora.getNome(),
+            editora.getCnpj(),
+            editora.getTelefone(),
+            editora.getEmail()
+        );
     }
-
-    /**
-     * Define o identificador da editora.
-     *
-     * @param id o novo ID da editora
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
+    
     
     /**
      * Retorna o nome da editora.
@@ -159,5 +169,38 @@ public class EditoraDTO {
      */
     public void setEmail(String email) {
         this.email = email;
+    }
+    
+    /**
+     * Valida os dados do DTO.
+     * 
+     * @throws ValidacaoException se os dados forem inválidos
+     */
+    @Override
+    public void validar() {
+        if (nome == null || nome.isBlank()) {
+            throw new ValidacaoException("O nome da editora é obrigatório");
+        }
+        
+        if (cnpj == null || cnpj.isBlank()) {
+            throw new ValidacaoException("O CNPJ da editora é obrigatório");
+        }
+        
+        if (telefone == null || telefone.isBlank()) {
+            throw new ValidacaoException("O telefone da editora é obrigatório");
+        }
+        
+        if (email == null || email.isBlank()) {
+            throw new ValidacaoException("O email da editora é obrigatório");
+        }
+        
+        if (email != null && !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            throw new ValidacaoException("O email da editora é inválido");
+        }
+        
+        // Validação específica para CNPJ
+        if (cnpj != null && !cnpj.matches("^\\d{14}$")) {
+            throw new ValidacaoException("O CNPJ deve conter exatamente 14 dígitos numéricos");
+        }
     }
 }

@@ -6,8 +6,10 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
 
 import org.junit.Before;
@@ -16,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.biblioteca.domain.entities.autor.Autor;
+import com.biblioteca.infrastructure.exceptions.PersistenciaException;
 
 public class AutorRepositoryTest {
 
@@ -23,6 +26,9 @@ public class AutorRepositoryTest {
 
     @Mock
     private EntityManager entityManager;
+
+    @Mock
+    private EntityTransaction transaction;
 
     @Mock
     private TypedQuery<Autor> query;
@@ -37,7 +43,19 @@ public class AutorRepositoryTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        autorRepository = new AutorRepository(entityManager);
+        autorRepository = spy(new AutorRepository());
+        
+        // Configurar o mock para executeInTransaction
+        doAnswer(invocation -> {
+            Function<EntityManager, ?> operation = invocation.getArgument(0);
+            return operation.apply(entityManager);
+        }).when(autorRepository).executeInTransaction(any());
+
+        // Configurar o mock do EntityManager
+        when(entityManager.getTransaction()).thenReturn(transaction);
+        doNothing().when(transaction).begin();
+        doNothing().when(transaction).commit();
+        when(transaction.isActive()).thenReturn(true);
 
         autor = new Autor(NOME, CPFCNPJ, TELEFONE, EMAIL);
         autor.setId(ID);
@@ -47,7 +65,7 @@ public class AutorRepositoryTest {
     public void testSalvar() {
         when(entityManager.merge(any(Autor.class))).thenReturn(autor);
 
-        Autor resultado = autorRepository.salvar(autor);
+        Autor resultado = autorRepository.save(autor);
 
         assertNotNull(resultado);
         assertEquals(ID, resultado.getId());
@@ -57,21 +75,20 @@ public class AutorRepositoryTest {
         assertEquals(EMAIL, resultado.getEmail());
 
         verify(entityManager).merge(any(Autor.class));
-        verify(entityManager).flush();
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = PersistenciaException.class)
     public void testSalvarComErro() {
         when(entityManager.merge(any(Autor.class))).thenThrow(new RuntimeException("Erro simulado"));
 
-        autorRepository.salvar(autor);
+        autorRepository.save(autor);
     }
 
     @Test
     public void testBuscarPorId() {
         when(entityManager.find(Autor.class, ID)).thenReturn(autor);
 
-        Optional<Autor> resultado = autorRepository.buscarPorId(ID);
+        Optional<Autor> resultado = autorRepository.findById(ID);
 
         assertTrue(resultado.isPresent());
         assertEquals(autor, resultado.get());
@@ -83,18 +100,18 @@ public class AutorRepositoryTest {
     public void testBuscarPorIdNaoEncontrado() {
         when(entityManager.find(Autor.class, ID)).thenReturn(null);
 
-        Optional<Autor> resultado = autorRepository.buscarPorId(ID);
+        Optional<Autor> resultado = autorRepository.findById(ID);
 
         assertFalse(resultado.isPresent());
 
         verify(entityManager).find(Autor.class, ID);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = PersistenciaException.class)
     public void testBuscarPorIdComErro() {
         when(entityManager.find(Autor.class, ID)).thenThrow(new RuntimeException("Erro simulado"));
 
-        autorRepository.buscarPorId(ID);
+        autorRepository.findById(ID);
     }
 
     @Test
@@ -130,7 +147,7 @@ public class AutorRepositoryTest {
         verify(query).getResultStream();
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = PersistenciaException.class)
     public void testBuscarPorCpfcnpjComErro() {
         when(entityManager.createQuery("SELECT a FROM Autor a WHERE a.cpfcnpj = :cpfcnpj", Autor.class))
                 .thenThrow(new RuntimeException("Erro simulado"));
@@ -141,40 +158,40 @@ public class AutorRepositoryTest {
     @Test
     public void testBuscarTodos() {
         List<Autor> autores = Arrays.asList(autor);
-        when(entityManager.createQuery("SELECT a FROM Autor a", Autor.class)).thenReturn(query);
+        when(entityManager.getCriteriaBuilder()).thenReturn(mock(javax.persistence.criteria.CriteriaBuilder.class));
+        when(entityManager.createQuery(any(javax.persistence.criteria.CriteriaQuery.class))).thenReturn(query);
         when(query.getResultList()).thenReturn(autores);
 
-        List<Autor> resultado = autorRepository.buscarTodos();
+        List<Autor> resultado = autorRepository.findAll();
 
         assertNotNull(resultado);
         assertEquals(1, resultado.size());
         assertEquals(autor, resultado.get(0));
 
-        verify(entityManager).createQuery("SELECT a FROM Autor a", Autor.class);
+        verify(entityManager).createQuery(any(javax.persistence.criteria.CriteriaQuery.class));
         verify(query).getResultList();
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = PersistenciaException.class)
     public void testBuscarTodosComErro() {
-        when(entityManager.createQuery("SELECT a FROM Autor a", Autor.class))
-                .thenThrow(new RuntimeException("Erro simulado"));
+        when(entityManager.getCriteriaBuilder()).thenThrow(new RuntimeException("Erro simulado"));
 
-        autorRepository.buscarTodos();
+        autorRepository.findAll();
     }
 
     @Test
     public void testRemover() {
         doNothing().when(entityManager).remove(any(Autor.class));
 
-        autorRepository.remover(autor);
+        autorRepository.delete(autor);
 
         verify(entityManager).remove(any(Autor.class));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = PersistenciaException.class)
     public void testRemoverComErro() {
         doThrow(new RuntimeException("Erro simulado")).when(entityManager).remove(any(Autor.class));
 
-        autorRepository.remover(autor);
+        autorRepository.delete(autor);
     }
 }
