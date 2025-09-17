@@ -14,23 +14,24 @@ import javax.swing.JTextField;
 import javax.swing.text.MaskFormatter;
 
 import com.biblioteca.domain.entities.editora.DTO.EditoraDTO;
-import com.biblioteca.domain.entities.editora.interfaces.IEditoraService;
+import com.biblioteca.domain.entities.editora.DTO.EditoraDTO;
 import com.biblioteca.infrastructure.exceptions.ExceptionHandler;
 import com.biblioteca.infrastructure.util.ValidacaoUtil;
 import com.biblioteca.presentation.templates.FormPadrao;
+import com.biblioteca.presentation.util.ApiClient;
 
 public class FormEditoras extends FormPadrao {
 
-    private IEditoraService editoraService;
+    private ApiClient apiClient;
 
     private JTextField txtNome;
     private JTextField txtEmail;
     private JFormattedTextField txtCnpj;
     private JFormattedTextField txtTelefone;
 
-    public FormEditoras(IEditoraService editoraService) {
+    public FormEditoras() {
         super("Formulário de Editoras");
-        this.editoraService = editoraService;
+        this.apiClient = new ApiClient();
     }
 
     @Override
@@ -128,8 +129,8 @@ public class FormEditoras extends FormPadrao {
             // A validação de negócio é feita pelo próprio DTO
             editoraDTO.validar();
             
-            // Salva a editora no repositório
-            editoraService.salvar(editoraDTO);
+            // Envia os dados para a API
+            apiClient.post("/editoras", editoraDTO, EditoraDTO.class);
 
             JOptionPane.showMessageDialog(this, "Editora salva com sucesso!", "Sucesso",
                     JOptionPane.INFORMATION_MESSAGE);

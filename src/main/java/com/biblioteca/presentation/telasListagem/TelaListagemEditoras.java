@@ -7,19 +7,24 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import com.biblioteca.domain.entities.editora.Editora;
-import com.biblioteca.domain.entities.editora.interfaces.IEditoraService;
+import javax.swing.JOptionPane;
+
+import com.biblioteca.domain.entities.editora.DTO.EditoraDTO;
+import com.biblioteca.infrastructure.exceptions.ExceptionHandler;
 import com.biblioteca.presentation.formularios.FormEditoras;
 import com.biblioteca.presentation.templates.TelaListagemPadrao;
+import com.biblioteca.presentation.util.ApiClient;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 public class TelaListagemEditoras extends TelaListagemPadrao {
 
-    private final IEditoraService editoraService;
+    private final ApiClient apiClient;
 
-    public TelaListagemEditoras(IEditoraService editoraService) {
+    public TelaListagemEditoras() {
         super("Listagem de Editoras");
-        this.editoraService = editoraService;
-        carregar(); // Carrega as editoras ao abrir
+        this.apiClient = new ApiClient();
+        carregar();
     }
 
     @Override
@@ -48,7 +53,7 @@ public class TelaListagemEditoras extends TelaListagemPadrao {
 
     @Override
     protected void incluir() {
-        FormEditoras formEditoras = new FormEditoras(editoraService);
+        FormEditoras formEditoras = new FormEditoras();
         JDesktopPane desktopPane = getDesktopPane();
         if (desktopPane != null) {
             desktopPane.add(formEditoras);
@@ -63,22 +68,39 @@ public class TelaListagemEditoras extends TelaListagemPadrao {
 
     @Override
     protected void excluir() {
-        // Lógica para excluir editora selecionada
+        int selectedRow = tabela.getSelectedRow();
+        if (selectedRow >= 0) {
+            if (JOptionPane.showConfirmDialog(this, "Deseja realmente excluir a editora selecionada?", "Confirmação",
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                try {
+                    Long id = (Long) tabela.getValueAt(selectedRow, 0);
+                    apiClient.delete("/editoras/" + id);
+                    carregar(); // Recarrega a lista
+                } catch (Exception e) {
+                    ExceptionHandler.tratar(e, this);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione uma editora para excluir.", "Aviso", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     @Override
     protected void carregar() {
         model.setRowCount(0); // Limpa a tabela
-
-        List<Editora> editoras = editoraService.buscarTodos();
-        for (Editora editora : editoras) {
-            model.addRow(new Object[] {
-                    editora.getId(),
-                    editora.getNome(),
-                    editora.getCnpj(),
-                    editora.getTelefone(),
-                    editora.getEmail()
-            });
+        try {
+            List<EditoraDTO> editoras = apiClient.get("/editoras", new TypeReference<List<EditoraDTO>>() {});
+            for (EditoraDTO editora : editoras) {
+                model.addRow(new Object[]{
+                        editora.getId(),
+                        editora.getNome(),
+                        editora.getCnpj(),
+                        editora.getTelefone(),
+                        editora.getEmail()
+                });
+            }
+        } catch (Exception e) {
+            ExceptionHandler.tratar(e, this);
         }
     }
 }

@@ -14,23 +14,24 @@ import javax.swing.JTextField;
 import javax.swing.text.MaskFormatter;
 
 import com.biblioteca.domain.entities.autor.DTO.AutorDTO;
-import com.biblioteca.domain.entities.autor.interfaces.IAutorService;
+import com.biblioteca.domain.entities.autor.DTO.AutorDTO;
 import com.biblioteca.infrastructure.exceptions.ExceptionHandler;
 import com.biblioteca.infrastructure.util.ValidacaoUtil;
 import com.biblioteca.presentation.templates.FormPadrao;
+import com.biblioteca.presentation.util.ApiClient;
 
 public class FormAutores extends FormPadrao {
 
-    private IAutorService autorService;
+    private ApiClient apiClient;
 
     private JTextField txtNome;
     private JTextField txtEmail;
     private JFormattedTextField txtCpfCnpj;
     private JFormattedTextField txtTelefone;
 
-    public FormAutores(IAutorService autorService) {
+    public FormAutores() {
         super("Formulário de Autores");
-        this.autorService = autorService;
+        this.apiClient = new ApiClient();
     }
 
     @Override
@@ -128,8 +129,8 @@ public class FormAutores extends FormPadrao {
             // A validação de negócio é feita pelo próprio DTO
             autorDTO.validar();
             
-            // Salva o autor no repositório
-            autorService.salvar(autorDTO);
+            // Envia os dados para a API
+            apiClient.post("/autores", autorDTO, AutorDTO.class);
 
             JOptionPane.showMessageDialog(this, "Autor salvo com sucesso!", "Sucesso",
                     JOptionPane.INFORMATION_MESSAGE);

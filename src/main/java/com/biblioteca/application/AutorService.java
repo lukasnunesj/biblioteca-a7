@@ -4,21 +4,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+
 import com.biblioteca.domain.entities.autor.Autor;
 import com.biblioteca.domain.entities.autor.DTO.AutorDTO;
 import com.biblioteca.domain.entities.autor.interfaces.IAutorRepository;
 import com.biblioteca.domain.entities.autor.interfaces.IAutorService;
 import com.biblioteca.infrastructure.exceptions.RecursoNaoEncontradoException;
 
+@Stateless
 public class AutorService implements IAutorService {
-    
+
     private static final Logger LOGGER = Logger.getLogger(AutorService.class.getName());
 
-    private final IAutorRepository autorRepository;
-
-    public AutorService(IAutorRepository autorRepository) {
-        this.autorRepository = autorRepository;
-    }
+    @Inject
+    private IAutorRepository autorRepository;
 
     /**
      * {@inheritDoc}
@@ -26,16 +27,17 @@ public class AutorService implements IAutorService {
     @Override
     public Autor salvar(AutorDTO autorDTO) {
         LOGGER.info("Salvando autor: " + autorDTO.getNome());
-        
+
         // Valida os dados do DTO antes de prosseguir
         autorDTO.validar();
-        
+
         // Verifica se já existe um autor com o mesmo CPF/CNPJ
         Optional<Autor> autorExistente = autorRepository.buscarPorCpfcnpj(autorDTO.getCpfcnpj());
-        if (autorExistente.isPresent() && (autorDTO.getId() == null || !autorDTO.getId().equals(autorExistente.get().getId()))) {
+        if (autorExistente.isPresent()
+                && (autorDTO.getId() == null || !autorDTO.getId().equals(autorExistente.get().getId()))) {
             throw new IllegalArgumentException("Já existe um autor cadastrado com este CPF/CNPJ");
         }
-        
+
         Autor autor = autorDTO.toEntity();
         return autorRepository.salvar(autor);
     }
@@ -73,11 +75,11 @@ public class AutorService implements IAutorService {
     @Override
     public void remover(AutorDTO autorDTO) {
         LOGGER.info("Removendo autor com ID: " + autorDTO.getId());
-        
+
         if (autorDTO.getId() == null) {
             throw new IllegalArgumentException("ID do autor não pode ser nulo para remoção");
         }
-        
+
         Optional<Autor> autor = autorRepository.buscarPorId(autorDTO.getId());
         if (autor.isPresent()) {
             autorRepository.remover(autor.get());

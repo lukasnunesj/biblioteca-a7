@@ -2,104 +2,96 @@ package com.biblioteca.infrastructure.repositories;
 
 import com.biblioteca.domain.entities.common.interfaces.IBaseRepository;
 import com.biblioteca.infrastructure.exceptions.PersistenciaException;
-import com.biblioteca.infrastructure.util.JPAUtil;
-
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * Implementação base para repositórios JPA.
  * 
- * @param <T> Tipo da entidade
+ * @param <T>  Tipo da entidade
  * @param <ID> Tipo do identificador da entidade
  */
+@Stateless
 public abstract class BaseRepository<T, ID> implements IBaseRepository<T, ID> {
-    
+
+    @PersistenceContext
+    protected EntityManager entityManager;
+
     protected final Class<T> entityClass;
-    
+
     protected BaseRepository(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
-    
-    /**
-     * Executa uma operação dentro de uma transação.
-     */
-    protected <R> R executeInTransaction(Function<EntityManager, R> operation) {
-        EntityManager em = JPAUtil.getEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        
+
+    @Override
+    @Transactional
+    public T save(T entity) {
         try {
-            transaction.begin();
-            R result = operation.apply(em);
-            transaction.commit();
-            return result;
+            return entityManager.merge(entity);
         } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            throw new PersistenciaException("Erro ao executar operação no banco de dados", e);
-        } finally {
-            em.close();
+            throw new PersistenciaException("Erro ao salvar entidade: " + entity.getClass().getSimpleName(), e);
         }
     }
-    
-    @Override
-    public T save(T entity) {
-        return executeInTransaction(em -> {
-            return em.merge(entity);
-        });
-    }
-    
+
     @Override
     public Optional<T> findById(ID id) {
-        return executeInTransaction(em -> {
-            T entity = em.find(entityClass, id);
-            return Optional.ofNullable(entity);
-        });
+        try {
+            return Optional.ofNullable(entityManager.find(entityClass, id));
+        } catch (Exception e) {
+            throw new PersistenciaException("Erro ao buscar entidade por ID: " + id, e);
+        }
     }
-    
+
     @Override
     public List<T> findAll() {
-        return executeInTransaction(em -> {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
             CriteriaQuery<T> cq = cb.createQuery(entityClass);
             Root<T> root = cq.from(entityClass);
             cq.select(root);
-            return em.createQuery(cq).getResultList();
-        });
+            return entityManager.createQuery(cq).getResultList();
+        } catch (Exception e) {
+            throw new PersistenciaException("Erro ao buscar todas as entidades: " + entityClass.getSimpleName(), e);
+        }
     }
-    
+
     @Override
+    @Transactional
     public void delete(T entity) {
-        executeInTransaction(em -> {
-            em.remove(em.contains(entity) ? entity : em.merge(entity));
-            return null;
-        });
+        try {
+            entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
+        } catch (Exception e) {
+            throw new PersistenciaException("Erro ao deletar entidade: " + entity.getClass().getSimpleName(), e);
+        }
     }
-    
+
     @Override
+    @Transactional
     public void deleteById(ID id) {
         findById(id).ifPresent(this::delete);
     }
-    
+
     @Override
     public boolean existsById(ID id) {
         return findById(id).isPresent();
     }
-    
+
     @Override
     public long count() {
-        return executeInTransaction(em -> {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
             CriteriaQuery<Long> cq = cb.createQuery(Long.class);
             cq.select(cb.count(cq.from(entityClass)));
-            return em.createQuery(cq).getSingleResult();
-        });
+            return entityManager.createQuery(cq).getSingleResult();
+        } catch (Exception e) {
+            throw new PersistenciaException("Erro ao contar entidades: " + entityClass.getSimpleName(), e);
+        }
     }
 }

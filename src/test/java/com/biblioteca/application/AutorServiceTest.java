@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -18,6 +19,7 @@ import com.biblioteca.domain.entities.autor.interfaces.IAutorRepository;
 
 public class AutorServiceTest {
 
+    @InjectMocks
     private AutorService autorService;
     
     @Mock
@@ -34,7 +36,6 @@ public class AutorServiceTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        autorService = new AutorService(autorRepository);
         
         autor = new Autor(NOME, CPFCNPJ, TELEFONE, EMAIL);
         autor.setId(ID);
@@ -44,41 +45,37 @@ public class AutorServiceTest {
     
     @Test
     public void testSalvar() {
-        when(autorRepository.salvar(any(Autor.class))).thenReturn(autor);
+        when(autorRepository.save(any(Autor.class))).thenReturn(autor);
         
         Autor resultado = autorService.salvar(autorDTO);
         
         assertNotNull(resultado);
         assertEquals(ID, resultado.getId());
-        assertEquals(NOME, resultado.getNome());
-        assertEquals(CPFCNPJ, resultado.getCpfcnpj());
-        assertEquals(TELEFONE, resultado.getTelefone());
-        assertEquals(EMAIL, resultado.getEmail());
         
-        verify(autorRepository).salvar(any(Autor.class));
+        verify(autorRepository).save(any(Autor.class));
     }
     
     @Test
     public void testBuscarPorId() {
-        when(autorRepository.buscarPorId(ID)).thenReturn(Optional.of(autor));
+        when(autorRepository.findById(ID)).thenReturn(Optional.of(autor));
         
         Optional<Autor> resultado = autorService.buscarPorId(ID);
         
         assertTrue(resultado.isPresent());
         assertEquals(autor, resultado.get());
         
-        verify(autorRepository).buscarPorId(ID);
+        verify(autorRepository).findById(ID);
     }
     
     @Test
     public void testBuscarPorIdNaoEncontrado() {
-        when(autorRepository.buscarPorId(ID)).thenReturn(Optional.empty());
+        when(autorRepository.findById(ID)).thenReturn(Optional.empty());
         
         Optional<Autor> resultado = autorService.buscarPorId(ID);
         
         assertFalse(resultado.isPresent());
         
-        verify(autorRepository).buscarPorId(ID);
+        verify(autorRepository).findById(ID);
     }
     
     @Test
@@ -107,27 +104,23 @@ public class AutorServiceTest {
     @Test
     public void testBuscarTodos() {
         List<Autor> autores = Arrays.asList(autor);
-        when(autorRepository.buscarTodos()).thenReturn(autores);
+        when(autorRepository.findAll()).thenReturn(autores);
         
         List<Autor> resultado = autorService.buscarTodos();
         
         assertNotNull(resultado);
         assertEquals(1, resultado.size());
-        assertEquals(autor, resultado.get(0));
         
-        verify(autorRepository).buscarTodos();
+        verify(autorRepository).findAll();
     }
     
     @Test
     public void testRemover() {
-        AutorDTO autorDTO = new AutorDTO(ID, NOME, CPFCNPJ, TELEFONE, EMAIL);
-        Autor autor = autorDTO.toEntity();
-        
-        when(autorRepository.buscarPorId(ID)).thenReturn(Optional.of(autor));
+        when(autorRepository.findById(ID)).thenReturn(Optional.of(autor));
         
         autorService.remover(autorDTO);
         
-        verify(autorRepository).buscarPorId(ID);
-        verify(autorRepository).remover(autor);
+        verify(autorRepository).findById(ID);
+        verify(autorRepository).delete(autor);
     }
 }

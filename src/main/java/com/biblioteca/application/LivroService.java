@@ -3,6 +3,11 @@ package com.biblioteca.application;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import com.biblioteca.domain.entities.autor.Autor;
 import com.biblioteca.domain.entities.autor.interfaces.IAutorService;
@@ -12,6 +17,7 @@ import com.biblioteca.domain.entities.livro.Livro;
 import com.biblioteca.domain.entities.livro.DTO.LivroDTO;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroRepository;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroService;
+import com.biblioteca.infrastructure.exceptions.RecursoNaoEncontradoException;
 
 /**
  * Implementação da interface ILivroService.
@@ -24,35 +30,40 @@ import com.biblioteca.domain.entities.livro.interfaces.ILivroService;
  * @author Biblioteca A7
  * @version 1.0
  */
+@Stateless
 public class LivroService implements ILivroService {
 
-    private final ILivroRepository livroRepository;
-    private final IEditoraService editoraService;
-    private final IAutorService autorService;
+    private static final Logger LOGGER = Logger.getLogger(LivroService.class.getName());
 
-    public LivroService(ILivroRepository livroRepository, IEditoraService editoraService,
-            IAutorService autorService) {
-        this.livroRepository = livroRepository;
-        this.editoraService = editoraService;
-        this.autorService = autorService;
-    }
+    @Inject
+    private ILivroRepository livroRepository;
+
+    @Inject
+    private IEditoraService editoraService;
+
+    @Inject
+    private IAutorService autorService;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public Livro salvar(LivroDTO livroDTO) {
-        Editora editora = editoraService.buscarPorId(livroDTO.getEditoraId())
-                .orElseThrow(() -> new IllegalArgumentException("Editora não encontrada!"));
+        LOGGER.info("Salvando livro: " + livroDTO.getTitulo());
+        livroDTO.validar();
 
-        HashSet<Autor> autores = new HashSet<>();
+        Editora editora = editoraService.buscarPorId(livroDTO.getEditoraId())
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Editora com ID " + livroDTO.getEditoraId() + " não encontrada."));
+
+        Set<Autor> autores = new HashSet<>();
         for (Long autorId : livroDTO.getAutoresIds()) {
-            autores.add(autorService.buscarPorId(autorId)
-                    .orElseThrow(() -> new IllegalArgumentException("Autor não encontrado!")));
+            Autor autor = autorService.buscarPorId(autorId)
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Autor com ID " + autorId + " não encontrado."));
+            autores.add(autor);
         }
 
         Livro livro = livroDTO.toEntity(editora, autores);
-        return livroRepository.salvar(livro);
+        return livroRepository.save(livro);
     }
 
     /**
@@ -60,7 +71,8 @@ public class LivroService implements ILivroService {
      */
     @Override
     public Optional<Livro> buscarPorId(Long id) {
-        return livroRepository.buscarPorId(id);
+        LOGGER.info("Buscando livro por ID: " + id);
+        return livroRepository.findById(id);
     }
 
     /**
@@ -68,6 +80,7 @@ public class LivroService implements ILivroService {
      */
     @Override
     public Optional<Livro> buscarPorIsbn(String isbn) {
+        LOGGER.info("Buscando livro por ISBN: " + isbn);
         return livroRepository.buscarPorIsbn(isbn);
     }
 
@@ -76,7 +89,8 @@ public class LivroService implements ILivroService {
      */
     @Override
     public List<Livro> buscarTodos() {
-        return livroRepository.buscarTodos();
+        LOGGER.info("Buscando todos os livros.");
+        return livroRepository.findAll();
     }
 
     /**
@@ -84,10 +98,16 @@ public class LivroService implements ILivroService {
      */
     @Override
     public void remover(LivroDTO livroDTO) {
-        Optional<Livro> livro = livroRepository.buscarPorId(livroDTO.getId());
-        if (livro.isPresent()) {
-            livroRepository.remover(livro.get());
+        LOGGER.info("Removendo livro com ID: " + livroDTO.getId());
+        if (livroDTO.getId() == null) {
+            throw new IllegalArgumentException("ID do livro não pode ser nulo para remoção.");
         }
+
+        Livro livro = livroRepository.findById(livroDTO.getId())
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Livro com ID " + livroDTO.getId() + " não encontrado."));
+
+        livroRepository.delete(livro);
+        LOGGER.info("Livro removido com sucesso.");
     }
 
 }

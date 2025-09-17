@@ -1,12 +1,15 @@
 package com.biblioteca.domain.entities.livro.DTO;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.biblioteca.domain.entities.autor.Autor;
+import com.biblioteca.domain.entities.common.DTO.BaseDTO;
 import com.biblioteca.domain.entities.editora.Editora;
 import com.biblioteca.domain.entities.livro.Livro;
+import com.biblioteca.infrastructure.exceptions.ValidacaoException;
 
 /**
  * Classe de Transferência de Dados (DTO) para a entidade Livro.
@@ -17,11 +20,10 @@ import com.biblioteca.domain.entities.livro.Livro;
  * necessários para operações de criação e atualização de livros.
  * </p>
  */
-public class LivroDTO {
+public class LivroDTO extends BaseDTO {
     /**
      * Identificador único do livro.
      */
-    private Long id;
 
     /**
      * Título do livro.
@@ -58,9 +60,13 @@ public class LivroDTO {
      * @param editoraId      o identificador da editora
      * @param autoresIds     a lista de identificadores dos autores
      */
+    public LivroDTO() {
+        super();
+    }
+
     public LivroDTO(Long id, String titulo, String isbn, LocalDate dataPublicacao, Long editoraId,
             List<Long> autoresIds) {
-        this.id = id;
+        super(id);
         this.titulo = titulo;
         this.isbn = isbn;
         this.dataPublicacao = dataPublicacao;
@@ -75,9 +81,9 @@ public class LivroDTO {
      * @param autores o conjunto de entidades Autor associadas ao livro
      * @return uma nova instância de Livro com os dados deste DTO
      */
-    public Livro toEntity(Editora editora, HashSet<Autor> autores) {
+    public Livro toEntity(Editora editora, Set<Autor> autores) {
         Livro livro = new Livro();
-        livro.setId(this.id);
+        livro.setId(this.getId());
         livro.setTitulo(this.titulo);
         livro.setIsbn(this.isbn);
         livro.setDataPublicacao(this.dataPublicacao);
@@ -86,23 +92,28 @@ public class LivroDTO {
         return livro;
     }
 
+    public static LivroDTO fromEntity(Livro livro) {
+        if (livro == null) {
+            return null;
+        }
+        List<Long> autoresIds = livro.getAutores().stream()
+                                    .map(Autor::getId)
+                                    .collect(Collectors.toList());
+        return new LivroDTO(
+            livro.getId(),
+            livro.getTitulo(),
+            livro.getIsbn(),
+            livro.getDataPublicacao(),
+            livro.getEditora().getId(),
+            autoresIds
+        );
+    }
+
     /**
      * Retorna o identificador do livro.
      *
      * @return o ID do livro
      */
-    public Long getId() {
-        return id;
-    }
-
-    /**
-     * Define o identificador do livro.
-     *
-     * @param id o novo ID do livro
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     /**
      * Retorna o título do livro.
@@ -192,6 +203,25 @@ public class LivroDTO {
      */
     public void setAutoresIds(List<Long> autoresIds) {
         this.autoresIds = autoresIds;
+    }
+
+    @Override
+    public void validar() {
+        if (titulo == null || titulo.isBlank()) {
+            throw new ValidacaoException("O título do livro é obrigatório.");
+        }
+        if (isbn == null || isbn.isBlank()) {
+            throw new ValidacaoException("O ISBN do livro é obrigatório.");
+        }
+        if (dataPublicacao == null) {
+            throw new ValidacaoException("A data de publicação do livro é obrigatória.");
+        }
+        if (editoraId == null) {
+            throw new ValidacaoException("A editora do livro é obrigatória.");
+        }
+        if (autoresIds == null || autoresIds.isEmpty()) {
+            throw new ValidacaoException("O livro deve ter pelo menos um autor.");
+        }
     }
 
 }

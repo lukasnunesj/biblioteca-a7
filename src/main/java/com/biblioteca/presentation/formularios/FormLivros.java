@@ -5,6 +5,10 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -20,20 +24,29 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.text.MaskFormatter;
 
+import com.biblioteca.domain.entities.autor.DTO.AutorDTO;
+import com.biblioteca.domain.entities.editora.DTO.EditoraDTO;
+import com.biblioteca.domain.entities.livro.DTO.LivroDTO;
+import com.biblioteca.infrastructure.exceptions.ExceptionHandler;
+import com.biblioteca.presentation.util.ApiClient;
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import com.biblioteca.presentation.templates.FormPadrao;
 
 public class FormLivros extends FormPadrao {
         private JTextField txtTitulo, txtIsbn;
     private JFormattedTextField txtDataPublicacao;
-    private JComboBox<String> cbAutores;
-    private JComboBox<String> cbEditora;
+    private JComboBox<AutorDTO> cbAutores;
+    private JComboBox<EditoraDTO> cbEditora;
     private JTable tabelaLivrosSemelhantes;
     private DefaultTableModel modelLivrosSemelhantes;
     private JButton btnRelacionar;
     private JButton btnBuscarPorIsbn;
+    private ApiClient apiClient;
 
     public FormLivros() {
         super("Formulário de Livros");
+        this.apiClient = new ApiClient();
     }
 
     @Override
@@ -46,7 +59,40 @@ public class FormLivros extends FormPadrao {
 
     @Override
     protected void salvar() {
-        dispose();
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate dataPublicacao = LocalDate.parse(txtDataPublicacao.getText(), formatter);
+
+            EditoraDTO editoraSelecionada = (EditoraDTO) cbEditora.getSelectedItem();
+            AutorDTO autorSelecionado = (AutorDTO) cbAutores.getSelectedItem();
+
+            if (editoraSelecionada == null || autorSelecionado == null) {
+                JOptionPane.showMessageDialog(this, "Selecione uma editora e um autor.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            List<Long> autoresIds = new ArrayList<>();
+            autoresIds.add(autorSelecionado.getId());
+
+            LivroDTO livroDTO = new LivroDTO(
+                    null, // ID é gerado no backend
+                    txtTitulo.getText(),
+                    txtIsbn.getText(),
+                    dataPublicacao,
+                    editoraSelecionada.getId(),
+                    autoresIds
+            );
+
+            livroDTO.validar();
+
+            apiClient.post("/livros", livroDTO, LivroDTO.class);
+
+            JOptionPane.showMessageDialog(this, "Livro salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            dispose();
+
+        } catch (Exception e) {
+            ExceptionHandler.tratar(e, this);
+        }
     }
 
     @Override
@@ -104,8 +150,8 @@ public class FormLivros extends FormPadrao {
         painelFormulario.add(new JLabel("Editora:"), gbc);
 
         gbc.gridy++;
-        String[] editorasMock = { "Editora A", "Editora B", "Nova Fronteira" };
-        cbEditora = new JComboBox<>(editorasMock);
+        cbEditora = new JComboBox<>();
+        carregarEditoras();
         cbEditora.setEditable(true);
         painelFormulario.add(cbEditora, gbc);
 
@@ -114,8 +160,8 @@ public class FormLivros extends FormPadrao {
         painelFormulario.add(new JLabel("Autores:"), gbc);
 
         gbc.gridy++;
-        String[] autoresMock = { "Machado de Assis", "J.K. Rowling", "George Orwell" };
-        cbAutores = new JComboBox<>(autoresMock);
+        cbAutores = new JComboBox<>();
+        carregarAutores();
         cbAutores.setEditable(true);
         painelFormulario.add(cbAutores, gbc);
 
@@ -169,5 +215,29 @@ public class FormLivros extends FormPadrao {
         // TODO: Implementar busca na API OpenLibrary
         JOptionPane.showMessageDialog(this, "Funcionalidade de busca por ISBN será implementada na próxima fase.",
                 "Info", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void carregarAutores() {
+        try {
+            List<AutorDTO> autores = apiClient.get("/autores", new TypeReference<List<AutorDTO>>() {});
+            cbAutores.removeAllItems();
+            for (AutorDTO autor : autores) {
+                cbAutores.addItem(autor);
+            }
+        } catch (Exception e) {
+            ExceptionHandler.tratar(e, this);
+        }
+    }
+
+    private void carregarEditoras() {
+        try {
+            List<EditoraDTO> editoras = apiClient.get("/editoras", new TypeReference<List<EditoraDTO>>() {});
+            cbEditora.removeAllItems();
+            for (EditoraDTO editora : editoras) {
+                cbEditora.addItem(editora);
+            }
+        } catch (Exception e) {
+            ExceptionHandler.tratar(e, this);
+        }
     }
 }

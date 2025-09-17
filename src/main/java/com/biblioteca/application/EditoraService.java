@@ -2,28 +2,40 @@ package com.biblioteca.application;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
+import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import com.biblioteca.domain.entities.editora.Editora;
+import com.biblioteca.infrastructure.exceptions.RecursoNaoEncontradoException;
 import com.biblioteca.domain.entities.editora.DTO.EditoraDTO;
 import com.biblioteca.domain.entities.editora.interfaces.IEditoraRepository;
 import com.biblioteca.domain.entities.editora.interfaces.IEditoraService;
 
+@Stateless
 public class EditoraService implements IEditoraService {
 
-    private final IEditoraRepository editoraRepository;
+    private static final Logger LOGGER = Logger.getLogger(EditoraService.class.getName());
 
-    public EditoraService(IEditoraRepository editoraRepository) {
-        this.editoraRepository = editoraRepository;
-    }
+    @Inject
+    private IEditoraRepository editoraRepository;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public Editora salvar(EditoraDTO editoraDTO) {
+        LOGGER.info("Salvando editora: " + editoraDTO.getNome());
+        editoraDTO.validar();
+
+        Optional<Editora> editoraExistente = editoraRepository.buscarPorCnpj(editoraDTO.getCnpj());
+        if (editoraExistente.isPresent() && (editoraDTO.getId() == null || !editoraDTO.getId().equals(editoraExistente.get().getId()))) {
+            throw new IllegalArgumentException("Já existe uma editora cadastrada com este CNPJ.");
+        }
+
         Editora editora = editoraDTO.toEntity();
-        return editoraRepository.salvar(editora);
+        return editoraRepository.save(editora);
     }
 
     /**
@@ -31,7 +43,8 @@ public class EditoraService implements IEditoraService {
      */
     @Override
     public Optional<Editora> buscarPorId(Long id) {
-        return editoraRepository.buscarPorId(id);
+        LOGGER.info("Buscando editora por ID: " + id);
+        return editoraRepository.findById(id);
     }
 
     /**
@@ -39,6 +52,7 @@ public class EditoraService implements IEditoraService {
      */
     @Override
     public Optional<Editora> buscarPorCnpj(String cnpj) {
+        LOGGER.info("Buscando editora por CNPJ: " + cnpj);
         return editoraRepository.buscarPorCnpj(cnpj);
     }
 
@@ -47,7 +61,8 @@ public class EditoraService implements IEditoraService {
      */
     @Override
     public List<Editora> buscarTodos() {
-        return editoraRepository.buscarTodos();
+        LOGGER.info("Buscando todas as editoras.");
+        return editoraRepository.findAll();
     }
 
     /**
@@ -55,9 +70,15 @@ public class EditoraService implements IEditoraService {
      */
     @Override
     public void remover(EditoraDTO editoraDTO) {
-        Optional<Editora> editora = editoraRepository.buscarPorId(editoraDTO.getId());
-        if (editora.isPresent()) {
-            editoraRepository.remover(editora.get());
+        LOGGER.info("Removendo editora com ID: " + editoraDTO.getId());
+        if (editoraDTO.getId() == null) {
+            throw new IllegalArgumentException("ID da editora não pode ser nulo para remoção.");
         }
+
+        Editora editora = editoraRepository.findById(editoraDTO.getId())
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Editora com ID " + editoraDTO.getId() + " não encontrada."));
+
+        editoraRepository.delete(editora);
+        LOGGER.info("Editora removida com sucesso.");
     }
 }

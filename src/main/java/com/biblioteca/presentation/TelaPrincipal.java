@@ -14,11 +14,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import com.biblioteca.domain.entities.autor.interfaces.IAutorService;
-import com.biblioteca.domain.entities.editora.interfaces.IEditoraService;
-import com.biblioteca.domain.entities.livro.interfaces.ILivroService;
-import com.biblioteca.infrastructure.factory.DependencyFactory;
-import com.biblioteca.infrastructure.util.JPAUtil;
 import com.biblioteca.presentation.telasListagem.TelaListagemAutores;
 import com.biblioteca.presentation.telasListagem.TelaListagemEditoras;
 import com.biblioteca.presentation.telasListagem.TelaListagemLivros;
@@ -28,15 +23,8 @@ public class TelaPrincipal {
 
     private final JFrame frame = new JFrame();
     private JDesktopPane desktopPane;
-    private final ILivroService livroService;
-    private final IAutorService autorService;
-    private final IEditoraService editoraService;
 
     public TelaPrincipal() {
-        DependencyFactory factory = new DependencyFactory();
-        this.livroService = factory.createLivroService();
-        this.autorService = factory.createAutorService();
-        this.editoraService = factory.createEditoraService();
         initComponents();
     }
 
@@ -78,7 +66,7 @@ public class TelaPrincipal {
         JMenuItem menuItemLivros = new JMenuItem("Livros");
         menuItemLivros.setMnemonic('L');
         menuItemLivros.addActionListener(e -> {
-            TelaListagemLivros telaListagemLivros = new TelaListagemLivros(livroService);
+            TelaListagemLivros telaListagemLivros = new TelaListagemLivros();
             desktopPane.add(telaListagemLivros);
             telaListagemLivros.setVisible(true);
         });
@@ -87,7 +75,7 @@ public class TelaPrincipal {
         JMenuItem menuItemAutores = new JMenuItem("Autores");
         menuItemAutores.setMnemonic('A');
         menuItemAutores.addActionListener(e -> {
-            TelaListagemAutores telaListagemAutores = new TelaListagemAutores(autorService);
+            TelaListagemAutores telaListagemAutores = new TelaListagemAutores();
             desktopPane.add(telaListagemAutores);
             telaListagemAutores.setVisible(true);
         });
@@ -96,7 +84,7 @@ public class TelaPrincipal {
         JMenuItem menuItemEditoras = new JMenuItem("Editoras");
         menuItemEditoras.setMnemonic('E');
         menuItemEditoras.addActionListener(e -> {
-            TelaListagemEditoras telaListagemEditoras = new TelaListagemEditoras(editoraService);
+            TelaListagemEditoras telaListagemEditoras = new TelaListagemEditoras();
             desktopPane.add(telaListagemEditoras);
             telaListagemEditoras.setVisible(true);
         });
@@ -133,7 +121,6 @@ public class TelaPrincipal {
                 JOptionPane.QUESTION_MESSAGE);
 
         if (opcao == JOptionPane.YES_OPTION) {
-            JPAUtil.close();
             System.exit(0);
         }
     }

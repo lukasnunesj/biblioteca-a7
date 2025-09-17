@@ -7,19 +7,24 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import com.biblioteca.domain.entities.autor.Autor;
-import com.biblioteca.domain.entities.autor.interfaces.IAutorService;
+import javax.swing.JOptionPane;
+
+import com.biblioteca.domain.entities.autor.DTO.AutorDTO;
+import com.biblioteca.infrastructure.exceptions.ExceptionHandler;
 import com.biblioteca.presentation.formularios.FormAutores;
 import com.biblioteca.presentation.templates.TelaListagemPadrao;
+import com.biblioteca.presentation.util.ApiClient;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 public class TelaListagemAutores extends TelaListagemPadrao {
 
-    private final IAutorService autorService;
+    private final ApiClient apiClient;
 
-    public TelaListagemAutores(IAutorService autorService) {
+    public TelaListagemAutores() {
         super("Listagem de Autores");
-        this.autorService = autorService;
-        carregar(); // Carrega os autores ao abrir
+        this.apiClient = new ApiClient();
+        carregar();
     }
 
     @Override
@@ -48,7 +53,7 @@ public class TelaListagemAutores extends TelaListagemPadrao {
 
     @Override
     protected void incluir() {
-        FormAutores formAutores = new FormAutores(autorService);
+        FormAutores formAutores = new FormAutores();
         JDesktopPane desktopPane = getDesktopPane();
         if (desktopPane != null) {
             desktopPane.add(formAutores);
@@ -63,22 +68,39 @@ public class TelaListagemAutores extends TelaListagemPadrao {
 
     @Override
     protected void excluir() {
-        // Lógica para excluir autor selecionado
+        int selectedRow = tabela.getSelectedRow();
+        if (selectedRow >= 0) {
+            if (JOptionPane.showConfirmDialog(this, "Deseja realmente excluir o autor selecionado?", "Confirmação",
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                try {
+                    Long id = (Long) tabela.getValueAt(selectedRow, 0);
+                    apiClient.delete("/autores/" + id);
+                    carregar(); // Recarrega a lista
+                } catch (Exception e) {
+                    ExceptionHandler.tratar(e, this);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione um autor para excluir.", "Aviso", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     @Override
     protected void carregar() {
         model.setRowCount(0); // Limpa a tabela
-
-        List<Autor> autores = autorService.buscarTodos();
-        for (Autor autor : autores) {
-            model.addRow(new Object[] {
-                    autor.getId(),
-                    autor.getNome(),
-                    autor.getCpfcnpj(),
-                    autor.getTelefone(),
-                    autor.getEmail()
-            });
+        try {
+            List<AutorDTO> autores = apiClient.get("/autores", new TypeReference<List<AutorDTO>>() {});
+            for (AutorDTO autor : autores) {
+                model.addRow(new Object[]{
+                        autor.getId(),
+                        autor.getNome(),
+                        autor.getCpfcnpj(),
+                        autor.getTelefone(),
+                        autor.getEmail()
+                });
+            }
+        } catch (Exception e) {
+            ExceptionHandler.tratar(e, this);
         }
     }
 }

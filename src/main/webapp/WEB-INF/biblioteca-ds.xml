@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources xmlns="http://www.jboss.org/ironjacamar/schema">
+    <datasource jndi-name="java:jboss/datasources/BibliotecaDS" pool-name="BibliotecaDS" enabled="true" use-java-context="true">
+        <connection-url>jdbc:postgresql://localhost:5432/biblioteca</connection-url>
+        <driver>postgresql</driver>
+        <security>
+            <user-name>postgres</user-name>
+            <password>postgres</password>
+        </security>
+
+    </datasource>
+    <drivers>
+        <driver name="postgresql" module="org.postgresql"/>
+    </drivers>
+</datasources>

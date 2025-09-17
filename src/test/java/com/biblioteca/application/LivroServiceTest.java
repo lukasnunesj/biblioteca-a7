@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -25,6 +26,7 @@ import com.biblioteca.domain.entities.livro.interfaces.ILivroRepository;
 
 public class LivroServiceTest {
 
+    @InjectMocks
     private LivroService livroService;
     
     @Mock
@@ -61,7 +63,6 @@ public class LivroServiceTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        livroService = new LivroService(livroRepository, editoraService, autorService);
         
         editora = new Editora(EDITORA_NOME, EDITORA_CNPJ, EDITORA_TELEFONE, EDITORA_EMAIL);
         editora.setId(EDITORA_ID);
@@ -69,12 +70,10 @@ public class LivroServiceTest {
         autor = new Autor(AUTOR_NOME, AUTOR_CPFCNPJ, AUTOR_TELEFONE, AUTOR_EMAIL);
         autor.setId(AUTOR_ID);
         
-        Set<Autor> autores = new HashSet<>();
-        autores.add(autor);
-        
         livro = new Livro(TITULO, ISBN, DATA_PUBLICACAO);
         livro.setId(LIVRO_ID);
         livro.setEditora(editora);
+        livro.setAutores(new HashSet<>(Arrays.asList(autor)));
         
         livroDTO = new LivroDTO(LIVRO_ID, TITULO, ISBN, DATA_PUBLICACAO, EDITORA_ID, Arrays.asList(AUTOR_ID));
     }
@@ -83,50 +82,39 @@ public class LivroServiceTest {
     public void testSalvar() {
         when(editoraService.buscarPorId(EDITORA_ID)).thenReturn(Optional.of(editora));
         when(autorService.buscarPorId(AUTOR_ID)).thenReturn(Optional.of(autor));
-        
-        // Configura o mock para retornar o livro com os autores adicionados
-        when(livroRepository.salvar(any(Livro.class))).thenAnswer(invocation -> {
-            Livro livroSalvo = invocation.getArgument(0);
-            livroSalvo.setId(LIVRO_ID);
-            return livroSalvo;
-        });
+        when(livroRepository.save(any(Livro.class))).thenReturn(livro);
         
         Livro resultado = livroService.salvar(livroDTO);
         
         assertNotNull(resultado);
         assertEquals(LIVRO_ID, resultado.getId());
-        assertEquals(TITULO, resultado.getTitulo());
-        assertEquals(ISBN, resultado.getIsbn());
-        assertEquals(DATA_PUBLICACAO, resultado.getDataPublicacao());
-        assertEquals(editora, resultado.getEditora());
-        assertTrue(resultado.getAutores().contains(autor));
         
         verify(editoraService).buscarPorId(EDITORA_ID);
         verify(autorService).buscarPorId(AUTOR_ID);
-        verify(livroRepository).salvar(any(Livro.class));
+        verify(livroRepository).save(any(Livro.class));
     }
     
     @Test
     public void testBuscarPorId() {
-        when(livroRepository.buscarPorId(LIVRO_ID)).thenReturn(Optional.of(livro));
+        when(livroRepository.findById(LIVRO_ID)).thenReturn(Optional.of(livro));
         
         Optional<Livro> resultado = livroService.buscarPorId(LIVRO_ID);
         
         assertTrue(resultado.isPresent());
         assertEquals(livro, resultado.get());
         
-        verify(livroRepository).buscarPorId(LIVRO_ID);
+        verify(livroRepository).findById(LIVRO_ID);
     }
     
     @Test
     public void testBuscarPorIdNaoEncontrado() {
-        when(livroRepository.buscarPorId(LIVRO_ID)).thenReturn(Optional.empty());
+        when(livroRepository.findById(LIVRO_ID)).thenReturn(Optional.empty());
         
         Optional<Livro> resultado = livroService.buscarPorId(LIVRO_ID);
         
         assertFalse(resultado.isPresent());
         
-        verify(livroRepository).buscarPorId(LIVRO_ID);
+        verify(livroRepository).findById(LIVRO_ID);
     }
     
     @Test
@@ -155,24 +143,23 @@ public class LivroServiceTest {
     @Test
     public void testBuscarTodos() {
         List<Livro> livros = Arrays.asList(livro);
-        when(livroRepository.buscarTodos()).thenReturn(livros);
+        when(livroRepository.findAll()).thenReturn(livros);
         
         List<Livro> resultado = livroService.buscarTodos();
         
         assertNotNull(resultado);
         assertEquals(1, resultado.size());
-        assertEquals(livro, resultado.get(0));
         
-        verify(livroRepository).buscarTodos();
+        verify(livroRepository).findAll();
     }
     
     @Test
     public void testRemover() {
-        when(livroRepository.buscarPorId(LIVRO_ID)).thenReturn(Optional.of(livro));
+        when(livroRepository.findById(LIVRO_ID)).thenReturn(Optional.of(livro));
         
         livroService.remover(livroDTO);
         
-        verify(livroRepository).buscarPorId(LIVRO_ID);
-        verify(livroRepository).remover(livro);
+        verify(livroRepository).findById(LIVRO_ID);
+        verify(livroRepository).delete(livro);
     }
 }

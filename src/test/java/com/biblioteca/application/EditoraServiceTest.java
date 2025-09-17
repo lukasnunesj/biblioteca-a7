@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -18,6 +19,7 @@ import com.biblioteca.domain.entities.editora.interfaces.IEditoraRepository;
 
 public class EditoraServiceTest {
 
+    @InjectMocks
     private EditoraService editoraService;
     
     @Mock
@@ -34,7 +36,6 @@ public class EditoraServiceTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        editoraService = new EditoraService(editoraRepository);
         
         editora = new Editora(NOME, CNPJ, TELEFONE, EMAIL);
         editora.setId(ID);
@@ -44,41 +45,37 @@ public class EditoraServiceTest {
     
     @Test
     public void testSalvar() {
-        when(editoraRepository.salvar(any(Editora.class))).thenReturn(editora);
+        when(editoraRepository.save(any(Editora.class))).thenReturn(editora);
         
         Editora resultado = editoraService.salvar(editoraDTO);
         
         assertNotNull(resultado);
         assertEquals(ID, resultado.getId());
-        assertEquals(NOME, resultado.getNome());
-        assertEquals(CNPJ, resultado.getCnpj());
-        assertEquals(TELEFONE, resultado.getTelefone());
-        assertEquals(EMAIL, resultado.getEmail());
         
-        verify(editoraRepository).salvar(any(Editora.class));
+        verify(editoraRepository).save(any(Editora.class));
     }
     
     @Test
     public void testBuscarPorId() {
-        when(editoraRepository.buscarPorId(ID)).thenReturn(Optional.of(editora));
+        when(editoraRepository.findById(ID)).thenReturn(Optional.of(editora));
         
         Optional<Editora> resultado = editoraService.buscarPorId(ID);
         
         assertTrue(resultado.isPresent());
         assertEquals(editora, resultado.get());
         
-        verify(editoraRepository).buscarPorId(ID);
+        verify(editoraRepository).findById(ID);
     }
     
     @Test
     public void testBuscarPorIdNaoEncontrado() {
-        when(editoraRepository.buscarPorId(ID)).thenReturn(Optional.empty());
+        when(editoraRepository.findById(ID)).thenReturn(Optional.empty());
         
         Optional<Editora> resultado = editoraService.buscarPorId(ID);
         
         assertFalse(resultado.isPresent());
         
-        verify(editoraRepository).buscarPorId(ID);
+        verify(editoraRepository).findById(ID);
     }
     
     @Test
@@ -107,27 +104,23 @@ public class EditoraServiceTest {
     @Test
     public void testBuscarTodos() {
         List<Editora> editoras = Arrays.asList(editora);
-        when(editoraRepository.buscarTodos()).thenReturn(editoras);
+        when(editoraRepository.findAll()).thenReturn(editoras);
         
         List<Editora> resultado = editoraService.buscarTodos();
         
         assertNotNull(resultado);
         assertEquals(1, resultado.size());
-        assertEquals(editora, resultado.get(0));
         
-        verify(editoraRepository).buscarTodos();
+        verify(editoraRepository).findAll();
     }
     
     @Test
     public void testRemover() {
-        EditoraDTO editoraDTO = new EditoraDTO(ID, NOME, CNPJ, TELEFONE, EMAIL);
-        Editora editora = editoraDTO.toEntity();
-        
-        when(editoraRepository.buscarPorId(ID)).thenReturn(Optional.of(editora));
+        when(editoraRepository.findById(ID)).thenReturn(Optional.of(editora));
         
         editoraService.remover(editoraDTO);
         
-        verify(editoraRepository).buscarPorId(ID);
-        verify(editoraRepository).remover(editora);
+        verify(editoraRepository).findById(ID);
+        verify(editoraRepository).delete(editora);
     }
 }

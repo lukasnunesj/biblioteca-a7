@@ -1,22 +1,29 @@
 package com.biblioteca.presentation.telasListagem;
 
 import javax.swing.JDesktopPane;
+import java.util.List;
+
+import javax.swing.JDesktopPane;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import com.biblioteca.domain.entities.livro.interfaces.ILivroService;
+import com.biblioteca.domain.entities.livro.DTO.LivroDTO;
+import com.biblioteca.infrastructure.exceptions.ExceptionHandler;
 import com.biblioteca.presentation.formularios.FormLivros;
+import com.biblioteca.presentation.util.ApiClient;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.biblioteca.presentation.templates.TelaListagemPadrao;
 
 public class TelaListagemLivros extends TelaListagemPadrao {
 
-    private final ILivroService livroService;
+    private final ApiClient apiClient;
 
-    public TelaListagemLivros(ILivroService livroService) {
+    public TelaListagemLivros() {
         super("Listagem de Livros");
-        this.livroService = livroService;
-        carregar(); // Carrega os livros ao abrir
+        this.apiClient = new ApiClient();
+        carregar();
     }
 
     @Override
@@ -61,11 +68,40 @@ public class TelaListagemLivros extends TelaListagemPadrao {
 
     @Override
     protected void excluir() {
-        // Lógica para excluir livro selecionado
+        int selectedRow = tabela.getSelectedRow();
+        if (selectedRow >= 0) {
+            if (JOptionPane.showConfirmDialog(this, "Deseja realmente excluir o livro selecionado?", "Confirmação",
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                try {
+                    Long id = (Long) tabela.getValueAt(selectedRow, 0);
+                    apiClient.delete("/livros/" + id);
+                    carregar(); // Recarrega a lista
+                } catch (Exception e) {
+                    ExceptionHandler.tratar(e, this);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione um livro para excluir.", "Aviso", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     @Override
     protected void carregar() {
-        // Lógica para carregar/atualizar livros na tabela
+        model.setRowCount(0);
+        try {
+            List<LivroDTO> livros = apiClient.get("/livros", new TypeReference<List<LivroDTO>>() {});
+            for (LivroDTO livro : livros) {
+                model.addRow(new Object[]{
+                        livro.getId(),
+                        livro.getIsbn(),
+                        livro.getTitulo(),
+                        "- Autores -", // Placeholder
+                        "- Editora -", // Placeholder
+                        livro.getDataPublicacao()
+                });
+            }
+        } catch (Exception e) {
+            ExceptionHandler.tratar(e, this);
+        }
     }
 }
