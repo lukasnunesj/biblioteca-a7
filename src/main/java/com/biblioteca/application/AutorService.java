@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 import com.biblioteca.domain.entities.autor.Autor;
 import com.biblioteca.domain.entities.autor.DTO.AutorDTO;
@@ -20,6 +20,20 @@ public class AutorService implements IAutorService {
 
     @Inject
     private IAutorRepository autorRepository;
+    
+    /**
+     * Construtor padrão para CDI
+     */
+    public AutorService() {
+        // Construtor vazio para CDI
+    }
+    
+    /**
+     * Construtor para testes com injeção manual
+     */
+    public AutorService(IAutorRepository autorRepository) {
+        this.autorRepository = autorRepository;
+    }
 
     /**
      * {@inheritDoc}
@@ -39,7 +53,7 @@ public class AutorService implements IAutorService {
         }
 
         Autor autor = autorDTO.toEntity();
-        return autorRepository.salvar(autor);
+        return autorRepository.save(autor);
     }
 
     /**
@@ -48,7 +62,7 @@ public class AutorService implements IAutorService {
     @Override
     public Optional<Autor> buscarPorId(Long id) {
         LOGGER.info("Buscando autor por ID: " + id);
-        return autorRepository.buscarPorId(id);
+        return autorRepository.findById(id);
     }
 
     /**
@@ -66,7 +80,7 @@ public class AutorService implements IAutorService {
     @Override
     public List<Autor> buscarTodos() {
         LOGGER.info("Buscando todos os autores");
-        return autorRepository.buscarTodos();
+        return autorRepository.findAll();
     }
 
     /**
@@ -80,9 +94,9 @@ public class AutorService implements IAutorService {
             throw new IllegalArgumentException("ID do autor não pode ser nulo para remoção");
         }
 
-        Optional<Autor> autor = autorRepository.buscarPorId(autorDTO.getId());
+        Optional<Autor> autor = autorRepository.findById(autorDTO.getId());
         if (autor.isPresent()) {
-            autorRepository.remover(autor.get());
+            autorRepository.delete(autor.get());
             LOGGER.info("Autor removido com sucesso");
         } else {
             throw new RecursoNaoEncontradoException("Autor com ID " + autorDTO.getId() + " não encontrado");

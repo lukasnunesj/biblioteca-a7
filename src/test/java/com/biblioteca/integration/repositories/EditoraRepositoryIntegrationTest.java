@@ -23,11 +23,12 @@ public class EditoraRepositoryIntegrationTest extends IntegrationTestBase {
     @Test
     public void testSalvarEditora() {
         // Arrange
-        Editora editora = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999", "contato@companhiadasletras.com");
+        Editora editora = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999",
+                "contato@companhiadasletras.com");
 
         // Act
-        Editora editoraSalva = editoraRepository.salvar(editora);
-        
+        Editora editoraSalva = editoraRepository.save(editora);
+
         // Assert
         assertThat(editoraSalva.getId()).isNotNull();
         assertThat(editoraSalva.getNome()).isEqualTo("Companhia das Letras");
@@ -39,12 +40,13 @@ public class EditoraRepositoryIntegrationTest extends IntegrationTestBase {
     @Test
     public void testBuscarPorId() {
         // Arrange
-        Editora editora = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999", "contato@companhiadasletras.com");
-        Editora editoraSalva = editoraRepository.salvar(editora);
-        
+        Editora editora = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999",
+                "contato@companhiadasletras.com");
+        Editora editoraSalva = editoraRepository.save(editora);
+
         // Act
-        Optional<Editora> resultado = editoraRepository.buscarPorId(editoraSalva.getId());
-        
+        Optional<Editora> resultado = editoraRepository.findById(editoraSalva.getId());
+
         // Assert
         assertThat(resultado).isPresent();
         assertThat(resultado.get().getNome()).isEqualTo("Companhia das Letras");
@@ -53,8 +55,8 @@ public class EditoraRepositoryIntegrationTest extends IntegrationTestBase {
     @Test
     public void testBuscarPorIdNaoEncontrado() {
         // Act
-        Optional<Editora> resultado = editoraRepository.buscarPorId(999L);
-        
+        Optional<Editora> resultado = editoraRepository.findById(999L);
+
         // Assert
         assertThat(resultado).isEmpty();
     }
@@ -62,15 +64,16 @@ public class EditoraRepositoryIntegrationTest extends IntegrationTestBase {
     @Test
     public void testBuscarTodos() {
         // Arrange
-        Editora editora1 = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999", "contato@companhiadasletras.com");
+        Editora editora1 = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999",
+                "contato@companhiadasletras.com");
         Editora editora2 = new Editora("Rocco", "98765432109876", "(21) 88888-8888", "contato@rocco.com.br");
-        
-        editoraRepository.salvar(editora1);
-        editoraRepository.salvar(editora2);
-        
+
+        editoraRepository.save(editora1);
+        editoraRepository.save(editora2);
+
         // Act
-        List<Editora> editoras = editoraRepository.buscarTodos();
-        
+        List<Editora> editoras = editoraRepository.findAll();
+
         // Assert
         assertThat(editoras).hasSize(2);
         assertThat(editoras).extracting("nome").contains("Companhia das Letras", "Rocco");
@@ -79,13 +82,14 @@ public class EditoraRepositoryIntegrationTest extends IntegrationTestBase {
     @Test
     public void testRemover() {
         // Arrange
-        Editora editora = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999", "contato@companhiadasletras.com");
-        Editora editoraSalva = editoraRepository.salvar(editora);
-        
+        Editora editora = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999",
+                "contato@companhiadasletras.com");
+        Editora editoraSalva = editoraRepository.save(editora);
+
         // Act
-        editoraRepository.remover(editoraSalva);
-        Optional<Editora> resultado = editoraRepository.buscarPorId(editoraSalva.getId());
-        
+        editoraRepository.delete(editoraSalva);
+        Optional<Editora> resultado = editoraRepository.findById(editoraSalva.getId());
+
         // Assert
         assertThat(resultado).isEmpty();
     }

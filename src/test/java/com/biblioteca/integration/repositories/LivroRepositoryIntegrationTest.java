@@ -40,7 +40,7 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
         livro.addAutor(autor);
 
         // Act
-        Livro livroSalvo = livroRepository.salvar(livro);
+        Livro livroSalvo = livroRepository.save(livro);
 
         // Assert
         assertThat(livroSalvo.getId()).isNotNull();
@@ -58,7 +58,7 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
         Livro livro = criarLivroCompleto();
 
         // Act
-        Optional<Livro> resultado = livroRepository.buscarPorId(livro.getId());
+        Optional<Livro> resultado = livroRepository.findById(livro.getId());
 
         // Assert
         assertThat(resultado).isPresent();
@@ -68,7 +68,7 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
     @Test
     public void testBuscarPorIdNaoEncontrado() {
         // Act
-        Optional<Livro> resultado = livroRepository.buscarPorId(999L);
+        Optional<Livro> resultado = livroRepository.findById(999L);
 
         // Assert
         assertThat(resultado).isEmpty();
@@ -85,10 +85,10 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
         Livro livro2 = new Livro("Memórias Póstumas de Brás Cubas", "9788535921182", LocalDate.of(1881, 1, 1));
         livro2.setEditora(editora);
         livro2.addAutor(autor);
-        livroRepository.salvar(livro2);
+        livroRepository.save(livro2);
 
         // Act
-        List<Livro> livros = livroRepository.buscarTodos();
+        List<Livro> livros = livroRepository.findAll();
 
         // Assert
         assertThat(livros).hasSize(2);
@@ -101,8 +101,8 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
         Livro livro = criarLivroCompleto();
 
         // Act
-        livroRepository.remover(livro);
-        Optional<Livro> resultado = livroRepository.buscarPorId(livro.getId());
+        livroRepository.delete(livro);
+        Optional<Livro> resultado = livroRepository.findById(livro.getId());
 
         // Assert
         assertThat(resultado).isEmpty();
@@ -113,12 +113,12 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
     private Editora criarEditora() {
         Editora editora = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999",
                 "contato@companhiadasletras.com");
-        return editoraRepository.salvar(editora);
+        return editoraRepository.save(editora);
     }
 
     private Autor criarAutor() {
         Autor autor = new Autor("Machado de Assis", "123.456.789-00", "(21) 99999-9999", "machado@exemplo.com");
-        return autorRepository.salvar(autor);
+        return autorRepository.save(autor);
     }
 
     private Livro criarLivroCompleto() {
@@ -129,6 +129,6 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
         livro.setEditora(editora);
         livro.addAutor(autor);
 
-        return livroRepository.salvar(livro);
+        return livroRepository.save(livro);
     }
 }

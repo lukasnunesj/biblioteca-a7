@@ -26,7 +26,7 @@ public class AutorRepositoryIntegrationTest extends IntegrationTestBase {
         Autor autor = new Autor("Carlos Drummond", "123.456.789-00", "(31) 99999-9999", "carlos@exemplo.com");
 
         // Act
-        Autor autorSalvo = autorRepository.salvar(autor);
+        Autor autorSalvo = autorRepository.save(autor);
 
         // Assert
         assertThat(autorSalvo.getId()).isNotNull();
@@ -40,10 +40,10 @@ public class AutorRepositoryIntegrationTest extends IntegrationTestBase {
     public void testBuscarPorId() {
         // Arrange
         Autor autor = new Autor("Carlos Drummond", "123.456.789-00", "(31) 99999-9999", "carlos@exemplo.com");
-        Autor autorSalvo = autorRepository.salvar(autor);
+        Autor autorSalvo = autorRepository.save(autor);
 
         // Act
-        Optional<Autor> resultado = autorRepository.buscarPorId(autorSalvo.getId());
+        Optional<Autor> resultado = autorRepository.findById(autorSalvo.getId());
 
         // Assert
         assertThat(resultado).isPresent();
@@ -53,7 +53,7 @@ public class AutorRepositoryIntegrationTest extends IntegrationTestBase {
     @Test
     public void testBuscarPorIdNaoEncontrado() {
         // Act
-        Optional<Autor> resultado = autorRepository.buscarPorId(999L);
+        Optional<Autor> resultado = autorRepository.findById(999L);
 
         // Assert
         assertThat(resultado).isEmpty();
@@ -65,11 +65,11 @@ public class AutorRepositoryIntegrationTest extends IntegrationTestBase {
         Autor autor1 = new Autor("Carlos Drummond", "123.456.789-00", "(31) 99999-9999", "carlos@exemplo.com");
         Autor autor2 = new Autor("Machado de Assis", "987.654.321-00", "(21) 88888-8888", "machado@exemplo.com");
 
-        autorRepository.salvar(autor1);
-        autorRepository.salvar(autor2);
+        autorRepository.save(autor1);
+        autorRepository.save(autor2);
 
         // Act
-        List<Autor> autores = autorRepository.buscarTodos();
+        List<Autor> autores = autorRepository.findAll();
 
         // Assert
         assertThat(autores).hasSize(2);
@@ -80,11 +80,11 @@ public class AutorRepositoryIntegrationTest extends IntegrationTestBase {
     public void testRemover() {
         // Arrange
         Autor autor = new Autor("Carlos Drummond", "123.456.789-00", "(31) 99999-9999", "carlos@exemplo.com");
-        Autor autorSalvo = autorRepository.salvar(autor);
+        Autor autorSalvo = autorRepository.save(autor);
 
         // Act
-        autorRepository.remover(autorSalvo);
-        Optional<Autor> resultado = autorRepository.buscarPorId(autorSalvo.getId());
+        autorRepository.delete(autorSalvo);
+        Optional<Autor> resultado = autorRepository.findById(autorSalvo.getId());
 
         // Assert
         assertThat(resultado).isEmpty();

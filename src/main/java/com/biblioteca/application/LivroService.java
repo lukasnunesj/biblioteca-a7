@@ -6,8 +6,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 import com.biblioteca.domain.entities.autor.Autor;
 import com.biblioteca.domain.entities.autor.interfaces.IAutorService;
@@ -43,6 +43,22 @@ public class LivroService implements ILivroService {
 
     @Inject
     private IAutorService autorService;
+    
+    /**
+     * Construtor padrão para CDI
+     */
+    public LivroService() {
+        // Construtor vazio para CDI
+    }
+    
+    /**
+     * Construtor para testes com injeção manual
+     */
+    public LivroService(ILivroRepository livroRepository, IEditoraService editoraService, IAutorService autorService) {
+        this.livroRepository = livroRepository;
+        this.editoraService = editoraService;
+        this.autorService = autorService;
+    }
 
     /**
      * {@inheritDoc}
@@ -53,12 +69,14 @@ public class LivroService implements ILivroService {
         livroDTO.validar();
 
         Editora editora = editoraService.buscarPorId(livroDTO.getEditoraId())
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Editora com ID " + livroDTO.getEditoraId() + " não encontrada."));
+                .orElseThrow(() -> new RecursoNaoEncontradoException(
+                        "Editora com ID " + livroDTO.getEditoraId() + " não encontrada."));
 
         Set<Autor> autores = new HashSet<>();
         for (Long autorId : livroDTO.getAutoresIds()) {
             Autor autor = autorService.buscarPorId(autorId)
-                    .orElseThrow(() -> new RecursoNaoEncontradoException("Autor com ID " + autorId + " não encontrado."));
+                    .orElseThrow(
+                            () -> new RecursoNaoEncontradoException("Autor com ID " + autorId + " não encontrado."));
             autores.add(autor);
         }
 
@@ -104,7 +122,8 @@ public class LivroService implements ILivroService {
         }
 
         Livro livro = livroRepository.findById(livroDTO.getId())
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Livro com ID " + livroDTO.getId() + " não encontrado."));
+                .orElseThrow(() -> new RecursoNaoEncontradoException(
+                        "Livro com ID " + livroDTO.getId() + " não encontrado."));
 
         livroRepository.delete(livro);
         LOGGER.info("Livro removido com sucesso.");

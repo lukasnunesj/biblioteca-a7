@@ -3,8 +3,8 @@ package com.biblioteca.infrastructure.repositories;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import javax.ejb.Stateless;
-import javax.persistence.TypedQuery;
+import jakarta.ejb.Stateless;
+import jakarta.persistence.TypedQuery;
 
 import com.biblioteca.domain.entities.editora.Editora;
 import com.biblioteca.domain.entities.editora.interfaces.IEditoraRepository;
@@ -17,7 +17,11 @@ public class EditoraRepository extends BaseRepository<Editora, Long> implements 
     public EditoraRepository() {
         super(Editora.class);
     }
-
+    
+    public EditoraRepository(jakarta.persistence.EntityManager entityManager) {
+        super(Editora.class);
+        this.entityManager = entityManager;
+    }
 
     /**
      * {@inheritDoc}
@@ -26,7 +30,8 @@ public class EditoraRepository extends BaseRepository<Editora, Long> implements 
     public Optional<Editora> buscarPorCnpj(String cnpj) {
         try {
             LOGGER.info("Buscando editora por cnpj: " + cnpj);
-            TypedQuery<Editora> query = entityManager.createQuery("SELECT e FROM Editora e WHERE e.cnpj = :cnpj", Editora.class);
+            TypedQuery<Editora> query = entityManager.createQuery("SELECT e FROM Editora e WHERE e.cnpj = :cnpj",
+                    Editora.class);
             query.setParameter("cnpj", cnpj);
             return query.getResultStream().findFirst();
         } catch (Exception e) {

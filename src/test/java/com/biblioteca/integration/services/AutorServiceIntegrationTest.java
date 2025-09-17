@@ -21,7 +21,15 @@ public class AutorServiceIntegrationTest extends IntegrationTestBase {
     @Override
     protected void beforeEachTest() {
         autorRepository = new AutorRepository(entityManager);
-        autorService = new AutorService(autorRepository);
+        autorService = new AutorService();
+        // Injetar o repositório manualmente para o teste
+        try {
+            java.lang.reflect.Field field = AutorService.class.getDeclaredField("autorRepository");
+            field.setAccessible(true);
+            field.set(autorService, autorRepository);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao injetar dependência", e);
+        }
     }
 
     @Test
@@ -136,11 +144,11 @@ public class AutorServiceIntegrationTest extends IntegrationTestBase {
 
     private Autor criarAutor() {
         Autor autor = new Autor("Carlos Drummond", "123.456.789-00", "(31) 99999-9999", "carlos@exemplo.com");
-        return autorRepository.salvar(autor);
+        return autorRepository.save(autor);
     }
 
     private Autor criarOutroAutor() {
         Autor autor = new Autor("Machado de Assis", "987.654.321-00", "(21) 88888-8888", "machado@exemplo.com");
-        return autorRepository.salvar(autor);
+        return autorRepository.save(autor);
     }
 }

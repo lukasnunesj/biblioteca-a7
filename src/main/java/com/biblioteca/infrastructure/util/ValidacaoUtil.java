@@ -31,9 +31,8 @@ public class ValidacaoUtil {
          */
         public CampoValidacao obrigatorio() {
             validacoes.add(new Validacao(
-                texto -> !texto.isBlank(),
-                "O campo '" + nomeCampo + "' é obrigatório."
-            ));
+                    texto -> !texto.isBlank(),
+                    "O campo '" + nomeCampo + "' é obrigatório."));
             return this;
         }
 
@@ -42,9 +41,8 @@ public class ValidacaoUtil {
          */
         public CampoValidacao tamanhoMinimo(int tamanho) {
             validacoes.add(new Validacao(
-                texto -> texto.length() >= tamanho,
-                "O campo '" + nomeCampo + "' deve ter pelo menos " + tamanho + " caracteres."
-            ));
+                    texto -> texto.length() >= tamanho,
+                    "O campo '" + nomeCampo + "' deve ter pelo menos " + tamanho + " caracteres."));
             return this;
         }
 
@@ -53,9 +51,8 @@ public class ValidacaoUtil {
          */
         public CampoValidacao email() {
             validacoes.add(new Validacao(
-                texto -> texto.isBlank() || texto.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"),
-                "O campo '" + nomeCampo + "' deve ser um email válido."
-            ));
+                    texto -> texto.isBlank() || texto.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"),
+                    "O campo '" + nomeCampo + "' deve ser um email válido."));
             return this;
         }
 
@@ -136,11 +133,10 @@ public class ValidacaoUtil {
 
             if (!valido && !erros.isEmpty()) {
                 JOptionPane.showMessageDialog(
-                    componentePai,
-                    erros.get(0),
-                    "Erro de Validação",
-                    JOptionPane.ERROR_MESSAGE
-                );
+                        componentePai,
+                        erros.get(0),
+                        "Erro de Validação",
+                        JOptionPane.ERROR_MESSAGE);
             }
 
             return valido;

@@ -4,15 +4,15 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Objects;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 
 import com.biblioteca.domain.entities.livro.Livro;
 
@@ -21,7 +21,8 @@ import com.biblioteca.domain.entities.livro.Livro;
  * <p>
  * Esta entidade armazena informações sobre autores, como nome, CPF/CNPJ,
  * telefone e email. É mapeada para a tabela 'autores' no banco de dados.
- * Cada autor pode estar associado a múltiplos livros através de um relacionamento
+ * Cada autor pode estar associado a múltiplos livros através de um
+ * relacionamento
  * muitos-para-muitos.
  * </p>
  * 
@@ -69,7 +70,8 @@ public class Autor {
 
     /**
      * Conjunto de livros associados a este autor.
-     * Relacionamento muitos-para-muitos mapeado pelo atributo 'autor' na entidade Livro.
+     * Relacionamento muitos-para-muitos mapeado pelo atributo 'autor' na entidade
+     * Livro.
      */
     @ManyToMany(mappedBy = "autores", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Livro> livros = new HashSet<>();
@@ -85,13 +87,13 @@ public class Autor {
      * Realiza validações nos parâmetros antes de criar o objeto.
      *
      * @param nome     o nome do autor
-     * @param cpfcnpj o CPF ou CNPJ do autor
+     * @param cpfcnpj  o CPF ou CNPJ do autor
      * @param telefone o telefone de contato do autor
-     * @param email   o email de contato do autor
+     * @param email    o email de contato do autor
      * @throws IllegalArgumentException se algum dos parâmetros for nulo ou vazio
      */
     public Autor(String nome, String cpfcnpj, String telefone, String email) {
-                if (nome == null || nome.isBlank()) {
+        if (nome == null || nome.isBlank()) {
             throw new IllegalArgumentException("Nome inválido");
         }
         if (cpfcnpj == null || cpfcnpj.isBlank()) {

@@ -1,19 +1,20 @@
 package com.biblioteca.infrastructure.util;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 
 /**
  * Classe utilitária para gerenciar o EntityManager nos testes de integração.
  */
 public class TestJPAUtil {
-    
+
     private static EntityManagerFactory emf;
-    
+
     /**
      * Obtém uma instância do EntityManagerFactory para testes.
-     * Utiliza a unidade de persistência "biblioteca-test" configurada para H2 em memória.
+     * Utiliza a unidade de persistência "biblioteca-test" configurada para H2 em
+     * memória.
      * 
      * @return a instância do EntityManagerFactory
      */
@@ -23,7 +24,7 @@ public class TestJPAUtil {
         }
         return emf;
     }
-    
+
     /**
      * Cria e retorna uma nova instância do EntityManager.
      * 
@@ -32,7 +33,7 @@ public class TestJPAUtil {
     public static EntityManager createEntityManager() {
         return getEntityManagerFactory().createEntityManager();
     }
-    
+
     /**
      * Fecha o EntityManagerFactory.
      * Deve ser chamado ao final da execução dos testes.

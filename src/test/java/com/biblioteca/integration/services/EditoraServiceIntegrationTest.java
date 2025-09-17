@@ -27,11 +27,12 @@ public class EditoraServiceIntegrationTest extends IntegrationTestBase {
     @Test
     public void testSalvar() {
         // Arrange
-        EditoraDTO editoraDTO = new EditoraDTO(null, "Companhia das Letras", "12345678901234", "(11) 99999-9999", "contato@companhiadasletras.com");
-        
+        EditoraDTO editoraDTO = new EditoraDTO(null, "Companhia das Letras", "12345678901234", "(11) 99999-9999",
+                "contato@companhiadasletras.com");
+
         // Act
         Editora editoraSalva = editoraService.salvar(editoraDTO);
-        
+
         // Assert
         assertThat(editoraSalva.getId()).isNotNull();
         assertThat(editoraSalva.getNome()).isEqualTo("Companhia das Letras");
@@ -44,10 +45,10 @@ public class EditoraServiceIntegrationTest extends IntegrationTestBase {
     public void testBuscarPorId() {
         // Arrange
         Editora editora = criarEditora();
-        
+
         // Act
         Optional<Editora> resultado = editoraService.buscarPorId(editora.getId());
-        
+
         // Assert
         assertThat(resultado).isPresent();
         assertThat(resultado.get().getNome()).isEqualTo("Companhia das Letras");
@@ -57,7 +58,7 @@ public class EditoraServiceIntegrationTest extends IntegrationTestBase {
     public void testBuscarPorIdNaoEncontrado() {
         // Act
         Optional<Editora> resultado = editoraService.buscarPorId(999L);
-        
+
         // Assert
         assertThat(resultado).isEmpty();
     }
@@ -66,14 +67,14 @@ public class EditoraServiceIntegrationTest extends IntegrationTestBase {
     public void testBuscarPorCnpj() {
         // Arrange
         Editora editora = criarEditora();
-        
+
         // Garantir que a entidade esteja persistida
         transaction.commit();
         transaction.begin();
-        
+
         // Act
         Optional<Editora> resultado = editoraService.buscarPorCnpj(editora.getCnpj());
-        
+
         // Assert
         assertThat(resultado).isPresent();
         assertThat(resultado.get().getNome()).isEqualTo("Companhia das Letras");
@@ -84,10 +85,10 @@ public class EditoraServiceIntegrationTest extends IntegrationTestBase {
         // Arrange
         criarEditora();
         criarOutraEditora();
-        
+
         // Act
         List<Editora> editoras = editoraService.buscarTodos();
-        
+
         // Assert
         assertThat(editoras).hasSize(2);
         assertThat(editoras).extracting("nome").contains("Companhia das Letras", "Rocco");
@@ -98,49 +99,49 @@ public class EditoraServiceIntegrationTest extends IntegrationTestBase {
         // Arrange
         Editora editora = criarEditora();
         Long editoraId = editora.getId();
-        
+
         // Garantir que a entidade esteja persistida
         transaction.commit();
         entityManager.clear();
         transaction = entityManager.getTransaction();
         transaction.begin();
-        
+
         // Buscar a entidade novamente para garantir que está gerenciada
         Editora editoraGerenciada = entityManager.find(Editora.class, editoraId);
         assertThat(editoraGerenciada).isNotNull();
-        
+
         EditoraDTO editoraDTO = new EditoraDTO(
-            editoraGerenciada.getId(), 
-            editoraGerenciada.getNome(), 
-            editoraGerenciada.getCnpj(), 
-            editoraGerenciada.getTelefone(), 
-            editoraGerenciada.getEmail()
-        );
-        
+                editoraGerenciada.getId(),
+                editoraGerenciada.getNome(),
+                editoraGerenciada.getCnpj(),
+                editoraGerenciada.getTelefone(),
+                editoraGerenciada.getEmail());
+
         // Act
         editoraService.remover(editoraDTO);
-        
+
         // Commit para confirmar a remoção
         transaction.commit();
         transaction = entityManager.getTransaction();
         transaction.begin();
-        
+
         // Verificar se foi removido
         Optional<Editora> resultado = editoraService.buscarPorId(editoraId);
-        
+
         // Assert
         assertThat(resultado).isEmpty();
     }
-    
+
     // Métodos auxiliares
-    
+
     private Editora criarEditora() {
-        Editora editora = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999", "contato@companhiadasletras.com");
-        return editoraRepository.salvar(editora);
+        Editora editora = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999",
+                "contato@companhiadasletras.com");
+        return editoraRepository.save(editora);
     }
-    
+
     private Editora criarOutraEditora() {
         Editora editora = new Editora("Rocco", "98765432109876", "(21) 88888-8888", "contato@rocco.com.br");
-        return editoraRepository.salvar(editora);
+        return editoraRepository.save(editora);
     }
 }

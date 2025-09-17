@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 import com.biblioteca.domain.entities.editora.Editora;
 import com.biblioteca.infrastructure.exceptions.RecursoNaoEncontradoException;
@@ -22,6 +22,20 @@ public class EditoraService implements IEditoraService {
     private IEditoraRepository editoraRepository;
 
     /**
+     * Construtor para testes
+     */
+    public EditoraService() {
+        // Construtor vazio para testes
+    }
+    
+    /**
+     * Construtor para testes com injeção manual
+     */
+    public EditoraService(IEditoraRepository editoraRepository) {
+        this.editoraRepository = editoraRepository;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -30,7 +44,8 @@ public class EditoraService implements IEditoraService {
         editoraDTO.validar();
 
         Optional<Editora> editoraExistente = editoraRepository.buscarPorCnpj(editoraDTO.getCnpj());
-        if (editoraExistente.isPresent() && (editoraDTO.getId() == null || !editoraDTO.getId().equals(editoraExistente.get().getId()))) {
+        if (editoraExistente.isPresent()
+                && (editoraDTO.getId() == null || !editoraDTO.getId().equals(editoraExistente.get().getId()))) {
             throw new IllegalArgumentException("Já existe uma editora cadastrada com este CNPJ.");
         }
 
@@ -76,7 +91,8 @@ public class EditoraService implements IEditoraService {
         }
 
         Editora editora = editoraRepository.findById(editoraDTO.getId())
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Editora com ID " + editoraDTO.getId() + " não encontrada."));
+                .orElseThrow(() -> new RecursoNaoEncontradoException(
+                        "Editora com ID " + editoraDTO.getId() + " não encontrada."));
 
         editoraRepository.delete(editora);
         LOGGER.info("Editora removida com sucesso.");

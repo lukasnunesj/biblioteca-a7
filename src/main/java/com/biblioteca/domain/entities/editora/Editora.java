@@ -4,15 +4,15 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Objects;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import com.biblioteca.domain.entities.livro.Livro;
 
@@ -21,7 +21,8 @@ import com.biblioteca.domain.entities.livro.Livro;
  * <p>
  * Esta entidade armazena informações sobre editoras, como nome, CNPJ,
  * telefone e email. É mapeada para a tabela 'editoras' no banco de dados.
- * Cada editora pode ter múltiplos livros associados através de um relacionamento
+ * Cada editora pode ter múltiplos livros associados através de um
+ * relacionamento
  * um-para-muitos.
  * </p>
  * 
@@ -69,7 +70,8 @@ public class Editora {
 
     /**
      * Conjunto de livros publicados por esta editora.
-     * Relacionamento um-para-muitos mapeado pelo atributo 'editora' na entidade Livro.
+     * Relacionamento um-para-muitos mapeado pelo atributo 'editora' na entidade
+     * Livro.
      */
     @OneToMany(mappedBy = "editora", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Livro> livros = new HashSet<>();

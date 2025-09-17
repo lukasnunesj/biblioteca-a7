@@ -169,12 +169,12 @@ public class LivroServiceIntegrationTest extends IntegrationTestBase {
     private Editora criarEditora() {
         Editora editora = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999",
                 "contato@companhiadasletras.com");
-        return editoraRepository.salvar(editora);
+        return editoraRepository.save(editora);
     }
 
     private Autor criarAutor() {
         Autor autor = new Autor("Machado de Assis", "123.456.789-00", "(21) 99999-9999", "machado@exemplo.com");
-        return autorRepository.salvar(autor);
+        return autorRepository.save(autor);
     }
 
     private Livro criarLivroCompleto() {
@@ -188,7 +188,7 @@ public class LivroServiceIntegrationTest extends IntegrationTestBase {
         livro.setEditora(editora);
         livro.addAutor(autor);
 
-        return livroRepository.salvar(livro);
+        return livroRepository.save(livro);
     }
 
     private Livro criarOutroLivro() {
@@ -209,6 +209,6 @@ public class LivroServiceIntegrationTest extends IntegrationTestBase {
         livro.setEditora(editora);
         livro.addAutor(autor);
 
-        return livroRepository.salvar(livro);
+        return livroRepository.save(livro);
     }
 }
