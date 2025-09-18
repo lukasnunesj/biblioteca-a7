@@ -44,7 +44,7 @@ public class AutorServiceIntegrationTest extends IntegrationTestBase {
         // Assert
         assertThat(autorSalvo.getId()).isNotNull();
         assertThat(autorSalvo.getNome()).isEqualTo("Carlos Drummond");
-        assertThat(autorSalvo.getCpfcnpj()).isEqualTo("123.456.789-00");
+        assertThat(autorSalvo.getCpfcnpj()).isEqualTo("12345678900");
         assertThat(autorSalvo.getTelefone()).isEqualTo("(31) 99999-9999");
         assertThat(autorSalvo.getEmail()).isEqualTo("carlos@exemplo.com");
     }

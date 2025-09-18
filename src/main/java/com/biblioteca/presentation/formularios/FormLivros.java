@@ -1,7 +1,6 @@
 package com.biblioteca.presentation.formularios;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -18,10 +17,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.JTextField;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 
 import com.biblioteca.domain.entities.autor.DTO.AutorDTO;
@@ -36,13 +33,19 @@ public class FormLivros extends FormPadrao {
     private JFormattedTextField txtDataPublicacao;
     private JComboBox<AutorDTO> cbAutores;
     private JComboBox<EditoraDTO> cbEditora;
-    private JTable tabelaLivrosSemelhantes;
-    private DefaultTableModel modelLivrosSemelhantes;
-    private JButton btnRelacionar;
     private JButton btnBuscarPorIsbn;
+    private JButton btnGerenciarSemelhantes;
+    private LivroDTO livroParaEdicao;
 
     public FormLivros() {
         super("Formulário de Livros");
+        btnGerenciarSemelhantes.setEnabled(false); // Desabilita para novos livros
+    }
+
+    public FormLivros(LivroDTO livro) {
+        super("Edição de Livro");
+        this.livroParaEdicao = livro;
+        SwingUtilities.invokeLater(this::preencherCamposParaEdicao);
     }
 
     @Override
@@ -63,19 +66,30 @@ public class FormLivros extends FormPadrao {
             List<Long> autoresIds = new ArrayList<>();
             autoresIds.add(autorSelecionado.getId());
 
+            Long id = (livroParaEdicao != null) ? livroParaEdicao.getId() : null;
+            List<Long> semelhantesIds = (livroParaEdicao != null) ? livroParaEdicao.getLivrosSemelhantesIds() : new ArrayList<>();
+
             LivroDTO livroDTO = new LivroDTO(
-                    null, // ID é gerado no backend
+                    id,
                     txtTitulo.getText(),
                     txtIsbn.getText(),
                     dataPublicacao,
                     editoraSelecionada.getId(),
-                    autoresIds);
+                    autoresIds,
+                    semelhantesIds);
 
             livroDTO.validar();
 
-            apiClient.post("/livros", livroDTO, LivroDTO.class);
+            if (id == null) {
+                // Criação
+                apiClient.post("/livros", livroDTO, LivroDTO.class);
+                JOptionPane.showMessageDialog(this, "Livro salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Atualização
+                apiClient.put("/livros/" + id, livroDTO, LivroDTO.class);
+                JOptionPane.showMessageDialog(this, "Livro atualizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            }
 
-            JOptionPane.showMessageDialog(this, "Livro salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             dispose();
 
         } catch (Exception e) {
@@ -153,44 +167,65 @@ public class FormLivros extends FormPadrao {
         cbAutores.setEditable(true);
         painelFormulario.add(cbAutores, gbc);
 
-        // --- Painel de Livros Semelhantes ---
-        JPanel painelLivrosSemelhantes = new JPanel(new BorderLayout(10, 10));
-        painelLivrosSemelhantes.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder("Livros Semelhantes"),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+        // Adiciona um painel espaçador para empurrar o conteúdo para cima
+        gbc.gridy++;
+        gbc.weighty = 1.0;
+        painelFormulario.add(new JPanel(), gbc);
 
-        // Tabela para listar livros relacionados
-        String[] colunas = { "ID", "Título" };
-        modelLivrosSemelhantes = new DefaultTableModel(colunas, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        tabelaLivrosSemelhantes = new JTable(modelLivrosSemelhantes);
-        painelLivrosSemelhantes.add(new JScrollPane(tabelaLivrosSemelhantes), BorderLayout.CENTER);
-
-        // Painel com botão para adicionar relação
-        JPanel painelBotoesRelacionar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        btnRelacionar = new JButton("Relacionar");
-        btnRelacionar.addActionListener(e -> abrirModalRelacionarLivros());
-        painelBotoesRelacionar.add(btnRelacionar);
-        painelLivrosSemelhantes.add(painelBotoesRelacionar, BorderLayout.SOUTH);
-
-        // --- Split Pane ---
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                new JScrollPane(painelFormulario),
-                painelLivrosSemelhantes);
-        splitPane.setResizeWeight(0.6); // 60% do espaço para o formulário
-
-        add(splitPane, BorderLayout.CENTER);
+        add(new JScrollPane(painelFormulario), BorderLayout.CENTER);
     }
 
-    private void abrirModalRelacionarLivros() {
-        JOptionPane.showMessageDialog(this,
-                "Modal para busca e seleção de livros será implementado aqui.",
-                "Relacionar Livros",
-                JOptionPane.INFORMATION_MESSAGE);
+    @Override
+    protected void configPainelBotoes() {
+        super.configPainelBotoes();
+        btnGerenciarSemelhantes = new JButton("Gerenciar Semelhantes");
+        btnGerenciarSemelhantes.addActionListener(e -> abrirTelaRelacionamento());
+        painelBotoes.add(btnGerenciarSemelhantes, 0); // Adiciona o botão no início do painel
+    }
+
+    private void abrirTelaRelacionamento() {
+        if (livroParaEdicao == null) {
+            JOptionPane.showMessageDialog(this, "Você precisa salvar o livro antes de gerenciar seus semelhantes.",
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        FormRelacionarLivros form = new FormRelacionarLivros(SwingUtilities.getWindowAncestor(this), livroParaEdicao);
+        form.setVisible(true);
+    }
+
+    private void preencherCamposParaEdicao() {
+        if (livroParaEdicao == null)
+            return;
+
+        setTitle("Edição de Livro - ID: " + livroParaEdicao.getId());
+        txtTitulo.setText(livroParaEdicao.getTitulo());
+        txtIsbn.setText(livroParaEdicao.getIsbn());
+
+        if (livroParaEdicao.getDataPublicacao() != null) {
+            txtDataPublicacao
+                    .setText(livroParaEdicao.getDataPublicacao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        }
+
+        // Seleciona a editora no ComboBox
+        if (livroParaEdicao.getEditoraId() != null) {
+            for (int i = 0; i < cbEditora.getItemCount(); i++) {
+                if (cbEditora.getItemAt(i).getId().equals(livroParaEdicao.getEditoraId())) {
+                    cbEditora.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
+
+        // Seleciona o primeiro autor no ComboBox
+        if (livroParaEdicao.getAutoresIds() != null && !livroParaEdicao.getAutoresIds().isEmpty()) {
+            Long primeiroAutorId = livroParaEdicao.getAutoresIds().get(0);
+            for (int i = 0; i < cbAutores.getItemCount(); i++) {
+                if (cbAutores.getItemAt(i).getId().equals(primeiroAutorId)) {
+                    cbAutores.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
     }
 
     private void buscarPorIsbn() {

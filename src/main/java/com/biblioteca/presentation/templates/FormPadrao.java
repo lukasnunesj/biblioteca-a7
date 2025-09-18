@@ -11,6 +11,7 @@ import com.biblioteca.presentation.util.ApiClient;
 
 public abstract class FormPadrao extends JInternalFrame {
 
+    protected JPanel painelBotoes;
     protected JButton btnSalvar;
     protected JButton btnCancelar;
     protected ApiClient apiClient;
@@ -35,15 +36,15 @@ public abstract class FormPadrao extends JInternalFrame {
     }
 
     protected void configPainelBotoes() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         btnSalvar = new JButton("Salvar");
         btnCancelar = new JButton("Cancelar");
 
-        panel.add(btnSalvar);
-        panel.add(btnCancelar);
+        painelBotoes.add(btnSalvar);
+        painelBotoes.add(btnCancelar);
 
-        add(panel, BorderLayout.SOUTH);
+        add(painelBotoes, BorderLayout.SOUTH);
     }
 
     protected void configurarEventos() {

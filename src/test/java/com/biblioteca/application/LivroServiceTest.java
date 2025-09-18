@@ -80,13 +80,14 @@ public class LivroServiceTest {
         livro.setEditora(editora);
         livro.setAutores(new HashSet<>(Arrays.asList(autor)));
         
-        livroDTO = new LivroDTO(LIVRO_ID, TITULO, ISBN, DATA_PUBLICACAO, EDITORA_ID, Arrays.asList(AUTOR_ID));
+        livroDTO = new LivroDTO(LIVRO_ID, TITULO, ISBN, DATA_PUBLICACAO, EDITORA_ID, Arrays.asList(AUTOR_ID), new java.util.ArrayList<>());
     }
     
     @Test
     public void testSalvar() {
         when(editoraService.buscarPorId(EDITORA_ID)).thenReturn(Optional.of(editora));
         when(autorService.buscarPorId(AUTOR_ID)).thenReturn(Optional.of(autor));
+        when(livroRepository.findById(LIVRO_ID)).thenReturn(Optional.of(livro)); // Adicionado para cobrir o caso de atualização
         when(livroRepository.save(any(Livro.class))).thenReturn(livro);
         
         Livro resultado = livroService.salvar(livroDTO);
@@ -204,16 +205,25 @@ public class LivroServiceTest {
     public void testCadastrarPorIsbn_SucessoComDadosCompletos() {
         // Given
         String isbn = "9788574801414";
-        OpenLibraryResponseDTO dadosOpenLibrary = new OpenLibraryResponseDTO();
-        dadosOpenLibrary.setTitle("Test Book");
-        dadosOpenLibrary.setPublishDate("2023");
-        dadosOpenLibrary.setPublishers(Arrays.asList("Test Publisher"));
-        
+
+        // Mock para OpenLibraryResponseDTO e seus dados aninhados
+        OpenLibraryResponseDTO dadosOpenLibrary = spy(new OpenLibraryResponseDTO());
+        OpenLibraryResponseDTO.Author authorMock = mock(OpenLibraryResponseDTO.Author.class);
+        OpenLibraryResponseDTO.Publisher publisherMock = mock(OpenLibraryResponseDTO.Publisher.class);
+
+        when(dadosOpenLibrary.getTitle()).thenReturn("Test Book");
+        when(dadosOpenLibrary.getPublishDate()).thenReturn("2023");
+        when(dadosOpenLibrary.getPublishers()).thenReturn(Arrays.asList(publisherMock));
+        when(publisherMock.getName()).thenReturn("Test Publisher");
+        when(dadosOpenLibrary.getAuthors()).thenReturn(Arrays.asList(authorMock));
+        when(authorMock.getName()).thenReturn("Test Author");
+
         when(livroRepository.buscarPorIsbn(isbn)).thenReturn(Optional.empty());
         when(openLibraryService.buscarLivroPorIsbn(isbn)).thenReturn(Optional.of(dadosOpenLibrary));
         when(editoraService.buscarTodos()).thenReturn(Arrays.asList());
         when(editoraService.salvar(any(EditoraDTO.class))).thenReturn(editora);
         when(autorService.buscarTodos()).thenReturn(Arrays.asList());
+        when(autorService.salvar(any())).thenReturn(autor);
         when(livroRepository.save(any(Livro.class))).thenReturn(livro);
         
         // When
@@ -223,6 +233,7 @@ public class LivroServiceTest {
         assertTrue(resultado.isPresent());
         verify(livroRepository).buscarPorIsbn(isbn);
         verify(openLibraryService).buscarLivroPorIsbn(isbn);
-        verify(livroRepository).save(any(Livro.class));
+                verify(livroRepository).save(any(Livro.class));
     }
+
 }

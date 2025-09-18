@@ -20,4 +20,12 @@ public interface ILivroRepository extends IBaseRepository<Livro, Long> {
      */
     Optional<Livro> buscarPorIsbn(String isbn);
 
+    /**
+     * Busca um livro pelo seu ID, com carregamento antecipado de autores e editora.
+     * 
+     * @param id o ID do livro a ser buscado
+     * @return um Optional contendo o livro, se encontrado, ou vazio caso contrário
+     */
+    Optional<Livro> findById(Long id);
+
 }

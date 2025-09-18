@@ -1,16 +1,22 @@
 package com.biblioteca.application;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-import jakarta.ejb.Stateless;
-import jakarta.inject.Inject;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 
 import com.biblioteca.application.livro.service.OpenLibraryService;
 import com.biblioteca.domain.entities.autor.Autor;
@@ -21,11 +27,13 @@ import com.biblioteca.domain.entities.editora.DTO.EditoraDTO;
 import com.biblioteca.domain.entities.editora.interfaces.IEditoraService;
 import com.biblioteca.domain.entities.livro.Livro;
 import com.biblioteca.domain.entities.livro.DTO.LivroDTO;
-import com.biblioteca.domain.entities.livro.DTO.OpenLibraryAuthorDTO;
 import com.biblioteca.domain.entities.livro.DTO.OpenLibraryResponseDTO;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroRepository;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroService;
 import com.biblioteca.infrastructure.exceptions.RecursoNaoEncontradoException;
+
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 /**
  * Implementação da interface ILivroService.
@@ -65,10 +73,11 @@ public class LivroService implements ILivroService {
     /**
      * Construtor para testes com injeção manual
      */
-    public LivroService(ILivroRepository livroRepository, IEditoraService editoraService, IAutorService autorService) {
+    public LivroService(ILivroRepository livroRepository, IEditoraService editoraService, IAutorService autorService, OpenLibraryService openLibraryService) {
         this.livroRepository = livroRepository;
         this.editoraService = editoraService;
         this.autorService = autorService;
+        this.openLibraryService = openLibraryService;
     }
 
     /**
@@ -91,7 +100,29 @@ public class LivroService implements ILivroService {
             autores.add(autor);
         }
 
-        Livro livro = livroDTO.toEntity(editora, autores);
+        Livro livro;
+        if (livroDTO.getId() != null) {
+            livro = livroRepository.findById(livroDTO.getId())
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Livro com ID " + livroDTO.getId() + " não encontrado."));
+            livro.setTitulo(livroDTO.getTitulo());
+            livro.setIsbn(livroDTO.getIsbn());
+            livro.setDataPublicacao(livroDTO.getDataPublicacao());
+            livro.setEditora(editora);
+            livro.setAutores(autores);
+        } else {
+            livro = livroDTO.toEntity(editora, autores);
+        }
+
+        Set<Livro> livrosSemelhantes = new HashSet<>();
+        if (livroDTO.getLivrosSemelhantesIds() != null) {
+            for (Long semelhanteId : livroDTO.getLivrosSemelhantesIds()) {
+                Livro semelhante = livroRepository.findById(semelhanteId)
+                        .orElseThrow(() -> new RecursoNaoEncontradoException("Livro semelhante com ID " + semelhanteId + " não encontrado."));
+                livrosSemelhantes.add(semelhante);
+            }
+        }
+        livro.setLivrosSemelhantes(livrosSemelhantes);
+
         return livroRepository.save(livro);
     }
 
@@ -179,7 +210,7 @@ public class LivroService implements ILivroService {
 
             // Busca ou cria editora
             if (dadosLivro.getPublishers() != null && !dadosLivro.getPublishers().isEmpty()) {
-                String nomeEditora = dadosLivro.getPublishers().get(0);
+                String nomeEditora = dadosLivro.getPublishers().get(0).getName();
                 Editora editora = buscarOuCriarEditora(nomeEditora);
                 livro.setEditora(editora);
             }
@@ -241,18 +272,11 @@ public class LivroService implements ILivroService {
         Set<Autor> autores = new HashSet<>();
         
         if (dadosLivro.getAuthors() != null) {
-            for (OpenLibraryResponseDTO.AuthorReference authorRef : dadosLivro.getAuthors()) {
-                if (authorRef.getKey() != null) {
-                    // Busca dados do autor na OpenLibrary
-                    Optional<OpenLibraryAuthorDTO> dadosAutor = openLibraryService.buscarAutorPorChave(authorRef.getKey());
-                    
-                    if (dadosAutor.isPresent()) {
-                        String nomeAutor = dadosAutor.get().getName();
-                        if (nomeAutor != null && !nomeAutor.trim().isEmpty()) {
-                            Autor autor = buscarOuCriarAutor(nomeAutor);
-                            autores.add(autor);
-                        }
-                    }
+            for (OpenLibraryResponseDTO.Author author : dadosLivro.getAuthors()) {
+                String nomeAutor = author.getName();
+                if (nomeAutor != null && !nomeAutor.trim().isEmpty()) {
+                    Autor autor = buscarOuCriarAutor(nomeAutor);
+                    autores.add(autor);
                 }
             }
         }

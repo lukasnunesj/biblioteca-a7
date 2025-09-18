@@ -24,7 +24,7 @@ public class LivroDTOTest {
 
     @Test
     public void testConstrutor() {
-        LivroDTO livroDTO = new LivroDTO(ID, TITULO, ISBN, DATA_PUBLICACAO, EDITORA_ID, AUTORES_IDS);
+        LivroDTO livroDTO = new LivroDTO(ID, TITULO, ISBN, DATA_PUBLICACAO, EDITORA_ID, AUTORES_IDS, new java.util.ArrayList<>());
 
         assertEquals(ID, livroDTO.getId());
         assertEquals(TITULO, livroDTO.getTitulo());
@@ -36,7 +36,7 @@ public class LivroDTOTest {
 
     @Test
     public void testToEntity() {
-        LivroDTO livroDTO = new LivroDTO(ID, TITULO, ISBN, DATA_PUBLICACAO, EDITORA_ID, AUTORES_IDS);
+        LivroDTO livroDTO = new LivroDTO(ID, TITULO, ISBN, DATA_PUBLICACAO, EDITORA_ID, AUTORES_IDS, new java.util.ArrayList<>());
 
         Editora editora = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999",
                 "contato@companhia.com");
@@ -62,7 +62,7 @@ public class LivroDTOTest {
 
     @Test
     public void testSettersAndGetters() {
-        LivroDTO livroDTO = new LivroDTO(ID, TITULO, ISBN, DATA_PUBLICACAO, EDITORA_ID, AUTORES_IDS);
+        LivroDTO livroDTO = new LivroDTO(ID, TITULO, ISBN, DATA_PUBLICACAO, EDITORA_ID, AUTORES_IDS, new java.util.ArrayList<>());
 
         Long novoId = 2L;
         String novoTitulo = "Memórias Póstumas de Brás Cubas";

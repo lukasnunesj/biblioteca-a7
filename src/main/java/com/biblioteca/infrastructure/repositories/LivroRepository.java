@@ -63,12 +63,27 @@ public class LivroRepository extends BaseRepository<Livro, Long> implements ILiv
      * @return Lista de livros com autores e editora carregados
      */
     @Override
+    public Optional<Livro> findById(Long id) {
+        try {
+            LOGGER.info("Buscando livro por id com carregamento antecipado de autores e editora: " + id);
+            TypedQuery<Livro> query = entityManager.createQuery(
+                    "SELECT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora LEFT JOIN FETCH l.livrosSemelhantes WHERE l.id = :id",
+                    Livro.class);
+            query.setParameter("id", id);
+            return query.getResultStream().findFirst();
+        } catch (Exception e) {
+            LOGGER.severe("Erro ao buscar livro por id: " + e.getMessage());
+            throw new RuntimeException("Erro ao buscar livro por id: " + e.getMessage());
+        }
+    }
+
+    @Override
     public List<Livro> findAll() {
         try {
             LOGGER.info("Buscando todos os livros com carregamento antecipado de autores e editora");
             System.out.println("Buscando todos os livros com carregamento antecipado de autores e editora");
             TypedQuery<Livro> query = entityManager.createQuery(
-                    "SELECT DISTINCT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora",
+                    "SELECT DISTINCT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora LEFT JOIN FETCH l.livrosSemelhantes",
                     Livro.class);
             return query.getResultList();
         } catch (Exception e) {

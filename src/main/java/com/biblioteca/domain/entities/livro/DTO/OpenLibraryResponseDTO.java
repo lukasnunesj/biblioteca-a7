@@ -14,10 +14,10 @@ public class OpenLibraryResponseDTO {
     private String title;
 
     @JsonProperty("authors")
-    private List<AuthorReference> authors;
+    private List<Author> authors;
 
     @JsonProperty("publishers")
-    private List<String> publishers;
+    private List<Publisher> publishers;
 
     @JsonProperty("publish_date")
     private String publishDate;
@@ -32,89 +32,67 @@ public class OpenLibraryResponseDTO {
     private List<String> isbn13;
 
     @JsonProperty("subjects")
-    private List<String> subjects;
-
-    public OpenLibraryResponseDTO() {
-    }
+    private List<Subject> subjects;
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public List<AuthorReference> getAuthors() {
+    public List<Author> getAuthors() {
         return authors;
     }
 
-    public void setAuthors(List<AuthorReference> authors) {
-        this.authors = authors;
-    }
-
-    public List<String> getPublishers() {
+    public List<Publisher> getPublishers() {
         return publishers;
-    }
-
-    public void setPublishers(List<String> publishers) {
-        this.publishers = publishers;
     }
 
     public String getPublishDate() {
         return publishDate;
     }
 
-    public void setPublishDate(String publishDate) {
-        this.publishDate = publishDate;
-    }
-
     public Integer getNumberOfPages() {
         return numberOfPages;
-    }
-
-    public void setNumberOfPages(Integer numberOfPages) {
-        this.numberOfPages = numberOfPages;
     }
 
     public List<String> getIsbn10() {
         return isbn10;
     }
 
-    public void setIsbn10(List<String> isbn10) {
-        this.isbn10 = isbn10;
-    }
-
     public List<String> getIsbn13() {
         return isbn13;
     }
 
-    public void setIsbn13(List<String> isbn13) {
-        this.isbn13 = isbn13;
-    }
-
-    public List<String> getSubjects() {
+    public List<Subject> getSubjects() {
         return subjects;
     }
 
-    public void setSubjects(List<String> subjects) {
-        this.subjects = subjects;
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Author {
+        @JsonProperty("name")
+        private String name;
+
+        public String getName() {
+            return name;
+        }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class AuthorReference {
-        @JsonProperty("key")
-        private String key;
+    public static class Publisher {
+        @JsonProperty("name")
+        private String name;
 
-        public AuthorReference() {
+        public String getName() {
+            return name;
         }
+    }
 
-        public String getKey() {
-            return key;
-        }
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Subject {
+        @JsonProperty("name")
+        private String name;
 
-        public void setKey(String key) {
-            this.key = key;
+        public String getName() {
+            return name;
         }
     }
 }

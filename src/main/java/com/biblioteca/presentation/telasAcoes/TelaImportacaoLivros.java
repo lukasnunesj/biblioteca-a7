@@ -113,7 +113,7 @@ public class TelaImportacaoLivros extends JInternalFrame {
     private void baixarExemplo() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Salvar arquivo de exemplo");
-        fileChooser.setSelectedFile(new File("Exemplo.csv"));
+        fileChooser.setSelectedFile(new File("./src/main/resources/Exemplo.csv"));
         fileChooser.setFileFilter(new FileNameExtensionFilter("Arquivos CSV", "csv"));
 
         int userSelection = fileChooser.showSaveDialog(this);
@@ -121,8 +121,11 @@ public class TelaImportacaoLivros extends JInternalFrame {
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
             try (FileWriter writer = new FileWriter(fileToSave)) {
-                writer.append("titulo,isbn,data_publicacao,editora,autores\n");
-                writer.append("O Senhor dos Anéis,978-8595084759,1954-07-29,HarperCollins,J.R.R. Tolkien\n");
+                writer.append("titulo,isbn,data_publicacao,editora,cnpj_editora,autores,cpf_cnpj_autores\n");
+                writer.append(
+                        "O Senhor dos Anéis,978-8595084759,1954-07-29,HarperCollins,08.911.112/0001-31,J.R.R. Tolkien,111.222.333-44\n");
+                writer.append(
+                        "O Hobbit,978-8595084742,1937-09-21,HarperCollins,08.911.112/0001-31,J.R.R. Tolkien,111.222.333-44\n");
                 JOptionPane.showMessageDialog(this, "Arquivo de exemplo salvo com sucesso!", "Sucesso",
                         JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException e) {

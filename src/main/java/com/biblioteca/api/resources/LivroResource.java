@@ -2,12 +2,15 @@ package com.biblioteca.api.resources;
 
 import com.biblioteca.domain.entities.livro.DTO.LivroDTO;
 import com.biblioteca.domain.entities.livro.Livro;
+import com.biblioteca.application.livro.usecases.IImportacaoLivroService;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroService;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +21,9 @@ public class LivroResource {
 
     @Inject
     private ILivroService livroService;
+
+    @Inject
+    private IImportacaoLivroService importacaoLivroService;
 
     @GET
     public Response listarTodos() {
@@ -66,6 +72,19 @@ public class LivroResource {
             return Response.ok(LivroDTO.fromEntity(livroAtualizado)).build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+    }
+
+    @POST
+    @Path("/importar-csv")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response importarCsv(MultipartFormDataInput input) {
+        try {
+            InputStream inputStream = input.getFormDataPart("file", InputStream.class, null);
+            importacaoLivroService.importar(inputStream);
+            return Response.ok("Arquivo CSV importado com sucesso.").build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Erro ao importar CSV: " + e.getMessage()).build();
         }
     }
 

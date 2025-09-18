@@ -1,5 +1,6 @@
 package com.biblioteca.presentation.formularios;
 
+import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -108,7 +109,12 @@ public class FormEditoras extends FormPadrao {
         txtEmail = new JTextField();
         painelFormulario.add(txtEmail, gbc);
 
-        add(painelFormulario);
+        // Adiciona um painel espaçador para empurrar o conteúdo para cima
+        gbc.gridy++;
+        gbc.weighty = 1.0;
+        painelFormulario.add(new JPanel(), gbc);
+
+        add(painelFormulario, BorderLayout.CENTER);
 
     }
 

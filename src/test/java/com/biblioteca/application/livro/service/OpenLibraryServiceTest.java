@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
-import com.biblioteca.domain.entities.livro.DTO.OpenLibraryAuthorDTO;
 import com.biblioteca.domain.entities.livro.DTO.OpenLibraryResponseDTO;
 
 public class OpenLibraryServiceTest {
@@ -48,54 +47,4 @@ public class OpenLibraryServiceTest {
         // Para ISBN inválido, esperamos que retorne empty ou dados válidos dependendo da API
     }
     
-    @Test
-    public void testBuscarAutorPorChave_ChaveValida() {
-        // Given
-        String chaveAutor = "/authors/OL23919A";
-        
-        // When
-        Optional<OpenLibraryAuthorDTO> resultado = openLibraryService.buscarAutorPorChave(chaveAutor);
-        
-        // Then
-        assertNotNull(resultado);
-    }
-    
-    @Test
-    public void testBuscarAutorPorChave_ChaveInvalida() {
-        // Given
-        String chaveInvalida = "/authors/INVALID";
-        
-        // When
-        Optional<OpenLibraryAuthorDTO> resultado = openLibraryService.buscarAutorPorChave(chaveInvalida);
-        
-        // Then
-        assertNotNull(resultado);
-        // Para chave inválida, esperamos que retorne empty
-    }
-    
-    @Test
-    public void testBuscarAutoresPorChaves_ListaVazia() {
-        // Given
-        java.util.List<String> chavesVazias = java.util.Collections.emptyList();
-        
-        // When
-        java.util.List<OpenLibraryAuthorDTO> resultado = openLibraryService.buscarAutoresPorChaves(chavesVazias);
-        
-        // Then
-        assertNotNull(resultado);
-        assertTrue(resultado.isEmpty());
-    }
-    
-    @Test
-    public void testBuscarAutoresPorChaves_ListaNula() {
-        // Given
-        java.util.List<String> chavesNulas = null;
-        
-        // When
-        java.util.List<OpenLibraryAuthorDTO> resultado = openLibraryService.buscarAutoresPorChaves(chavesNulas);
-        
-        // Then
-        assertNotNull(resultado);
-        assertTrue(resultado.isEmpty());
-    }
 }

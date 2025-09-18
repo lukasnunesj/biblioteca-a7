@@ -39,7 +39,7 @@ public class LivroServiceIntegrationTest extends IntegrationTestBase {
         autorService = new AutorService(autorRepository);
         editoraService = new EditoraService(editoraRepository);
 
-        livroService = new LivroService(livroRepository, editoraService, autorService);
+        livroService = new LivroService(livroRepository, editoraService, autorService, new com.biblioteca.application.livro.service.OpenLibraryService());
     }
 
     @Test
@@ -57,7 +57,8 @@ public class LivroServiceIntegrationTest extends IntegrationTestBase {
                 isbnUnico,
                 LocalDate.of(1899, 1, 1),
                 editora.getId(),
-                Arrays.asList(autor.getId()));
+                Arrays.asList(autor.getId()),
+                new java.util.ArrayList<>());
 
         // Act
         Livro livroSalvo = livroService.salvar(livroDTO);
@@ -147,7 +148,8 @@ public class LivroServiceIntegrationTest extends IntegrationTestBase {
                 livroGerenciado.getIsbn(),
                 livroGerenciado.getDataPublicacao(),
                 livroGerenciado.getEditora().getId(),
-                Arrays.asList(livroGerenciado.getAutores().iterator().next().getId()));
+                Arrays.asList(livroGerenciado.getAutores().iterator().next().getId()),
+                new java.util.ArrayList<>());
 
         // Act
         livroService.remover(livroDTO);

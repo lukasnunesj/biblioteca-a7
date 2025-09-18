@@ -60,4 +60,15 @@ public class EditoraDTOTest {
         assertEquals(novoTelefone, editoraDTO.getTelefone());
         assertEquals(novoEmail, editoraDTO.getEmail());
     }
+
+    @Test
+    public void testSetCnpjComMascara() {
+        EditoraDTO editoraDTO = new EditoraDTO();
+        String cnpjComMascara = "12.345.678/0001-90";
+        String cnpjSemMascara = "12345678000190";
+
+        editoraDTO.setCnpj(cnpjComMascara);
+
+        assertEquals(cnpjSemMascara, editoraDTO.getCnpj());
+    }
 }

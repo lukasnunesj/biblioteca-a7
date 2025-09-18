@@ -62,7 +62,26 @@ public class TelaListagemLivros extends TelaListagemPadrao {
 
     @Override
     protected void editar() {
-        // Lógica para editar livro selecionado
+        int selectedRow = tabela.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Selecione um livro para editar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            Long id = (Long) tabela.getValueAt(selectedRow, 0);
+            LivroDTO livroParaEditar = apiClient.get("/livros/" + id, LivroDTO.class);
+
+            FormLivros form = new FormLivros(livroParaEditar);
+            JDesktopPane desktopPane = getDesktopPane();
+            if (desktopPane != null) {
+                desktopPane.add(form);
+                form.setVisible(true);
+            }
+
+        } catch (Exception e) {
+            ExceptionHandler.tratar(e, this);
+        }
     }
 
     @Override

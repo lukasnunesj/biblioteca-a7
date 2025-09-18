@@ -46,7 +46,7 @@ public class AutorService implements IAutorService {
         autorDTO.validar();
 
         // Verifica se já existe um autor com o mesmo CPF/CNPJ
-        Optional<Autor> autorExistente = autorRepository.buscarPorCpfcnpj(autorDTO.getCpfcnpj());
+        Optional<Autor> autorExistente = autorRepository.buscarPorCpfcnpj(removerFormatacaoCpfCnpj(autorDTO.getCpfcnpj()));
         if (autorExistente.isPresent()
                 && (autorDTO.getId() == null || !autorDTO.getId().equals(autorExistente.get().getId()))) {
             throw new IllegalArgumentException("Já existe um autor cadastrado com este CPF/CNPJ");
@@ -71,7 +71,7 @@ public class AutorService implements IAutorService {
     @Override
     public Optional<Autor> buscarPorCpfcnpj(String cpfcnpj) {
         LOGGER.info("Buscando autor por CPF/CNPJ: " + cpfcnpj);
-        return autorRepository.buscarPorCpfcnpj(cpfcnpj);
+        return autorRepository.buscarPorCpfcnpj(removerFormatacaoCpfCnpj(cpfcnpj));
     }
 
     /**
@@ -101,5 +101,12 @@ public class AutorService implements IAutorService {
         } else {
             throw new RecursoNaoEncontradoException("Autor com ID " + autorDTO.getId() + " não encontrado");
         }
+    }
+
+    private String removerFormatacaoCpfCnpj(String cpfcnpj) {
+        if (cpfcnpj == null) {
+            return null;
+        }
+        return cpfcnpj.replaceAll("[./-]", "");
     }
 }

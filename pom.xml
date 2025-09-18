@@ -119,6 +119,14 @@
             <version>2.15.2</version>
         </dependency>
 
+        <!-- Suporte a Multipart para upload de arquivos -->
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-multipart-provider</artifactId>
+            <version>6.2.8.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

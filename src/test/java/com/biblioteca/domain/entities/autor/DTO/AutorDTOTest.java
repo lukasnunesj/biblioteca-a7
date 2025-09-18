@@ -20,7 +20,7 @@ public class AutorDTOTest {
         
         assertEquals(ID, autorDTO.getId());
         assertEquals(NOME, autorDTO.getNome());
-        assertEquals(CPFCNPJ, autorDTO.getCpfcnpj());
+        assertEquals(CPFCNPJ.replaceAll("[^0-9]", ""), autorDTO.getCpfcnpj());
         assertEquals(TELEFONE, autorDTO.getTelefone());
         assertEquals(EMAIL, autorDTO.getEmail());
     }
@@ -33,7 +33,7 @@ public class AutorDTOTest {
         
         assertEquals(ID, autor.getId());
         assertEquals(NOME, autor.getNome());
-        assertEquals(CPFCNPJ, autor.getCpfcnpj());
+        assertEquals(CPFCNPJ.replaceAll("[^0-9]", ""), autor.getCpfcnpj());
         assertEquals(TELEFONE, autor.getTelefone());
         assertEquals(EMAIL, autor.getEmail());
     }
@@ -56,8 +56,19 @@ public class AutorDTOTest {
 
         assertEquals(novoId, autorDTO.getId());
         assertEquals(novoNome, autorDTO.getNome());
-        assertEquals(novoCpfcnpj, autorDTO.getCpfcnpj());
+        assertEquals(novoCpfcnpj.replaceAll("[^0-9]", ""), autorDTO.getCpfcnpj());
         assertEquals(novoTelefone, autorDTO.getTelefone());
         assertEquals(novoEmail, autorDTO.getEmail());
+    }
+
+    @Test
+    public void testSetCpfcnpjComMascara() {
+        AutorDTO autorDTO = new AutorDTO();
+        String cpfComMascara = "123.456.789-00";
+        String cpfSemMascara = "12345678900";
+
+        autorDTO.setCpfcnpj(cpfComMascara);
+
+        assertEquals(cpfSemMascara, autorDTO.getCpfcnpj());
     }
 }

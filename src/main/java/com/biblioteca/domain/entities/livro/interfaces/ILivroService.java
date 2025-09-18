@@ -53,7 +53,9 @@ public interface ILivroService {
      * Cadastra um livro buscando informações pelo ISBN na OpenLibrary.
      * 
      * @param isbn o ISBN do livro a ser cadastrado
-     * @return um Optional contendo o livro cadastrado, se encontrado na API, ou vazio caso contrário
+     * @return um Optional contendo o livro cadastrado, se encontrado na API, ou
+     *         vazio caso contrário
      */
-    Optional<Livro> cadastrarPorIsbn(String isbn);
+        Optional<Livro> cadastrarPorIsbn(String isbn);
+
 }

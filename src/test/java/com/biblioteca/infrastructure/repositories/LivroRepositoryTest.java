@@ -44,7 +44,8 @@ public class LivroRepositoryTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        livroRepository = spy(new LivroRepository(entityManager));
+        livroRepository = new LivroRepository(entityManager);
+        when(entityManager.createQuery(anyString(), eq(Livro.class))).thenReturn(query);
 
         editora = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999", "contato@companhia.com");
         editora.setId(1L);
@@ -87,30 +88,37 @@ public class LivroRepositoryTest {
 
     @Test
     public void testBuscarPorId() {
-        when(entityManager.find(Livro.class, LIVRO_ID)).thenReturn(livro);
+        when(entityManager.createQuery("SELECT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora LEFT JOIN FETCH l.livrosSemelhantes WHERE l.id = :id", Livro.class)).thenReturn(query);
+        when(query.setParameter("id", LIVRO_ID)).thenReturn(query);
+        when(query.getResultStream()).thenReturn(java.util.stream.Stream.of(livro));
 
         Optional<Livro> resultado = livroRepository.findById(LIVRO_ID);
 
         assertTrue(resultado.isPresent());
         assertEquals(livro, resultado.get());
 
-        verify(entityManager).find(Livro.class, LIVRO_ID);
+        verify(entityManager).createQuery("SELECT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora LEFT JOIN FETCH l.livrosSemelhantes WHERE l.id = :id", Livro.class);
+        verify(query).setParameter("id", LIVRO_ID);
     }
 
     @Test
     public void testBuscarPorIdNaoEncontrado() {
-        when(entityManager.find(Livro.class, LIVRO_ID)).thenReturn(null);
+        when(entityManager.createQuery("SELECT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora LEFT JOIN FETCH l.livrosSemelhantes WHERE l.id = :id", Livro.class)).thenReturn(query);
+        when(query.setParameter("id", LIVRO_ID)).thenReturn(query);
+        when(query.getResultStream()).thenReturn(java.util.stream.Stream.empty());
 
         Optional<Livro> resultado = livroRepository.findById(LIVRO_ID);
 
         assertFalse(resultado.isPresent());
 
-        verify(entityManager).find(Livro.class, LIVRO_ID);
+        verify(entityManager).createQuery("SELECT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora LEFT JOIN FETCH l.livrosSemelhantes WHERE l.id = :id", Livro.class);
+        verify(query).setParameter("id", LIVRO_ID);
     }
 
     @Test(expected = RuntimeException.class)
     public void testBuscarPorIdComErro() {
-        when(entityManager.find(Livro.class, LIVRO_ID)).thenThrow(new RuntimeException("Erro simulado"));
+        when(entityManager.createQuery("SELECT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora LEFT JOIN FETCH l.livrosSemelhantes WHERE l.id = :id", Livro.class))
+            .thenThrow(new RuntimeException("Erro simulado"));
 
         livroRepository.findById(LIVRO_ID);
     }
@@ -149,9 +157,7 @@ public class LivroRepositoryTest {
     @Test
     public void testBuscarTodos() {
         List<Livro> livros = Arrays.asList(livro);
-        when(entityManager.createQuery(
-            "SELECT DISTINCT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora", 
-            Livro.class)).thenReturn(query);
+        when(entityManager.createQuery("SELECT DISTINCT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora LEFT JOIN FETCH l.livrosSemelhantes", Livro.class)).thenReturn(query);
         when(query.getResultList()).thenReturn(livros);
 
         List<Livro> resultado = livroRepository.findAll();
@@ -160,16 +166,14 @@ public class LivroRepositoryTest {
         assertEquals(1, resultado.size());
         assertEquals(livro, resultado.get(0));
         
-        verify(entityManager).createQuery(
-            "SELECT DISTINCT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora", 
-            Livro.class);
+        verify(entityManager).createQuery("SELECT DISTINCT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora LEFT JOIN FETCH l.livrosSemelhantes", Livro.class);
         verify(query).getResultList();
     }
 
     @Test(expected = RuntimeException.class)
     public void testBuscarTodosComErro() {
         when(entityManager.createQuery(
-            "SELECT DISTINCT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora", 
+            "SELECT DISTINCT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora LEFT JOIN FETCH l.livrosSemelhantes", 
             Livro.class)).thenThrow(new RuntimeException("Erro simulado"));
 
         livroRepository.findAll();

@@ -59,7 +59,7 @@ public class AutorDTO extends BaseDTO {
     public AutorDTO(Long id, String nome, String cpfcnpj, String telefone, String email) {
         super(id);
         this.nome = nome;
-        this.cpfcnpj = cpfcnpj;
+        setCpfcnpj(cpfcnpj);
         this.telefone = telefone;
         this.email = email;
     }
@@ -132,7 +132,11 @@ public class AutorDTO extends BaseDTO {
      * @param cpfcnpj o novo CPF/CNPJ do autor
      */
     public void setCpfcnpj(String cpfcnpj) {
-        this.cpfcnpj = cpfcnpj;
+        if (cpfcnpj != null) {
+            this.cpfcnpj = cpfcnpj.replaceAll("[^0-9]", "");
+        } else {
+            this.cpfcnpj = null;
+        }
     }
     
     /**
@@ -201,6 +205,6 @@ public class AutorDTO extends BaseDTO {
     
     @Override
     public String toString() {
-        return "AutorDTO [id=" + getId() + ", nome=" + nome + ", cpfcnpj=" + cpfcnpj + ", telefone=" + telefone + ", email=" + email + "]";
+        return this.nome;
     }
 }

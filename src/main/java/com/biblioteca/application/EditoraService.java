@@ -43,7 +43,7 @@ public class EditoraService implements IEditoraService {
         LOGGER.info("Salvando editora: " + editoraDTO.getNome());
         editoraDTO.validar();
 
-        Optional<Editora> editoraExistente = editoraRepository.buscarPorCnpj(editoraDTO.getCnpj());
+        Optional<Editora> editoraExistente = editoraRepository.buscarPorCnpj(removerFormatacaoCnpj(editoraDTO.getCnpj()));
         if (editoraExistente.isPresent()
                 && (editoraDTO.getId() == null || !editoraDTO.getId().equals(editoraExistente.get().getId()))) {
             throw new IllegalArgumentException("Já existe uma editora cadastrada com este CNPJ.");
@@ -68,7 +68,7 @@ public class EditoraService implements IEditoraService {
     @Override
     public Optional<Editora> buscarPorCnpj(String cnpj) {
         LOGGER.info("Buscando editora por CNPJ: " + cnpj);
-        return editoraRepository.buscarPorCnpj(cnpj);
+        return editoraRepository.buscarPorCnpj(removerFormatacaoCnpj(cnpj));
     }
 
     /**
@@ -96,5 +96,12 @@ public class EditoraService implements IEditoraService {
 
         editoraRepository.delete(editora);
         LOGGER.info("Editora removida com sucesso.");
+    }
+
+    private String removerFormatacaoCnpj(String cnpj) {
+        if (cnpj == null) {
+            return null;
+        }
+        return cnpj.replaceAll("[./-]", "");
     }
 }

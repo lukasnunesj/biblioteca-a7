@@ -132,7 +132,11 @@ public class EditoraDTO extends BaseDTO {
      * @param cnpj o novo CNPJ da editora
      */
     public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
+        if (cnpj != null) {
+            this.cnpj = cnpj.replaceAll("[^0-9]", "");
+        } else {
+            this.cnpj = null;
+        }
     }
     
     /**
@@ -202,5 +206,10 @@ public class EditoraDTO extends BaseDTO {
         if (cnpj != null && !cnpj.matches("^\\d{14}$")) {
             throw new ValidacaoException("O CNPJ deve conter exatamente 14 dígitos numéricos");
         }
+    }
+
+    @Override
+    public String toString() {
+        return this.nome;
     }
 }
