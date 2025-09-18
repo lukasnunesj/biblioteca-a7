@@ -47,6 +47,14 @@ public interface ILivroService {
      * 
      * @param livroDTO o DTO contendo os dados do livro a ser removido
      */
-    void remover(LivroDTO livroDTO);
+        void remover(LivroDTO livroDTO);
+
+    /**
+     * Busca livros por um termo de pesquisa em vários campos.
+     * 
+     * @param termo o termo a ser pesquisado
+     * @return uma lista de livros que correspondem ao termo de pesquisa
+     */
+    List<Livro> findByTermo(String termo);
 
 }

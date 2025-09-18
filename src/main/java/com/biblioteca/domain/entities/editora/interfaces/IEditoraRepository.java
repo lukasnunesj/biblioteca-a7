@@ -2,6 +2,8 @@ package com.biblioteca.domain.entities.editora.interfaces;
 
 import java.util.Optional;
 
+import java.util.List;
+
 import com.biblioteca.domain.entities.common.interfaces.IBaseRepository;
 import com.biblioteca.domain.entities.editora.Editora;
 
@@ -27,6 +29,14 @@ public interface IEditoraRepository extends IBaseRepository<Editora, Long> {
      * @return um Optional contendo a editora, se encontrada, ou vazio caso
      *         contrário
      */
-    Optional<Editora> buscarPorNome(String nome);
+        Optional<Editora> buscarPorNome(String nome);
+
+    /**
+     * Busca editoras por um termo de pesquisa em vários campos.
+     * 
+     * @param termo o termo a ser pesquisado
+     * @return uma lista de editoras que correspondem ao termo de pesquisa
+     */
+    List<Editora> findByTermo(String termo);
 
 }

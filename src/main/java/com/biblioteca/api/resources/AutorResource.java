@@ -20,6 +20,15 @@ public class AutorResource {
     private IAutorService autorService;
 
     @GET
+    @Path("/search")
+    public Response search(@QueryParam("termo") String termo) {
+        List<AutorDTO> autores = autorService.findByTermo(termo).stream()
+                .map(AutorDTO::fromEntity)
+                .collect(Collectors.toList());
+        return Response.ok(autores).build();
+    }
+
+    @GET
     public Response listarTodos() {
         List<AutorDTO> autores = autorService.buscarTodos().stream()
                 .map(AutorDTO::fromEntity)

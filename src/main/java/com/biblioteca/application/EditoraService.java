@@ -97,4 +97,10 @@ public class EditoraService implements IEditoraService {
         LOGGER.info("Editora removida com sucesso.");
     }
 
+    @Override
+    public List<Editora> findByTermo(String termo) {
+        LOGGER.info("Buscando editoras por termo: " + termo);
+        return editoraRepository.findByTermo(termo);
+    }
+
 }

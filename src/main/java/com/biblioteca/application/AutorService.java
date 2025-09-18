@@ -101,4 +101,10 @@ public class AutorService implements IAutorService {
         }
     }
 
+    @Override
+    public List<Autor> findByTermo(String termo) {
+        LOGGER.info("Buscando autores por termo: " + termo);
+        return autorRepository.findByTermo(termo);
+    }
+
 }

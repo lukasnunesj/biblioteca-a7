@@ -5,6 +5,11 @@ import java.util.logging.Logger;
 
 import jakarta.ejb.Stateless;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import java.util.List;
 
 import com.biblioteca.domain.entities.editora.Editora;
 import com.biblioteca.domain.entities.editora.interfaces.IEditoraRepository;
@@ -54,4 +59,27 @@ public class EditoraRepository extends BaseRepository<Editora, Long> implements 
         }
     }
 
+    @Override
+    public List<Editora> findByTermo(String termo) {
+        try {
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Editora> cq = cb.createQuery(Editora.class);
+            Root<Editora> editora = cq.from(Editora.class);
+
+            String termoLike = "%" + termo.toLowerCase() + "%";
+
+            Predicate predicado = cb.or(
+                cb.like(cb.lower(editora.get("nome")), termoLike),
+                cb.like(cb.lower(editora.get("cnpj")), termoLike),
+                cb.like(cb.lower(editora.get("telefone")), termoLike),
+                cb.like(cb.lower(editora.get("email")), termoLike)
+            );
+
+            cq.select(editora).where(predicado).distinct(true);
+
+            return entityManager.createQuery(cq).getResultList();
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar editoras por termo: " + e.getMessage());
+        }
+    }
 }

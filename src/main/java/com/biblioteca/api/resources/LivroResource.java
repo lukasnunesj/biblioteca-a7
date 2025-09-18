@@ -37,6 +37,15 @@ public class LivroResource {
         return Response.ok(livros).build();
     }
 
+        @GET
+    @Path("/search")
+    public Response search(@QueryParam("termo") String termo) {
+        List<LivroDTO> livros = livroService.findByTermo(termo).stream()
+                .map(LivroDTO::fromEntity)
+                .collect(Collectors.toList());
+        return Response.ok(livros).build();
+    }
+
     @GET
     @Path("/{id}")
     public Response buscarPorId(@PathParam("id") Long id) {

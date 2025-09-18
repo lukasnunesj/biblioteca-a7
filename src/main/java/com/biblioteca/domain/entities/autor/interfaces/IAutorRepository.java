@@ -1,10 +1,10 @@
 package com.biblioteca.domain.entities.autor.interfaces;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.biblioteca.domain.entities.autor.Autor;
 import com.biblioteca.domain.entities.common.interfaces.IBaseRepository;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Interface para o repositório de autores.
@@ -12,51 +12,27 @@ import com.biblioteca.domain.entities.common.interfaces.IBaseRepository;
  */
 public interface IAutorRepository extends IBaseRepository<Autor, Long> {
 
-
     /**
      * Busca um autor pelo seu nome.
-     * 
+     *
      * @param nome o nome do autor a ser buscado
      * @return um Optional contendo o autor, se encontrado, ou vazio caso contrário
      */
     Optional<Autor> buscarPorNome(String nome);
 
     /**
-     * Método de compatibilidade: Salva um autor no repositório.
-     * 
-     * @param autor o autor a ser salvo
-     * @return o autor salvo com possíveis atualizações (como ID gerado)
-     */
-    default Autor salvar(Autor autor) {
-        return save(autor);
-    }
-
-    /**
-     * Método de compatibilidade: Busca um autor pelo seu identificador único.
-     * 
-     * @param id o ID do autor a ser buscado
+     * Busca um autor pelo seu CPF/CNPJ.
+     *
+     * @param cpfcnpj o CPF/CNPJ do autor a ser buscado
      * @return um Optional contendo o autor, se encontrado, ou vazio caso contrário
      */
-    default Optional<Autor> buscarPorId(Long id) {
-        return findById(id);
-    }
+    Optional<Autor> buscarPorCpfcnpj(String cpfcnpj);
 
     /**
-     * Método de compatibilidade: Retorna todos os autores cadastrados no
-     * repositório.
-     * 
-     * @return uma lista contendo todos os autores
+     * Busca autores por um termo de pesquisa em vários campos.
+     *
+     * @param termo o termo a ser pesquisado
+     * @return uma lista de autores que correspondem ao termo de pesquisa
      */
-    default List<Autor> buscarTodos() {
-        return findAll();
-    }
-
-    /**
-     * Método de compatibilidade: Remove um autor do repositório.
-     * 
-     * @param autor o autor a ser removido
-     */
-    default void remover(Autor autor) {
-        delete(autor);
-    }
+    List<Autor> findByTermo(String termo);
 }

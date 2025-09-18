@@ -49,5 +49,13 @@ public interface IAutorService {
      * 
      * @param autorDTO o DTO contendo os dados do autor a ser removido
      */
-    void remover(AutorDTO autorDTO);
+        void remover(AutorDTO autorDTO);
+
+    /**
+     * Busca autores por um termo de pesquisa em vários campos.
+     * 
+     * @param termo o termo a ser pesquisado
+     * @return uma lista de autores que correspondem ao termo de pesquisa
+     */
+    List<Autor> findByTermo(String termo);
 }

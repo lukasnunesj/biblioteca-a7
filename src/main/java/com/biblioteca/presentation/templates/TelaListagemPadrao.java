@@ -10,6 +10,8 @@ import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.JLabel;
 import javax.swing.table.DefaultTableModel;
 
 public abstract class TelaListagemPadrao extends JInternalFrame {
@@ -22,6 +24,8 @@ public abstract class TelaListagemPadrao extends JInternalFrame {
     protected JButton btnImportarIsbn;
     protected JButton btnAtualizar;
     protected JButton btnFechar;
+    protected JTextField txtPesquisa;
+    protected JButton btnPesquisar;
 
     public TelaListagemPadrao(String title) {
         super(title, true, true, true, true);
@@ -31,6 +35,7 @@ public abstract class TelaListagemPadrao extends JInternalFrame {
     protected void initComponents() {
         configTela();
         configTabela();
+        configPainelPesquisa();
         configPainelBotoes();
         configurarEventos();
     }
@@ -47,6 +52,19 @@ public abstract class TelaListagemPadrao extends JInternalFrame {
 
         JScrollPane scrollPane = new JScrollPane(tabela);
         add(scrollPane, BorderLayout.CENTER);
+    }
+
+    protected void configPainelPesquisa() {
+        JPanel panelPesquisa = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblPesquisar = new JLabel("Pesquisar:");
+        txtPesquisa = new JTextField(30);
+        btnPesquisar = new JButton("Pesquisar");
+
+        panelPesquisa.add(lblPesquisar);
+        panelPesquisa.add(txtPesquisa);
+        panelPesquisa.add(btnPesquisar);
+
+        add(panelPesquisa, BorderLayout.NORTH);
     }
 
     protected void configPainelBotoes() {
@@ -75,6 +93,7 @@ public abstract class TelaListagemPadrao extends JInternalFrame {
         btnExcluir.addActionListener(e -> excluir());
         btnImportarIsbn.addActionListener(e -> importarPorIsbn());
         btnAtualizar.addActionListener(e -> carregar());
+        btnPesquisar.addActionListener(e -> pesquisar());
         btnFechar.addActionListener(e -> dispose());
 
         tabela.getSelectionModel().addListSelectionListener(e -> {
@@ -110,6 +129,10 @@ public abstract class TelaListagemPadrao extends JInternalFrame {
     protected abstract void excluir();
 
     protected abstract void carregar();
+
+    protected void pesquisar() {
+        // A ser implementado pelas subclasses
+    }
 
     protected void importarPorIsbn() {
         // A ser implementado pelas subclasses

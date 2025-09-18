@@ -20,7 +20,16 @@ public class EditoraResource {
     private IEditoraService editoraService;
 
     @GET
-    public Response listarTodas() {
+    @Path("/search")
+    public Response search(@QueryParam("termo") String termo) {
+        List<EditoraDTO> editoras = editoraService.findByTermo(termo).stream()
+                .map(EditoraDTO::fromEntity)
+                .collect(Collectors.toList());
+        return Response.ok(editoras).build();
+    }
+
+    @GET
+    public Response listarTodos() {
         List<EditoraDTO> editoras = editoraService.buscarTodos().stream()
                 .map(EditoraDTO::fromEntity)
                 .collect(Collectors.toList());

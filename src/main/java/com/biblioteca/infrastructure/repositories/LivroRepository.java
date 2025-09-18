@@ -6,6 +6,10 @@ import java.util.logging.Logger;
 
 import jakarta.ejb.Stateless;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import com.biblioteca.domain.entities.livro.Livro;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroRepository;
@@ -89,6 +93,35 @@ public class LivroRepository extends BaseRepository<Livro, Long> implements ILiv
         } catch (Exception e) {
             LOGGER.severe("Erro ao buscar todos os livros: " + e.getMessage());
             throw new RuntimeException("Erro ao buscar todos os livros: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Livro> findByTermo(String termo) {
+        try {
+            LOGGER.info("Buscando livros por termo: " + termo);
+            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Livro> cq = cb.createQuery(Livro.class);
+            Root<Livro> livro = cq.from(Livro.class);
+            livro.fetch("autores", jakarta.persistence.criteria.JoinType.LEFT);
+            livro.fetch("editora", jakarta.persistence.criteria.JoinType.LEFT);
+            livro.fetch("livrosSemelhantes", jakarta.persistence.criteria.JoinType.LEFT);
+
+            String termoLike = "%" + termo.toLowerCase() + "%";
+
+            Predicate predicado = cb.or(
+                cb.like(cb.lower(livro.get("titulo")), termoLike),
+                cb.like(cb.lower(livro.get("isbn")), termoLike),
+                cb.like(cb.lower(livro.get("editora").get("nome")), termoLike),
+                cb.like(cb.lower(livro.join("autores").get("nome")), termoLike)
+            );
+
+            cq.select(livro).where(predicado).distinct(true);
+
+            return entityManager.createQuery(cq).getResultList();
+        } catch (Exception e) {
+            LOGGER.severe("Erro ao buscar livros por termo: " + e.getMessage());
+            throw new RuntimeException("Erro ao buscar livros por termo: " + e.getMessage());
         }
     }
 

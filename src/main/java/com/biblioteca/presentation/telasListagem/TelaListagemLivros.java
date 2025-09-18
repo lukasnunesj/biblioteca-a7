@@ -1,19 +1,17 @@
 package com.biblioteca.presentation.telasListagem;
 
-import javax.swing.JDesktopPane;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.DefaultTableModel;
-
-import java.util.List;
-import java.util.Map;
-
 import com.biblioteca.domain.entities.livro.DTO.LivroDTO;
 import com.biblioteca.infrastructure.exceptions.ExceptionHandler;
 import com.biblioteca.presentation.formularios.FormLivros;
-import com.biblioteca.presentation.util.ApiClient;
 import com.biblioteca.presentation.templates.TelaListagemPadrao;
+import com.biblioteca.presentation.util.ApiClient;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 public class TelaListagemLivros extends TelaListagemPadrao {
 
@@ -27,7 +25,7 @@ public class TelaListagemLivros extends TelaListagemPadrao {
 
     @Override
     protected DefaultTableModel configurarTableModel() {
-        String[] colunas = { "ID", "ISBN", "Título", "Autor", "Editora", "Publicação" };
+        String[] colunas = {"ID", "ISBN", "Título", "Autor", "Editora", "Publicação"};
         return new DefaultTableModel(colunas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -136,60 +134,85 @@ public class TelaListagemLivros extends TelaListagemPadrao {
     }
 
     @Override
-    protected void carregar() {
-        model.setRowCount(0);
+    protected void pesquisar() {
+        String termo = txtPesquisa.getText();
+        if (termo == null || termo.trim().isEmpty()) {
+            carregar();
+            return;
+        }
+
         try {
-            List<LivroDTO> livros = apiClient.get("/livros", ApiClient.listOf(LivroDTO.class));
-            for (LivroDTO livro : livros) {
-                // Obter nomes dos autores
-                String autoresNomes = "";
-                if (livro.getAutoresIds() != null && !livro.getAutoresIds().isEmpty()) {
-                    // Buscar os autores pelo ID e obter seus nomes
-                    try {
-                        List<String> nomesAutores = new java.util.ArrayList<>();
-                        for (Long autorId : livro.getAutoresIds()) {
-                            // Buscar autor pelo ID
-                            try {
-                                Map<String, Object> autor = apiClient.get("/autores/" + autorId,
-                                        ApiClient.mapOf(String.class, Object.class));
-                                if (autor != null && autor.containsKey("nome")) {
-                                    nomesAutores.add(autor.get("nome").toString());
-                                }
-                            } catch (Exception ex) {
-                                // Ignora erro e continua com próximo autor
-                            }
-                        }
-                        autoresNomes = String.join(", ", nomesAutores);
-                    } catch (Exception ex) {
-                        autoresNomes = "Erro ao carregar autores";
-                    }
-                }
-
-                // Obter nome da editora
-                String editoraNome = "";
-                if (livro.getEditoraId() != null) {
-                    try {
-                        Map<String, Object> editora = apiClient.get("/editoras/" + livro.getEditoraId(),
-                                ApiClient.mapOf(String.class, Object.class));
-                        if (editora != null && editora.containsKey("nome")) {
-                            editoraNome = editora.get("nome").toString();
-                        }
-                    } catch (Exception ex) {
-                        editoraNome = "Erro ao carregar editora";
-                    }
-                }
-
-                model.addRow(new Object[] {
-                        livro.getId(),
-                        livro.getIsbn(),
-                        livro.getTitulo(),
-                        autoresNomes.isEmpty() ? "- Sem autores -" : autoresNomes,
-                        editoraNome.isEmpty() ? "- Sem editora -" : editoraNome,
-                        livro.getDataPublicacao()
-                });
-            }
+            String url = "/livros/search?termo=" + URLEncoder.encode(termo, StandardCharsets.UTF_8.toString());
+            List<LivroDTO> livros = apiClient.get(url, ApiClient.listOf(LivroDTO.class));
+            carregarDados(livros);
         } catch (Exception e) {
             ExceptionHandler.tratar(e, this);
         }
+    }
+
+    @Override
+    protected void carregar() {
+        try {
+            List<LivroDTO> livros = apiClient.get("/livros", ApiClient.listOf(LivroDTO.class));
+            carregarDados(livros);
+        } catch (Exception e) {
+            ExceptionHandler.tratar(e, this);
+        }
+    }
+
+    private void carregarDados(List<LivroDTO> livros) {
+        model.setRowCount(0);
+        if (livros == null) return;
+
+        for (LivroDTO livro : livros) {
+            String autoresNomes = carregarNomesAutores(livro);
+            String editoraNome = carregarNomeEditora(livro);
+
+            model.addRow(new Object[]{
+                    livro.getId(),
+                    livro.getIsbn(),
+                    livro.getTitulo(),
+                    autoresNomes.isEmpty() ? "- Sem autores -" : autoresNomes,
+                    editoraNome.isEmpty() ? "- Sem editora -" : editoraNome,
+                    livro.getDataPublicacao()
+            });
+        }
+    }
+
+    private String carregarNomesAutores(LivroDTO livro) {
+        if (livro.getAutoresIds() == null || livro.getAutoresIds().isEmpty()) {
+            return "";
+        }
+        try {
+            List<String> nomesAutores = new java.util.ArrayList<>();
+            for (Long autorId : livro.getAutoresIds()) {
+                try {
+                    Map<String, Object> autor = apiClient.get("/autores/" + autorId, ApiClient.mapOf(String.class, Object.class));
+                    if (autor != null && autor.containsKey("nome")) {
+                        nomesAutores.add(autor.get("nome").toString());
+                    }
+                } catch (Exception ex) {
+                    // Ignora erro e continua com próximo autor
+                }
+            }
+            return String.join(", ", nomesAutores);
+        } catch (Exception ex) {
+            return "Erro ao carregar autores";
+        }
+    }
+
+    private String carregarNomeEditora(LivroDTO livro) {
+        if (livro.getEditoraId() == null) {
+            return "";
+        }
+        try {
+            Map<String, Object> editora = apiClient.get("/editoras/" + livro.getEditoraId(), ApiClient.mapOf(String.class, Object.class));
+            if (editora != null && editora.containsKey("nome")) {
+                return editora.get("nome").toString();
+            }
+        } catch (Exception ex) {
+            return "Erro ao carregar editora";
+        }
+        return "";
     }
 }
