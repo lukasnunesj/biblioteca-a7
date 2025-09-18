@@ -198,4 +198,9 @@ public class AutorDTO extends BaseDTO {
             throw new ValidacaoException("O email do autor é inválido");
         }
     }
+    
+    @Override
+    public String toString() {
+        return "AutorDTO [id=" + getId() + ", nome=" + nome + ", cpfcnpj=" + cpfcnpj + ", telefone=" + telefone + ", email=" + email + "]";
+    }
 }

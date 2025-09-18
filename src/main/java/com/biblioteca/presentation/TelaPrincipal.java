@@ -16,6 +16,7 @@ import javax.swing.SwingUtilities;
 
 import com.biblioteca.presentation.telasListagem.TelaListagemAutores;
 import com.biblioteca.presentation.telasListagem.TelaListagemEditoras;
+import com.biblioteca.presentation.telasAcoes.TelaImportacaoLivros;
 import com.biblioteca.presentation.telasListagem.TelaListagemLivros;
 import com.formdev.flatlaf.FlatDarculaLaf;
 
@@ -99,7 +100,23 @@ public class TelaPrincipal {
         menuInicio.add(menuItemEditoras);
         menuInicio.add(itemSair);
 
+        // Menu Ações
+        JMenu menuAcoes = new JMenu("Ações");
+        menuAcoes.setMnemonic('Ç');
+
+        // Menu Importar Livros
+        JMenuItem menuItemImportarLivros = new JMenuItem("Importar Livros (CSV)");
+        menuItemImportarLivros.setMnemonic('I');
+        menuItemImportarLivros.addActionListener(e -> {
+            TelaImportacaoLivros telaImportacaoLivros = new TelaImportacaoLivros();
+            desktopPane.add(telaImportacaoLivros);
+            telaImportacaoLivros.setVisible(true);
+        });
+
+        menuAcoes.add(menuItemImportarLivros);
+
         menuBar.add(menuInicio);
+        menuBar.add(menuAcoes);
         frame.setJMenuBar(menuBar);
     }
 
@@ -133,4 +150,7 @@ public class TelaPrincipal {
             new TelaPrincipal();
         });
     }
+
 }
+
+    

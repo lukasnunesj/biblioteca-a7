@@ -18,7 +18,7 @@ public class AutorRepository extends BaseRepository<Autor, Long> implements IAut
     public AutorRepository() {
         super(Autor.class);
     }
-    
+
     public AutorRepository(jakarta.persistence.EntityManager entityManager) {
         super(Autor.class);
         this.entityManager = entityManager;

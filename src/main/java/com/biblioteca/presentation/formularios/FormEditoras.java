@@ -14,7 +14,6 @@ import javax.swing.JTextField;
 import javax.swing.text.MaskFormatter;
 
 import com.biblioteca.domain.entities.editora.DTO.EditoraDTO;
-import com.biblioteca.domain.entities.editora.DTO.EditoraDTO;
 import com.biblioteca.infrastructure.exceptions.ExceptionHandler;
 import com.biblioteca.infrastructure.util.ValidacaoUtil;
 import com.biblioteca.presentation.templates.FormPadrao;
@@ -22,16 +21,25 @@ import com.biblioteca.presentation.util.ApiClient;
 
 public class FormEditoras extends FormPadrao {
 
-    private ApiClient apiClient;
-
     private JTextField txtNome;
     private JTextField txtEmail;
     private JFormattedTextField txtCnpj;
     private JFormattedTextField txtTelefone;
 
+    private EditoraDTO editoraParaEdicao;
+
     public FormEditoras() {
         super("Formulário de Editoras");
-        this.apiClient = new ApiClient();
+    }
+
+    public FormEditoras(EditoraDTO editora) {
+        super("Edição de Editora");
+        if (editora != null) {
+            this.editoraParaEdicao = editora;
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                preencherCamposParaEdicao();
+            });
+        }
     }
 
     @Override
@@ -101,6 +109,48 @@ public class FormEditoras extends FormPadrao {
         painelFormulario.add(txtEmail, gbc);
 
         add(painelFormulario);
+
+    }
+
+    /**
+     * Preenche os campos do formulário com os dados da editora para edição
+     */
+    private void preencherCamposParaEdicao() {
+        if (editoraParaEdicao != null) {
+            txtNome.setText(editoraParaEdicao.getNome());
+
+            // Formatar CNPJ para exibição
+            String cnpj = editoraParaEdicao.getCnpj();
+            if (cnpj != null && cnpj.length() == 14) {
+                // Formatar CNPJ: XX.XXX.XXX/XXXX-XX
+                try {
+                    txtCnpj.setValue(cnpj.replaceAll("(\\d{2})(\\d{3})(\\d{3})(\\d{4})(\\d{2})", "$1.$2.$3/$4-$5"));
+                } catch (Exception e) {
+                    txtCnpj.setText(cnpj);
+                }
+            } else {
+                txtCnpj.setText(cnpj);
+            }
+
+            // Formatar telefone para exibição
+            String telefone = editoraParaEdicao.getTelefone();
+            if (telefone != null && telefone.length() >= 10) {
+                // Formatar telefone: (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
+                try {
+                    if (telefone.length() == 11) {
+                        txtTelefone.setValue(telefone.replaceAll("(\\d{2})(\\d{5})(\\d{4})", "($1) $2-$3"));
+                    } else {
+                        txtTelefone.setValue(telefone.replaceAll("(\\d{2})(\\d{4})(\\d{4})", "($1) $2-$3"));
+                    }
+                } catch (Exception e) {
+                    txtTelefone.setText(telefone);
+                }
+            } else {
+                txtTelefone.setText(telefone);
+            }
+
+            txtEmail.setText(editoraParaEdicao.getEmail());
+        }
     }
 
     @Override
@@ -112,11 +162,11 @@ public class FormEditoras extends FormPadrao {
             validador.campo(txtCnpj, "CNPJ").obrigatorio();
             validador.campo(txtTelefone, "Telefone").obrigatorio();
             validador.campo(txtEmail, "Email").obrigatorio().email();
-            
+
             if (!validador.validar()) {
                 return;
             }
-            
+
             // Processamento dos dados após validação
             String nome = txtNome.getText();
             String cnpj = txtCnpj.getText().replaceAll("[^0-9]", "");
@@ -124,16 +174,23 @@ public class FormEditoras extends FormPadrao {
             String email = txtEmail.getText();
 
             // Cria o DTO e valida os dados de negócio
-            EditoraDTO editoraDTO = new EditoraDTO(null, nome, cnpj, telefone, email);
-            
+            Long id = editoraParaEdicao != null ? editoraParaEdicao.getId() : null;
+            EditoraDTO editoraDTO = new EditoraDTO(id, nome, cnpj, telefone, email);
+
             // A validação de negócio é feita pelo próprio DTO
             editoraDTO.validar();
-            
-            // Envia os dados para a API
-            apiClient.post("/editoras", editoraDTO, EditoraDTO.class);
 
-            JOptionPane.showMessageDialog(this, "Editora salva com sucesso!", "Sucesso",
-                    JOptionPane.INFORMATION_MESSAGE);
+            // Envia os dados para a API (POST para criar, PUT para atualizar)
+            if (editoraParaEdicao == null) {
+                apiClient.post("/editoras", editoraDTO, EditoraDTO.class);
+                JOptionPane.showMessageDialog(this, "Editora salva com sucesso!", "Sucesso",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                apiClient.put("/editoras/" + editoraParaEdicao.getId(), editoraDTO, EditoraDTO.class);
+                JOptionPane.showMessageDialog(this, "Editora atualizada com sucesso!", "Sucesso",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+
             dispose();
 
         } catch (Exception e) {

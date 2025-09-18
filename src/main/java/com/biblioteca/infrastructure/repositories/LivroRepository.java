@@ -1,5 +1,6 @@
 package com.biblioteca.infrastructure.repositories;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -30,7 +31,7 @@ public class LivroRepository extends BaseRepository<Livro, Long> implements ILiv
     public LivroRepository() {
         super(Livro.class);
     }
-    
+
     public LivroRepository(jakarta.persistence.EntityManager entityManager) {
         super(Livro.class);
         this.entityManager = entityManager;
@@ -50,6 +51,29 @@ public class LivroRepository extends BaseRepository<Livro, Long> implements ILiv
         } catch (Exception e) {
             LOGGER.severe("Erro ao buscar livro por isbn: " + e.getMessage());
             throw new RuntimeException("Erro ao buscar livro por isbn: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Busca todos os livros com carregamento antecipado (eager loading) de autores
+     * e editora.
+     * Isso evita o problema de LazyInitializationException quando a sessão do
+     * Hibernate é fechada.
+     *
+     * @return Lista de livros com autores e editora carregados
+     */
+    @Override
+    public List<Livro> findAll() {
+        try {
+            LOGGER.info("Buscando todos os livros com carregamento antecipado de autores e editora");
+            System.out.println("Buscando todos os livros com carregamento antecipado de autores e editora");
+            TypedQuery<Livro> query = entityManager.createQuery(
+                    "SELECT DISTINCT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora",
+                    Livro.class);
+            return query.getResultList();
+        } catch (Exception e) {
+            LOGGER.severe("Erro ao buscar todos os livros: " + e.getMessage());
+            throw new RuntimeException("Erro ao buscar todos os livros: " + e.getMessage());
         }
     }
 

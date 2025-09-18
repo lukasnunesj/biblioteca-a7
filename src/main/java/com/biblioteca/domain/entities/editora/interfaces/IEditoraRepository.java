@@ -11,7 +11,6 @@ import com.biblioteca.domain.entities.editora.Editora;
  */
 public interface IEditoraRepository extends IBaseRepository<Editora, Long> {
 
-
     /**
      * Busca uma editora pelo seu CNPJ.
      * 

@@ -149,23 +149,28 @@ public class LivroRepositoryTest {
     @Test
     public void testBuscarTodos() {
         List<Livro> livros = Arrays.asList(livro);
-        when(entityManager.createQuery("SELECT l FROM Livro l", Livro.class)).thenReturn(query);
+        when(entityManager.createQuery(
+            "SELECT DISTINCT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora", 
+            Livro.class)).thenReturn(query);
         when(query.getResultList()).thenReturn(livros);
-
-        // Substituir o método findAll por uma implementação direta para o teste
-        doReturn(livros).when(livroRepository).findAll();
 
         List<Livro> resultado = livroRepository.findAll();
 
         assertNotNull(resultado);
         assertEquals(1, resultado.size());
         assertEquals(livro, resultado.get(0));
+        
+        verify(entityManager).createQuery(
+            "SELECT DISTINCT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora", 
+            Livro.class);
+        verify(query).getResultList();
     }
 
     @Test(expected = RuntimeException.class)
     public void testBuscarTodosComErro() {
-        // Configurar o mock para lançar exceção quando findAll for chamado
-        doThrow(new RuntimeException("Erro simulado")).when(livroRepository).findAll();
+        when(entityManager.createQuery(
+            "SELECT DISTINCT l FROM Livro l LEFT JOIN FETCH l.autores LEFT JOIN FETCH l.editora", 
+            Livro.class)).thenThrow(new RuntimeException("Erro simulado"));
 
         livroRepository.findAll();
     }

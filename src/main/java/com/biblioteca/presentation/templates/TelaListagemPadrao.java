@@ -19,6 +19,7 @@ public abstract class TelaListagemPadrao extends JInternalFrame {
     protected JButton btnNovo;
     protected JButton btnEditar;
     protected JButton btnExcluir;
+    protected JButton btnImportarIsbn;
     protected JButton btnAtualizar;
     protected JButton btnFechar;
 
@@ -54,12 +55,14 @@ public abstract class TelaListagemPadrao extends JInternalFrame {
         btnNovo = new JButton("Novo");
         btnEditar = new JButton("Editar");
         btnExcluir = new JButton("Excluir");
+        btnImportarIsbn = new JButton("Importar por ISBN");
         btnAtualizar = new JButton("Atualizar");
         btnFechar = new JButton("Fechar");
 
         panel.add(btnNovo);
         panel.add(btnEditar);
         panel.add(btnExcluir);
+        panel.add(btnImportarIsbn);
         panel.add(btnAtualizar);
         panel.add(btnFechar);
 
@@ -70,6 +73,7 @@ public abstract class TelaListagemPadrao extends JInternalFrame {
         btnNovo.addActionListener(e -> incluir());
         btnEditar.addActionListener(e -> editar());
         btnExcluir.addActionListener(e -> excluir());
+        btnImportarIsbn.addActionListener(e -> importarPorIsbn());
         btnAtualizar.addActionListener(e -> carregar());
         btnFechar.addActionListener(e -> dispose());
 
@@ -106,5 +110,9 @@ public abstract class TelaListagemPadrao extends JInternalFrame {
     protected abstract void excluir();
 
     protected abstract void carregar();
+
+    protected void importarPorIsbn() {
+        // A ser implementado pelas subclasses
+    }
 
 }

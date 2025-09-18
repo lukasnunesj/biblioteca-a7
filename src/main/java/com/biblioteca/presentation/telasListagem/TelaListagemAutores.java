@@ -1,6 +1,7 @@
 package com.biblioteca.presentation.telasListagem;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JTable;
@@ -14,8 +15,6 @@ import com.biblioteca.infrastructure.exceptions.ExceptionHandler;
 import com.biblioteca.presentation.formularios.FormAutores;
 import com.biblioteca.presentation.templates.TelaListagemPadrao;
 import com.biblioteca.presentation.util.ApiClient;
-
-import com.fasterxml.jackson.core.type.TypeReference;
 
 public class TelaListagemAutores extends TelaListagemPadrao {
 
@@ -43,11 +42,11 @@ public class TelaListagemAutores extends TelaListagemPadrao {
         JTable tabela = new JTable(model);
         tabela.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tabela.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        tabela.getColumnModel().getColumn(0).setPreferredWidth(50);   // ID
-        tabela.getColumnModel().getColumn(1).setPreferredWidth(250);  // Nome
-        tabela.getColumnModel().getColumn(2).setPreferredWidth(150);  // CPF/CNPJ
-        tabela.getColumnModel().getColumn(3).setPreferredWidth(120);  // Telefone
-        tabela.getColumnModel().getColumn(4).setPreferredWidth(250);  // Email
+        tabela.getColumnModel().getColumn(0).setPreferredWidth(50); // ID
+        tabela.getColumnModel().getColumn(1).setPreferredWidth(250); // Nome
+        tabela.getColumnModel().getColumn(2).setPreferredWidth(150); // CPF/CNPJ
+        tabela.getColumnModel().getColumn(3).setPreferredWidth(120); // Telefone
+        tabela.getColumnModel().getColumn(4).setPreferredWidth(250); // Email
         return tabela;
     }
 
@@ -58,12 +57,73 @@ public class TelaListagemAutores extends TelaListagemPadrao {
         if (desktopPane != null) {
             desktopPane.add(formAutores);
             formAutores.setVisible(true);
+
+            // Adicionar listener para atualizar a lista quando o formulário for fechado
+            formAutores.addInternalFrameListener(new javax.swing.event.InternalFrameAdapter() {
+                @Override
+                public void internalFrameClosed(javax.swing.event.InternalFrameEvent e) {
+                    carregar(); // Recarrega a lista após inclusão
+                }
+            });
         }
     }
 
     @Override
     protected void editar() {
-        // Lógica para editar autor selecionado
+        int selectedRow = tabela.getSelectedRow();
+        if (selectedRow >= 0) {
+            try {
+                Long id = (Long) tabela.getValueAt(selectedRow, 0);
+
+                // Usar TypeReference para Map para receber os dados JSON brutos
+                Map<String, Object> autorMap = apiClient.get("/autores/" + id,
+                        ApiClient.mapOf(String.class, Object.class));
+
+                // Verificar se os dados foram carregados corretamente
+                if (autorMap == null) {
+                    throw new Exception("Não foi possível carregar os dados do autor.");
+                }
+
+                // Criar o AutorDTO manualmente a partir do Map
+                AutorDTO autor = new AutorDTO();
+
+                // Converter o ID para Long se for um número
+                if (autorMap.get("id") instanceof Number) {
+                    autor.setId(((Number) autorMap.get("id")).longValue());
+                } else if (autorMap.get("id") instanceof String) {
+                    autor.setId(Long.parseLong((String) autorMap.get("id")));
+                }
+
+                // Definir os outros campos
+                autor.setNome((String) autorMap.get("nome"));
+                autor.setCpfcnpj((String) autorMap.get("cpfcnpj"));
+                autor.setTelefone((String) autorMap.get("telefone"));
+                autor.setEmail((String) autorMap.get("email"));
+
+                System.out.println("AutorDTO criado manualmente: ID=" + autor.getId() + ", Nome=" + autor.getNome());
+
+                // Criar e exibir o formulário de edição
+                FormAutores formAutores = new FormAutores(autor);
+                JDesktopPane desktopPane = getDesktopPane();
+                if (desktopPane != null) {
+                    desktopPane.add(formAutores);
+                    formAutores.setVisible(true);
+
+                    // Adicionar listener para atualizar a lista quando o formulário for fechado
+                    formAutores.addInternalFrameListener(new javax.swing.event.InternalFrameAdapter() {
+                        @Override
+                        public void internalFrameClosed(javax.swing.event.InternalFrameEvent e) {
+                            carregar(); // Recarrega a lista após edição
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                ExceptionHandler.tratar(e, this);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione um autor para editar.", "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     @Override
@@ -81,7 +141,8 @@ public class TelaListagemAutores extends TelaListagemPadrao {
                 }
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Selecione um autor para excluir.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Selecione um autor para excluir.", "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -89,9 +150,9 @@ public class TelaListagemAutores extends TelaListagemPadrao {
     protected void carregar() {
         model.setRowCount(0); // Limpa a tabela
         try {
-            List<AutorDTO> autores = apiClient.get("/autores", new TypeReference<List<AutorDTO>>() {});
+            List<AutorDTO> autores = apiClient.get("/autores", ApiClient.listOf(AutorDTO.class));
             for (AutorDTO autor : autores) {
-                model.addRow(new Object[]{
+                model.addRow(new Object[] {
                         autor.getId(),
                         autor.getNome(),
                         autor.getCpfcnpj(),

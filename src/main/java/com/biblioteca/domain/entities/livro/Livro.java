@@ -196,6 +196,7 @@ public class Livro {
      * @return a data de publicação
      */
     public LocalDate getDataPublicacao() {
+        System.out.println("Data de publicação: " + dataPublicacao);
         return dataPublicacao;
     }
 
@@ -297,7 +298,11 @@ public class Livro {
      * @return true se o ISBN for válido, false caso contrário
      */
     private boolean isISBNValid(String isbn) {
-        return isbn != null && isbn.matches("\\d{10}|\\d{13}");
+        if (isbn == null) {
+            return false;
+        }
+        String cleanedIsbn = isbn.replace("-", "");
+        return cleanedIsbn.matches("\\d{10}|\\d{13}");
     }
 
     /**

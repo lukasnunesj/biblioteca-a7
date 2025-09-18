@@ -15,8 +15,6 @@ import com.biblioteca.presentation.formularios.FormEditoras;
 import com.biblioteca.presentation.templates.TelaListagemPadrao;
 import com.biblioteca.presentation.util.ApiClient;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-
 public class TelaListagemEditoras extends TelaListagemPadrao {
 
     private final ApiClient apiClient;
@@ -43,11 +41,11 @@ public class TelaListagemEditoras extends TelaListagemPadrao {
         JTable tabela = new JTable(model);
         tabela.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tabela.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        tabela.getColumnModel().getColumn(0).setPreferredWidth(50);   // ID
-        tabela.getColumnModel().getColumn(1).setPreferredWidth(250);  // Nome
-        tabela.getColumnModel().getColumn(2).setPreferredWidth(150);  // CNPJ
-        tabela.getColumnModel().getColumn(3).setPreferredWidth(120);  // Telefone
-        tabela.getColumnModel().getColumn(4).setPreferredWidth(250);  // Email
+        tabela.getColumnModel().getColumn(0).setPreferredWidth(50); // ID
+        tabela.getColumnModel().getColumn(1).setPreferredWidth(250); // Nome
+        tabela.getColumnModel().getColumn(2).setPreferredWidth(150); // CNPJ
+        tabela.getColumnModel().getColumn(3).setPreferredWidth(120); // Telefone
+        tabela.getColumnModel().getColumn(4).setPreferredWidth(250); // Email
         return tabela;
     }
 
@@ -58,12 +56,46 @@ public class TelaListagemEditoras extends TelaListagemPadrao {
         if (desktopPane != null) {
             desktopPane.add(formEditoras);
             formEditoras.setVisible(true);
+
+            // Adicionar listener para atualizar a lista quando o formulário for fechado
+            formEditoras.addInternalFrameListener(new javax.swing.event.InternalFrameAdapter() {
+                @Override
+                public void internalFrameClosed(javax.swing.event.InternalFrameEvent e) {
+                    carregar(); // Recarrega a lista após inclusão
+                }
+            });
         }
     }
 
     @Override
     protected void editar() {
-        // Lógica para editar editora selecionada
+        int selectedRow = tabela.getSelectedRow();
+        if (selectedRow >= 0) {
+            try {
+                Long id = (Long) tabela.getValueAt(selectedRow, 0);
+                EditoraDTO editora = apiClient.get("/editoras/" + id, EditoraDTO.class);
+
+                FormEditoras formEditoras = new FormEditoras(editora);
+                JDesktopPane desktopPane = getDesktopPane();
+                if (desktopPane != null) {
+                    desktopPane.add(formEditoras);
+                    formEditoras.setVisible(true);
+
+                    // Adicionar listener para atualizar a lista quando o formulário for fechado
+                    formEditoras.addInternalFrameListener(new javax.swing.event.InternalFrameAdapter() {
+                        @Override
+                        public void internalFrameClosed(javax.swing.event.InternalFrameEvent e) {
+                            carregar(); // Recarrega a lista após edição
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                ExceptionHandler.tratar(e, this);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione uma editora para editar.", "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     @Override
@@ -81,7 +113,8 @@ public class TelaListagemEditoras extends TelaListagemPadrao {
                 }
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Selecione uma editora para excluir.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Selecione uma editora para excluir.", "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -89,9 +122,9 @@ public class TelaListagemEditoras extends TelaListagemPadrao {
     protected void carregar() {
         model.setRowCount(0); // Limpa a tabela
         try {
-            List<EditoraDTO> editoras = apiClient.get("/editoras", new TypeReference<List<EditoraDTO>>() {});
+            List<EditoraDTO> editoras = apiClient.get("/editoras", ApiClient.listOf(EditoraDTO.class));
             for (EditoraDTO editora : editoras) {
-                model.addRow(new Object[]{
+                model.addRow(new Object[] {
                         editora.getId(),
                         editora.getNome(),
                         editora.getCnpj(),

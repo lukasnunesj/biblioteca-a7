@@ -19,7 +19,7 @@ public interface IAutorRepository extends IBaseRepository<Autor, Long> {
      * @return um Optional contendo o autor, se encontrado, ou vazio caso contrário
      */
     Optional<Autor> buscarPorCpfcnpj(String cpfcnpj);
-    
+
     /**
      * Método de compatibilidade: Salva um autor no repositório.
      * 
@@ -29,7 +29,7 @@ public interface IAutorRepository extends IBaseRepository<Autor, Long> {
     default Autor salvar(Autor autor) {
         return save(autor);
     }
-    
+
     /**
      * Método de compatibilidade: Busca um autor pelo seu identificador único.
      * 
@@ -39,16 +39,17 @@ public interface IAutorRepository extends IBaseRepository<Autor, Long> {
     default Optional<Autor> buscarPorId(Long id) {
         return findById(id);
     }
-    
+
     /**
-     * Método de compatibilidade: Retorna todos os autores cadastrados no repositório.
+     * Método de compatibilidade: Retorna todos os autores cadastrados no
+     * repositório.
      * 
      * @return uma lista contendo todos os autores
      */
     default List<Autor> buscarTodos() {
         return findAll();
     }
-    
+
     /**
      * Método de compatibilidade: Remove um autor do repositório.
      * 

@@ -48,4 +48,12 @@ public interface ILivroService {
      * @param livroDTO o DTO contendo os dados do livro a ser removido
      */
     void remover(LivroDTO livroDTO);
+
+    /**
+     * Cadastra um livro buscando informações pelo ISBN na OpenLibrary.
+     * 
+     * @param isbn o ISBN do livro a ser cadastrado
+     * @return um Optional contendo o livro cadastrado, se encontrado na API, ou vazio caso contrário
+     */
+    Optional<Livro> cadastrarPorIsbn(String isbn);
 }

@@ -93,20 +93,29 @@ public class LivroDTO extends BaseDTO {
     }
 
     public static LivroDTO fromEntity(Livro livro) {
+        System.out.println("Convertendo entidade Livro para DTO");
         if (livro == null) {
             return null;
         }
+        System.out.println("Livro: " + livro);
         List<Long> autoresIds = livro.getAutores().stream()
-                                    .map(Autor::getId)
-                                    .collect(Collectors.toList());
+                .map(Autor::getId)
+                .collect(Collectors.toList());
+        System.out.println("Autores IDs: " + autoresIds);
+        // Safely get editora ID, handling null case
+        Long editoraId = null;
+        if (livro.getEditora() != null) {
+            editoraId = livro.getEditora().getId();
+        }
+        System.out.println("Editora ID: " + editoraId);
+
         return new LivroDTO(
-            livro.getId(),
-            livro.getTitulo(),
-            livro.getIsbn(),
-            livro.getDataPublicacao(),
-            livro.getEditora().getId(),
-            autoresIds
-        );
+                livro.getId(),
+                livro.getTitulo(),
+                livro.getIsbn(),
+                livro.getDataPublicacao(),
+                editoraId,
+                autoresIds);
     }
 
     /**

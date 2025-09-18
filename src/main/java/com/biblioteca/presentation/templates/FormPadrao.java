@@ -7,13 +7,17 @@ import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
+import com.biblioteca.presentation.util.ApiClient;
+
 public abstract class FormPadrao extends JInternalFrame {
 
     protected JButton btnSalvar;
     protected JButton btnCancelar;
+    protected ApiClient apiClient;
 
     public FormPadrao(String title) {
         super(title, true, true, true, true);
+        this.apiClient = new ApiClient();
         initComponents();
     }
 

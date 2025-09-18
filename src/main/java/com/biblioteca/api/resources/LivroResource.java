@@ -36,6 +36,18 @@ public class LivroResource {
     }
 
     @POST
+    @Path("/isbn/{isbn}")
+    public Response cadastrarPorIsbn(@PathParam("isbn") String isbn) {
+        try {
+            return livroService.cadastrarPorIsbn(isbn)
+                    .map(livro -> Response.status(Response.Status.CREATED).entity(LivroDTO.fromEntity(livro)).build())
+                    .orElse(Response.status(Response.Status.NOT_FOUND).entity("Livro não encontrado na OpenLibrary.").build());
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+    }
+
+    @POST
     public Response criar(LivroDTO livroDTO) {
         try {
             Livro livroSalvo = livroService.salvar(livroDTO);

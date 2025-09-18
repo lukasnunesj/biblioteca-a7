@@ -14,24 +14,31 @@ import javax.swing.JTextField;
 import javax.swing.text.MaskFormatter;
 
 import com.biblioteca.domain.entities.autor.DTO.AutorDTO;
-import com.biblioteca.domain.entities.autor.DTO.AutorDTO;
 import com.biblioteca.infrastructure.exceptions.ExceptionHandler;
 import com.biblioteca.infrastructure.util.ValidacaoUtil;
 import com.biblioteca.presentation.templates.FormPadrao;
-import com.biblioteca.presentation.util.ApiClient;
 
 public class FormAutores extends FormPadrao {
-
-    private ApiClient apiClient;
 
     private JTextField txtNome;
     private JTextField txtEmail;
     private JFormattedTextField txtCpfCnpj;
     private JFormattedTextField txtTelefone;
 
+    private AutorDTO autorParaEdicao;
+
     public FormAutores() {
         super("Formulário de Autores");
-        this.apiClient = new ApiClient();
+    }
+
+    public FormAutores(AutorDTO autor) {
+        super("Edição de Autor");
+        if (autor != null) {
+            this.autorParaEdicao = autor;
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                preencherCamposParaEdicao();
+            });
+        }
     }
 
     @Override
@@ -103,6 +110,55 @@ public class FormAutores extends FormPadrao {
         add(painelFormulario);
     }
 
+    /**
+     * Preenche os campos do formulário com os dados do autor para edição
+     */
+    private void preencherCamposParaEdicao() {
+        if (autorParaEdicao != null) {
+            System.out.println("Preenchendo campos para edição do autor: " + autorParaEdicao.getId() + " - "
+                    + autorParaEdicao.getNome());
+
+            // Definir o título do formulário para incluir o ID do autor
+            setTitle("Edição de Autor - ID: " + autorParaEdicao.getId());
+
+            txtNome.setText(autorParaEdicao.getNome());
+
+            // Formatar CPF/CNPJ para exibição
+            String cpfcnpj = autorParaEdicao.getCpfcnpj();
+            if (cpfcnpj != null && cpfcnpj.length() == 11) {
+                // Formatar CPF: XXX.XXX.XXX-XX
+                try {
+                    txtCpfCnpj.setValue(cpfcnpj.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4"));
+                } catch (Exception e) {
+                    txtCpfCnpj.setText(cpfcnpj);
+                }
+            } else {
+                txtCpfCnpj.setText(cpfcnpj);
+            }
+
+            // Formatar telefone para exibição
+            String telefone = autorParaEdicao.getTelefone();
+            if (telefone != null && telefone.length() >= 10) {
+                // Formatar telefone: (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
+                try {
+                    if (telefone.length() == 11) {
+                        txtTelefone.setValue(telefone.replaceAll("(\\d{2})(\\d{5})(\\d{4})", "($1) $2-$3"));
+                    } else {
+                        txtTelefone.setValue(telefone.replaceAll("(\\d{2})(\\d{4})(\\d{4})", "($1) $2-$3"));
+                    }
+                } catch (Exception e) {
+                    txtTelefone.setText(telefone);
+                }
+            } else {
+                txtTelefone.setText(telefone);
+            }
+
+            txtEmail.setText(autorParaEdicao.getEmail());
+        } else {
+            System.out.println("Erro: autorParaEdicao é null no método preencherCamposParaEdicao");
+        }
+    }
+
     @Override
     protected void salvar() {
         try {
@@ -112,11 +168,11 @@ public class FormAutores extends FormPadrao {
             validador.campo(txtCpfCnpj, "CPF/CNPJ").obrigatorio();
             validador.campo(txtTelefone, "Telefone").obrigatorio();
             validador.campo(txtEmail, "Email").obrigatorio().email();
-            
+
             if (!validador.validar()) {
                 return;
             }
-            
+
             // Processamento dos dados após validação
             String nome = txtNome.getText();
             String cpfcnpj = txtCpfCnpj.getText().replaceAll("[^0-9]", "");
@@ -124,16 +180,23 @@ public class FormAutores extends FormPadrao {
             String email = txtEmail.getText();
 
             // Cria o DTO e valida os dados de negócio
-            AutorDTO autorDTO = new AutorDTO(null, nome, cpfcnpj, telefone, email);
-            
+            Long id = autorParaEdicao != null ? autorParaEdicao.getId() : null;
+            AutorDTO autorDTO = new AutorDTO(id, nome, cpfcnpj, telefone, email);
+
             // A validação de negócio é feita pelo próprio DTO
             autorDTO.validar();
-            
-            // Envia os dados para a API
-            apiClient.post("/autores", autorDTO, AutorDTO.class);
 
-            JOptionPane.showMessageDialog(this, "Autor salvo com sucesso!", "Sucesso",
-                    JOptionPane.INFORMATION_MESSAGE);
+            // Envia os dados para a API (POST para criar, PUT para atualizar)
+            if (autorParaEdicao == null) {
+                apiClient.post("/autores", autorDTO, AutorDTO.class);
+                JOptionPane.showMessageDialog(this, "Autor salvo com sucesso!", "Sucesso",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                apiClient.put("/autores/" + autorParaEdicao.getId(), autorDTO, AutorDTO.class);
+                JOptionPane.showMessageDialog(this, "Autor atualizado com sucesso!", "Sucesso",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+
             dispose();
 
         } catch (Exception e) {

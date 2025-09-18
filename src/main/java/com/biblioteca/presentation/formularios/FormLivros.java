@@ -15,26 +15,24 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 
 import com.biblioteca.domain.entities.autor.DTO.AutorDTO;
 import com.biblioteca.domain.entities.editora.DTO.EditoraDTO;
 import com.biblioteca.domain.entities.livro.DTO.LivroDTO;
 import com.biblioteca.infrastructure.exceptions.ExceptionHandler;
-import com.biblioteca.presentation.util.ApiClient;
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import com.biblioteca.presentation.templates.FormPadrao;
+import com.biblioteca.presentation.util.ApiClient;
 
 public class FormLivros extends FormPadrao {
-        private JTextField txtTitulo, txtIsbn;
+    private JTextField txtTitulo, txtIsbn;
     private JFormattedTextField txtDataPublicacao;
     private JComboBox<AutorDTO> cbAutores;
     private JComboBox<EditoraDTO> cbEditora;
@@ -42,19 +40,9 @@ public class FormLivros extends FormPadrao {
     private DefaultTableModel modelLivrosSemelhantes;
     private JButton btnRelacionar;
     private JButton btnBuscarPorIsbn;
-    private ApiClient apiClient;
 
     public FormLivros() {
         super("Formulário de Livros");
-        this.apiClient = new ApiClient();
-    }
-
-    @Override
-    protected void initComponents() {
-        configTela();
-        configPainelBotoes();
-        configFormulario();
-        configurarEventos();
     }
 
     @Override
@@ -67,7 +55,8 @@ public class FormLivros extends FormPadrao {
             AutorDTO autorSelecionado = (AutorDTO) cbAutores.getSelectedItem();
 
             if (editoraSelecionada == null || autorSelecionado == null) {
-                JOptionPane.showMessageDialog(this, "Selecione uma editora e um autor.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Selecione uma editora e um autor.", "Erro de Validação",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -80,8 +69,7 @@ public class FormLivros extends FormPadrao {
                     txtIsbn.getText(),
                     dataPublicacao,
                     editoraSelecionada.getId(),
-                    autoresIds
-            );
+                    autoresIds);
 
             livroDTO.validar();
 
@@ -219,7 +207,7 @@ public class FormLivros extends FormPadrao {
 
     private void carregarAutores() {
         try {
-            List<AutorDTO> autores = apiClient.get("/autores", new TypeReference<List<AutorDTO>>() {});
+            List<AutorDTO> autores = apiClient.get("/autores", ApiClient.listOf(AutorDTO.class));
             cbAutores.removeAllItems();
             for (AutorDTO autor : autores) {
                 cbAutores.addItem(autor);
@@ -231,7 +219,7 @@ public class FormLivros extends FormPadrao {
 
     private void carregarEditoras() {
         try {
-            List<EditoraDTO> editoras = apiClient.get("/editoras", new TypeReference<List<EditoraDTO>>() {});
+            List<EditoraDTO> editoras = apiClient.get("/editoras", ApiClient.listOf(EditoraDTO.class));
             cbEditora.removeAllItems();
             for (EditoraDTO editora : editoras) {
                 cbEditora.addItem(editora);

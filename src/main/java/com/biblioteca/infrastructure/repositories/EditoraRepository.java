@@ -17,7 +17,7 @@ public class EditoraRepository extends BaseRepository<Editora, Long> implements 
     public EditoraRepository() {
         super(Editora.class);
     }
-    
+
     public EditoraRepository(jakarta.persistence.EntityManager entityManager) {
         super(Editora.class);
         this.entityManager = entityManager;

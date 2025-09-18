@@ -85,4 +85,34 @@ public class LivroDTOTest {
         assertEquals(novaEditoraId, livroDTO.getEditoraId());
         assertEquals(novosAutoresIds, livroDTO.getAutoresIds());
     }
+    
+    @Test
+    public void testFromEntityWithNullEditora() {
+        // Create a Livro with null Editora
+        Livro livro = new Livro(TITULO, ISBN, DATA_PUBLICACAO);
+        livro.setId(ID);
+        
+        // Add authors
+        HashSet<Autor> autores = new HashSet<>();
+        Autor autor = new Autor("Machado de Assis", "123.456.789-00", "(21) 99999-9999", "machado@exemplo.com");
+        autor.setId(1L);
+        autores.add(autor);
+        livro.setAutores(autores);
+        
+        // Explicitly set editora to null
+        livro.setEditora(null);
+        
+        // Convert to DTO
+        LivroDTO livroDTO = LivroDTO.fromEntity(livro);
+        
+        // Verify conversion worked correctly
+        assertNotNull(livroDTO);
+        assertEquals(ID, livroDTO.getId());
+        assertEquals(TITULO, livroDTO.getTitulo());
+        assertEquals(ISBN, livroDTO.getIsbn());
+        assertEquals(DATA_PUBLICACAO, livroDTO.getDataPublicacao());
+        assertNull(livroDTO.getEditoraId()); // Editora ID should be null
+        assertEquals(1, livroDTO.getAutoresIds().size());
+        assertEquals(Long.valueOf(1L), livroDTO.getAutoresIds().get(0));
+    }
 }
