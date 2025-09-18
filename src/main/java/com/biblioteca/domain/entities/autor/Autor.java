@@ -51,21 +51,21 @@ public class Autor {
      * CPF ou CNPJ do autor.
      * Campo obrigatório com tamanho máximo de 18 caracteres.
      */
-    @Column(name = "cpfcnpj", nullable = false, length = 18)
+    @Column(name = "cpfcnpj", length = 18)
     private String cpfcnpj;
 
     /**
      * Telefone de contato do autor.
-     * Campo obrigatório com tamanho máximo de 15 caracteres.
+     * Campo com tamanho máximo de 15 caracteres.
      */
-    @Column(name = "telefone", nullable = false, length = 15)
+    @Column(name = "telefone", length = 15)
     private String telefone;
 
     /**
      * Email de contato do autor.
-     * Campo obrigatório com tamanho máximo de 100 caracteres.
+     * Campo com tamanho máximo de 100 caracteres.
      */
-    @Column(name = "email", nullable = false, length = 100)
+    @Column(name = "email", length = 100)
     private String email;
 
     /**
@@ -95,15 +95,6 @@ public class Autor {
     public Autor(String nome, String cpfcnpj, String telefone, String email) {
         if (nome == null || nome.isBlank()) {
             throw new IllegalArgumentException("Nome inválido");
-        }
-        if (cpfcnpj == null || cpfcnpj.isBlank()) {
-            throw new IllegalArgumentException("CPF/CNPJ inválido");
-        }
-        if (telefone == null || telefone.isBlank()) {
-            throw new IllegalArgumentException("Telefone inválido");
-        }
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("Email inválido");
         }
 
         this.nome = nome;

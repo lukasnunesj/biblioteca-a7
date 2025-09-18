@@ -35,7 +35,7 @@ public class TelaPrincipal {
 
         // Criar desktop pane para janelas internas
         desktopPane = new JDesktopPane();
-        desktopPane.setBackground(new Color(240, 240, 240));
+
         frame.add(desktopPane, BorderLayout.CENTER);
 
     }
@@ -152,5 +152,3 @@ public class TelaPrincipal {
     }
 
 }
-
-    

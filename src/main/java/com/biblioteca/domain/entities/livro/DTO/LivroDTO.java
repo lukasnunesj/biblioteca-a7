@@ -1,6 +1,5 @@
 package com.biblioteca.domain.entities.livro.DTO;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +14,7 @@ import com.biblioteca.infrastructure.exceptions.ValidacaoException;
 public class LivroDTO extends BaseDTO {
     private String titulo;
     private String isbn;
-    private LocalDate dataPublicacao;
+    private Integer dataPublicacao;
     private Long editoraId;
     private List<Long> autoresIds;
     private List<Long> livrosSemelhantesIds;
@@ -24,7 +23,7 @@ public class LivroDTO extends BaseDTO {
         super();
     }
 
-    public LivroDTO(Long id, String titulo, String isbn, LocalDate dataPublicacao, Long editoraId,
+    public LivroDTO(Long id, String titulo, String isbn, Integer dataPublicacao, Long editoraId,
             List<Long> autoresIds, List<Long> livrosSemelhantesIds) {
         super(id);
         this.titulo = titulo;
@@ -89,11 +88,11 @@ public class LivroDTO extends BaseDTO {
         this.isbn = isbn;
     }
 
-    public LocalDate getDataPublicacao() {
+    public Integer getDataPublicacao() {
         return dataPublicacao;
     }
 
-    public void setDataPublicacao(LocalDate dataPublicacao) {
+    public void setDataPublicacao(Integer dataPublicacao) {
         this.dataPublicacao = dataPublicacao;
     }
 

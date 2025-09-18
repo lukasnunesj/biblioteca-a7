@@ -43,11 +43,12 @@ public class EditoraService implements IEditoraService {
         LOGGER.info("Salvando editora: " + editoraDTO.getNome());
         editoraDTO.validar();
 
-        Optional<Editora> editoraExistente = editoraRepository.buscarPorCnpj(removerFormatacaoCnpj(editoraDTO.getCnpj()));
-        if (editoraExistente.isPresent()
-                && (editoraDTO.getId() == null || !editoraDTO.getId().equals(editoraExistente.get().getId()))) {
-            throw new IllegalArgumentException("Já existe uma editora cadastrada com este CNPJ.");
+        // Valida duplicidade por nome
+        Optional<Editora> editoraPorNome = editoraRepository.buscarPorNome(editoraDTO.getNome());
+        if (editoraPorNome.isPresent() && (editoraDTO.getId() == null || !editoraDTO.getId().equals(editoraPorNome.get().getId()))) {
+            throw new IllegalArgumentException("Já existe uma editora cadastrada com este nome.");
         }
+
 
         Editora editora = editoraDTO.toEntity();
         return editoraRepository.save(editora);
@@ -62,13 +63,11 @@ public class EditoraService implements IEditoraService {
         return editoraRepository.findById(id);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
-    public Optional<Editora> buscarPorCnpj(String cnpj) {
-        LOGGER.info("Buscando editora por CNPJ: " + cnpj);
-        return editoraRepository.buscarPorCnpj(removerFormatacaoCnpj(cnpj));
+    public Optional<Editora> buscarPorNome(String nome) {
+        LOGGER.info("Buscando editora por nome: " + nome);
+        return editoraRepository.buscarPorNome(nome);
     }
 
     /**
@@ -98,10 +97,4 @@ public class EditoraService implements IEditoraService {
         LOGGER.info("Editora removida com sucesso.");
     }
 
-    private String removerFormatacaoCnpj(String cnpj) {
-        if (cnpj == null) {
-            return null;
-        }
-        return cnpj.replaceAll("[./-]", "");
-    }
 }

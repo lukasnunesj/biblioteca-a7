@@ -186,17 +186,6 @@ public class AutorDTO extends BaseDTO {
             throw new ValidacaoException("O nome do autor é obrigatório");
         }
         
-        if (cpfcnpj == null || cpfcnpj.isBlank()) {
-            throw new ValidacaoException("O CPF/CNPJ do autor é obrigatório");
-        }
-        
-        if (telefone == null || telefone.isBlank()) {
-            throw new ValidacaoException("O telefone do autor é obrigatório");
-        }
-        
-        if (email == null || email.isBlank()) {
-            throw new ValidacaoException("O email do autor é obrigatório");
-        }
         
         if (email != null && !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
             throw new ValidacaoException("O email do autor é inválido");

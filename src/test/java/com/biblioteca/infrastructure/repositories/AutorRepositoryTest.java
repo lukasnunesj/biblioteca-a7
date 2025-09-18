@@ -107,46 +107,8 @@ public class AutorRepositoryTest {
         autorRepository.findById(ID);
     }
 
-    @Test
-    public void testBuscarPorCpfcnpj() {
-        when(entityManager.createQuery("SELECT a FROM Autor a WHERE a.cpfcnpj = :cpfcnpj", Autor.class))
-                .thenReturn(query);
-        when(query.setParameter("cpfcnpj", CPFCNPJ)).thenReturn(query);
-        when(query.getResultStream()).thenReturn(java.util.stream.Stream.of(autor));
 
-        Optional<Autor> resultado = autorRepository.buscarPorCpfcnpj(CPFCNPJ);
 
-        assertTrue(resultado.isPresent());
-        assertEquals(autor, resultado.get());
-
-        verify(entityManager).createQuery("SELECT a FROM Autor a WHERE a.cpfcnpj = :cpfcnpj", Autor.class);
-        verify(query).setParameter("cpfcnpj", CPFCNPJ);
-        verify(query).getResultStream();
-    }
-
-    @Test
-    public void testBuscarPorCpfcnpjNaoEncontrado() {
-        when(entityManager.createQuery("SELECT a FROM Autor a WHERE a.cpfcnpj = :cpfcnpj", Autor.class))
-                .thenReturn(query);
-        when(query.setParameter("cpfcnpj", CPFCNPJ)).thenReturn(query);
-        when(query.getResultStream()).thenReturn(java.util.stream.Stream.empty());
-
-        Optional<Autor> resultado = autorRepository.buscarPorCpfcnpj(CPFCNPJ);
-
-        assertFalse(resultado.isPresent());
-
-        verify(entityManager).createQuery("SELECT a FROM Autor a WHERE a.cpfcnpj = :cpfcnpj", Autor.class);
-        verify(query).setParameter("cpfcnpj", CPFCNPJ);
-        verify(query).getResultStream();
-    }
-
-    @Test(expected = PersistenciaException.class)
-    public void testBuscarPorCpfcnpjComErro() {
-        when(entityManager.createQuery("SELECT a FROM Autor a WHERE a.cpfcnpj = :cpfcnpj", Autor.class))
-                .thenThrow(new RuntimeException("Erro simulado"));
-
-        autorRepository.buscarPorCpfcnpj(CPFCNPJ);
-    }
 
     @Test
     public void testBuscarTodos() {

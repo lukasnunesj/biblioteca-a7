@@ -71,22 +71,6 @@ public class AutorServiceIntegrationTest extends IntegrationTestBase {
         assertThat(resultado).isEmpty();
     }
 
-    @Test
-    public void testBuscarPorCpfcnpj() {
-        // Arrange
-        Autor autor = criarAutor();
-
-        // Garantir que a entidade esteja persistida
-        transaction.commit();
-        transaction.begin();
-
-        // Act
-        Optional<Autor> resultado = autorService.buscarPorCpfcnpj(autor.getCpfcnpj());
-
-        // Assert
-        assertThat(resultado).isPresent();
-        assertThat(resultado.get().getNome()).isEqualTo("Carlos Drummond");
-    }
 
     @Test
     public void testBuscarTodos() {

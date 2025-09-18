@@ -24,21 +24,19 @@ public class AutorRepository extends BaseRepository<Autor, Long> implements IAut
         this.entityManager = entityManager;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Optional<Autor> buscarPorCpfcnpj(String cpfcnpj) {
+    public Optional<Autor> buscarPorNome(String nome) {
         try {
-            LOGGER.info("Buscando autor por cpfcnpj: " + cpfcnpj);
-            TypedQuery<Autor> query = entityManager.createQuery("SELECT a FROM Autor a WHERE a.cpfcnpj = :cpfcnpj",
+            LOGGER.info("Buscando autor por nome: " + nome);
+            TypedQuery<Autor> query = entityManager.createQuery("SELECT a FROM Autor a WHERE a.nome = :nome",
                     Autor.class);
-            query.setParameter("cpfcnpj", cpfcnpj);
+            query.setParameter("nome", nome);
             return query.getResultStream().findFirst();
         } catch (Exception e) {
-            LOGGER.severe("Erro ao buscar autor por cpfcnpj: " + e.getMessage());
-            throw new PersistenciaException("Erro ao buscar autor por cpfcnpj", e);
+            LOGGER.severe("Erro ao buscar autor por nome: " + e.getMessage());
+            throw new PersistenciaException("Erro ao buscar autor por nome", e);
         }
     }
+
 
 }

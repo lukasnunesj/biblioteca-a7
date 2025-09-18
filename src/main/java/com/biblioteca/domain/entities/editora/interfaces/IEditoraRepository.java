@@ -20,4 +20,13 @@ public interface IEditoraRepository extends IBaseRepository<Editora, Long> {
      */
     Optional<Editora> buscarPorCnpj(String cnpj);
 
+    /**
+     * Busca uma editora pelo seu nome.
+     * 
+     * @param nome o nome da editora a ser buscada
+     * @return um Optional contendo a editora, se encontrada, ou vazio caso
+     *         contrário
+     */
+    Optional<Editora> buscarPorNome(String nome);
+
 }

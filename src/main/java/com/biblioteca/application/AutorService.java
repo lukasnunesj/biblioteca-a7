@@ -45,12 +45,12 @@ public class AutorService implements IAutorService {
         // Valida os dados do DTO antes de prosseguir
         autorDTO.validar();
 
-        // Verifica se já existe um autor com o mesmo CPF/CNPJ
-        Optional<Autor> autorExistente = autorRepository.buscarPorCpfcnpj(removerFormatacaoCpfCnpj(autorDTO.getCpfcnpj()));
-        if (autorExistente.isPresent()
-                && (autorDTO.getId() == null || !autorDTO.getId().equals(autorExistente.get().getId()))) {
-            throw new IllegalArgumentException("Já existe um autor cadastrado com este CPF/CNPJ");
+        // Valida duplicidade por nome
+        Optional<Autor> autorPorNome = autorRepository.buscarPorNome(autorDTO.getNome());
+        if (autorPorNome.isPresent() && (autorDTO.getId() == null || !autorDTO.getId().equals(autorPorNome.get().getId()))) {
+            throw new IllegalArgumentException("Já existe um autor cadastrado com este nome.");
         }
+
 
         Autor autor = autorDTO.toEntity();
         return autorRepository.save(autor);
@@ -65,13 +65,11 @@ public class AutorService implements IAutorService {
         return autorRepository.findById(id);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
-    public Optional<Autor> buscarPorCpfcnpj(String cpfcnpj) {
-        LOGGER.info("Buscando autor por CPF/CNPJ: " + cpfcnpj);
-        return autorRepository.buscarPorCpfcnpj(removerFormatacaoCpfCnpj(cpfcnpj));
+    public Optional<Autor> buscarPorNome(String nome) {
+        LOGGER.info("Buscando autor por nome: " + nome);
+        return autorRepository.buscarPorNome(nome);
     }
 
     /**
@@ -103,10 +101,4 @@ public class AutorService implements IAutorService {
         }
     }
 
-    private String removerFormatacaoCpfCnpj(String cpfcnpj) {
-        if (cpfcnpj == null) {
-            return null;
-        }
-        return cpfcnpj.replaceAll("[./-]", "");
-    }
 }

@@ -57,6 +57,13 @@ public class TelaListagemLivros extends TelaListagemPadrao {
         if (desktopPane != null) {
             desktopPane.add(formLivros);
             formLivros.setVisible(true);
+
+            formLivros.addInternalFrameListener(new javax.swing.event.InternalFrameAdapter() {
+                @Override
+                public void internalFrameClosed(javax.swing.event.InternalFrameEvent e) {
+                    carregar(); // Recarrega a lista após inclusão
+                }
+            });
         }
     }
 
@@ -64,7 +71,8 @@ public class TelaListagemLivros extends TelaListagemPadrao {
     protected void editar() {
         int selectedRow = tabela.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Selecione um livro para editar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Selecione um livro para editar.", "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -77,6 +85,13 @@ public class TelaListagemLivros extends TelaListagemPadrao {
             if (desktopPane != null) {
                 desktopPane.add(form);
                 form.setVisible(true);
+
+                form.addInternalFrameListener(new javax.swing.event.InternalFrameAdapter() {
+                    @Override
+                    public void internalFrameClosed(javax.swing.event.InternalFrameEvent e) {
+                        carregar(); // Recarrega a lista após edição
+                    }
+                });
             }
 
         } catch (Exception e) {
@@ -86,11 +101,13 @@ public class TelaListagemLivros extends TelaListagemPadrao {
 
     @Override
     protected void importarPorIsbn() {
-        String isbn = JOptionPane.showInputDialog(this, "Digite o ISBN do livro:", "Importar por ISBN", JOptionPane.PLAIN_MESSAGE);
+        String isbn = JOptionPane.showInputDialog(this, "Digite o ISBN do livro:", "Importar por ISBN",
+                JOptionPane.PLAIN_MESSAGE);
         if (isbn != null && !isbn.trim().isEmpty()) {
             try {
                 apiClient.post("/livros/isbn/" + isbn.trim(), null, ApiClient.mapOf(String.class, Object.class));
-                JOptionPane.showMessageDialog(this, "Livro importado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Livro importado com sucesso!", "Sucesso",
+                        JOptionPane.INFORMATION_MESSAGE);
                 carregar(); // Recarrega a lista
             } catch (Exception e) {
                 ExceptionHandler.tratar(e, this);

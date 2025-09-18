@@ -63,22 +63,6 @@ public class EditoraServiceIntegrationTest extends IntegrationTestBase {
         assertThat(resultado).isEmpty();
     }
 
-    @Test
-    public void testBuscarPorCnpj() {
-        // Arrange
-        Editora editora = criarEditora();
-
-        // Garantir que a entidade esteja persistida
-        transaction.commit();
-        transaction.begin();
-
-        // Act
-        Optional<Editora> resultado = editoraService.buscarPorCnpj(editora.getCnpj());
-
-        // Assert
-        assertThat(resultado).isPresent();
-        assertThat(resultado.get().getNome()).isEqualTo("Companhia das Letras");
-    }
 
     @Test
     public void testBuscarTodos() {

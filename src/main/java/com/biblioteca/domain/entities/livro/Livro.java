@@ -1,6 +1,6 @@
 package com.biblioteca.domain.entities.livro;
 
-import java.time.LocalDate;
+import java.time.Year;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Objects;
@@ -62,7 +62,7 @@ public class Livro {
      * Data de publicação do livro.
      */
     @Column(name = "data_publicacao")
-    private LocalDate dataPublicacao;
+    private Integer dataPublicacao;
 
     /**
      * Editora responsável pelo livro.
@@ -103,7 +103,7 @@ public class Livro {
      * @throws IllegalArgumentException se o título for vazio, o ISBN for inválido
      *                                  ou a data for futura
      */
-    public Livro(String titulo, String isbn, LocalDate dataPublicacao) {
+    public Livro(String titulo, String isbn, Integer dataPublicacao) {
         if (titulo == null || titulo.isBlank()) {
             throw new IllegalArgumentException("Título não pode ser vazio!");
         }
@@ -112,12 +112,12 @@ public class Livro {
             throw new IllegalArgumentException("ISBN inválido!");
         }
 
-        if (dataPublicacao.isAfter(LocalDate.now())) {
+        if (dataPublicacao != null && dataPublicacao > Year.now().getValue()) {
             throw new IllegalArgumentException("Data de publicação não pode ser no futuro!");
         }
 
         this.titulo = titulo;
-        this.isbn = isbn;
+        this.isbn = isbn.replace("-", "");
         this.dataPublicacao = dataPublicacao;
     }
 
@@ -178,7 +178,7 @@ public class Livro {
         if (!isISBNValid(isbn)) {
             throw new IllegalArgumentException("ISBN inválido!");
         }
-        this.isbn = isbn;
+        this.isbn = isbn.replace("-", "");
     }
 
     /**
@@ -186,7 +186,7 @@ public class Livro {
      *
      * @param dataPublicacao a nova data de publicação
      */
-    public void setDataPublicacao(LocalDate dataPublicacao) {
+    public void setDataPublicacao(Integer dataPublicacao) {
         this.dataPublicacao = dataPublicacao;
     }
 
@@ -195,8 +195,7 @@ public class Livro {
      *
      * @return a data de publicação
      */
-    public LocalDate getDataPublicacao() {
-        System.out.println("Data de publicação: " + dataPublicacao);
+    public Integer getDataPublicacao() {
         return dataPublicacao;
     }
 

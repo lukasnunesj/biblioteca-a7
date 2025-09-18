@@ -186,17 +186,6 @@ public class EditoraDTO extends BaseDTO {
             throw new ValidacaoException("O nome da editora é obrigatório");
         }
         
-        if (cnpj == null || cnpj.isBlank()) {
-            throw new ValidacaoException("O CNPJ da editora é obrigatório");
-        }
-        
-        if (telefone == null || telefone.isBlank()) {
-            throw new ValidacaoException("O telefone da editora é obrigatório");
-        }
-        
-        if (email == null || email.isBlank()) {
-            throw new ValidacaoException("O email da editora é obrigatório");
-        }
         
         if (email != null && !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
             throw new ValidacaoException("O email da editora é inválido");

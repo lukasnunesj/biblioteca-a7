@@ -127,13 +127,31 @@ public class TelaListagemEditoras extends TelaListagemPadrao {
                 model.addRow(new Object[] {
                         editora.getId(),
                         editora.getNome(),
-                        editora.getCnpj(),
-                        editora.getTelefone(),
+                        formatarCnpj(editora.getCnpj()),
+                        formatarTelefone(editora.getTelefone()),
                         editora.getEmail()
                 });
             }
         } catch (Exception e) {
             ExceptionHandler.tratar(e, this);
+        }
+    }
+
+    private String formatarCnpj(String cnpj) {
+        if (cnpj == null || cnpj.length() != 14) {
+            return cnpj;
+        }
+        return cnpj.substring(0, 2) + "." + cnpj.substring(2, 5) + "." + cnpj.substring(5, 8) + "/" + cnpj.substring(8, 12) + "-" + cnpj.substring(12, 14);
+    }
+
+    private String formatarTelefone(String telefone) {
+        if (telefone == null || telefone.length() < 10) {
+            return telefone;
+        }
+        if (telefone.length() == 11) {
+            return "(" + telefone.substring(0, 2) + ") " + telefone.substring(2, 7) + "-" + telefone.substring(7);
+        } else {
+            return "(" + telefone.substring(0, 2) + ") " + telefone.substring(2, 6) + "-" + telefone.substring(6);
         }
     }
 }

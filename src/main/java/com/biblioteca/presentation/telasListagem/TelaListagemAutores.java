@@ -155,13 +155,36 @@ public class TelaListagemAutores extends TelaListagemPadrao {
                 model.addRow(new Object[] {
                         autor.getId(),
                         autor.getNome(),
-                        autor.getCpfcnpj(),
-                        autor.getTelefone(),
+                        formatarCpfCnpj(autor.getCpfcnpj()),
+                        formatarTelefone(autor.getTelefone()),
                         autor.getEmail()
                 });
             }
         } catch (Exception e) {
             ExceptionHandler.tratar(e, this);
+        }
+    }
+
+    private String formatarCpfCnpj(String cpfCnpj) {
+        if (cpfCnpj == null) {
+            return cpfCnpj;
+        }
+        if (cpfCnpj.length() == 11) {
+            return cpfCnpj.substring(0, 3) + "." + cpfCnpj.substring(3, 6) + "." + cpfCnpj.substring(6, 9) + "-" + cpfCnpj.substring(9, 11);
+        } else if (cpfCnpj.length() == 14) {
+            return cpfCnpj.substring(0, 2) + "." + cpfCnpj.substring(2, 5) + "." + cpfCnpj.substring(5, 8) + "/" + cpfCnpj.substring(8, 12) + "-" + cpfCnpj.substring(12, 14);
+        }
+        return cpfCnpj;
+    }
+
+    private String formatarTelefone(String telefone) {
+        if (telefone == null || telefone.length() < 10) {
+            return telefone;
+        }
+        if (telefone.length() == 11) {
+            return "(" + telefone.substring(0, 2) + ") " + telefone.substring(2, 7) + "-" + telefone.substring(7);
+        } else {
+            return "(" + telefone.substring(0, 2) + ") " + telefone.substring(2, 6) + "-" + telefone.substring(6);
         }
     }
 }

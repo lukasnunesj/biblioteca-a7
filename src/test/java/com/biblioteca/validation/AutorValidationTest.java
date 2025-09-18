@@ -18,36 +18,19 @@ public class AutorValidationTest {
         new Autor("", "123.456.789-00", "(31) 99999-9999", "carlos@exemplo.com");
     }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testCriarAutorComCpfcnpjNulo() {
-        new Autor("Carlos Drummond", null, "(31) 99999-9999", "carlos@exemplo.com");
-    }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testCriarAutorComCpfcnpjVazio() {
-        new Autor("Carlos Drummond", "", "(31) 99999-9999", "carlos@exemplo.com");
-    }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testCriarAutorComTelefoneNulo() {
-        new Autor("Carlos Drummond", "123.456.789-00", null, "carlos@exemplo.com");
-    }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testCriarAutorComTelefoneVazio() {
-        new Autor("Carlos Drummond", "123.456.789-00", "", "carlos@exemplo.com");
-    }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testCriarAutorComEmailNulo() {
-        new Autor("Carlos Drummond", "123.456.789-00", "(31) 99999-9999", null);
-    }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testCriarAutorComEmailVazio() {
-        new Autor("Carlos Drummond", "123.456.789-00", "(31) 99999-9999", "");
-    }
     
+    @Test
+    public void testCriarAutorComCpfCnpjNulo() {
+        Autor autor = new Autor("Autor Sem Documento", null, "(11) 98765-4321", "semdoc@exemplo.com");
+        assertNotNull(autor);
+        assertNull(autor.getCpfcnpj());
+    }
+
     @Test
     public void testCriarAutorValido() {
         Autor autor = new Autor("Carlos Drummond", "123.456.789-00", "(31) 99999-9999", "carlos@exemplo.com");

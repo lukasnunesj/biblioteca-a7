@@ -42,35 +42,11 @@ public class EditoraTest {
         new Editora("", CNPJ, TELEFONE, EMAIL);
     }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstrutorCnpjNulo() {
-        new Editora(NOME, null, TELEFONE, EMAIL);
-    }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstrutorCnpjVazio() {
-        new Editora(NOME, "", TELEFONE, EMAIL);
-    }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstrutorTelefoneNulo() {
-        new Editora(NOME, CNPJ, null, EMAIL);
-    }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstrutorTelefoneVazio() {
-        new Editora(NOME, CNPJ, "", EMAIL);
-    }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstrutorEmailNulo() {
-        new Editora(NOME, CNPJ, TELEFONE, null);
-    }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstrutorEmailVazio() {
-        new Editora(NOME, CNPJ, TELEFONE, "");
-    }
     
     @Test
     public void testSetId() {

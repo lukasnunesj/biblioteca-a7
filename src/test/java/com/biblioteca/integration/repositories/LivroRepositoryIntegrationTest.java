@@ -2,7 +2,6 @@ package com.biblioteca.integration.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +34,7 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
         Editora editora = criarEditora();
         Autor autor = criarAutor();
 
-        Livro livro = new Livro("Dom Casmurro", "9788574801414", LocalDate.of(1899, 1, 1));
+        Livro livro = new Livro("Dom Casmurro", "9788574801414", 1899);
         livro.setEditora(editora);
         livro.addAutor(autor);
 
@@ -46,7 +45,7 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
         assertThat(livroSalvo.getId()).isNotNull();
         assertThat(livroSalvo.getTitulo()).isEqualTo("Dom Casmurro");
         assertThat(livroSalvo.getIsbn()).isEqualTo("9788574801414");
-        assertThat(livroSalvo.getDataPublicacao()).isEqualTo(LocalDate.of(1899, 1, 1));
+        assertThat(livroSalvo.getDataPublicacao()).isEqualTo(1899);
         assertThat(livroSalvo.getEditora().getNome()).isEqualTo("Companhia das Letras");
         assertThat(livroSalvo.getAutores()).hasSize(1);
         assertThat(livroSalvo.getAutores().iterator().next().getNome()).isEqualTo("Machado de Assis");
@@ -82,7 +81,7 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
         Editora editora = entityManager.find(Editora.class, livro1.getEditora().getId());
         Autor autor = entityManager.find(Autor.class, livro1.getAutores().iterator().next().getId());
 
-        Livro livro2 = new Livro("Memórias Póstumas de Brás Cubas", "9788535921182", LocalDate.of(1881, 1, 1));
+        Livro livro2 = new Livro("Memórias Póstumas de Brás Cubas", "9788535921182", 1881);
         livro2.setEditora(editora);
         livro2.addAutor(autor);
         livroRepository.save(livro2);
@@ -125,7 +124,7 @@ public class LivroRepositoryIntegrationTest extends IntegrationTestBase {
         Editora editora = criarEditora();
         Autor autor = criarAutor();
 
-        Livro livro = new Livro("Dom Casmurro", "9788574801414", LocalDate.of(1899, 1, 1));
+        Livro livro = new Livro("Dom Casmurro", "9788574801414", 1899);
         livro.setEditora(editora);
         livro.addAutor(autor);
 

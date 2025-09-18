@@ -40,4 +40,18 @@ public class EditoraRepository extends BaseRepository<Editora, Long> implements 
         }
     }
 
+    @Override
+    public Optional<Editora> buscarPorNome(String nome) {
+        try {
+            LOGGER.info("Buscando editora por nome: " + nome);
+            TypedQuery<Editora> query = entityManager.createQuery("SELECT e FROM Editora e WHERE e.nome = :nome",
+                    Editora.class);
+            query.setParameter("nome", nome);
+            return query.getResultStream().findFirst();
+        } catch (Exception e) {
+            LOGGER.severe("Erro ao buscar editora por nome: " + e.getMessage());
+            throw new RuntimeException("Erro ao buscar editora por nome: " + e.getMessage());
+        }
+    }
+
 }

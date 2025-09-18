@@ -27,13 +27,14 @@ public interface IEditoraService {
      */
     Optional<Editora> buscarPorId(Long id);
 
+
     /**
-     * Busca uma editora pelo seu CNPJ.
+     * Busca uma editora pelo seu nome.
      * 
-     * @param cnpj o CNPJ da editora a ser buscada
+     * @param nome o nome da editora a ser buscada
      * @return um Optional contendo a editora, se encontrada, ou vazio caso contrário
      */
-    Optional<Editora> buscarPorCnpj(String cnpj);
+    Optional<Editora> buscarPorNome(String nome);
 
     /**
      * Retorna todas as editoras cadastradas no sistema.

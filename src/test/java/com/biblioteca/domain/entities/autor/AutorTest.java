@@ -42,35 +42,11 @@ public class AutorTest {
         new Autor("", CPFCNPJ, TELEFONE, EMAIL);
     }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstrutorCpfCnpjNulo() {
-        new Autor(NOME, null, TELEFONE, EMAIL);
-    }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstrutorCpfCnpjVazio() {
-        new Autor(NOME, "", TELEFONE, EMAIL);
-    }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstrutorTelefoneNulo() {
-        new Autor(NOME, CPFCNPJ, null, EMAIL);
-    }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstrutorTelefoneVazio() {
-        new Autor(NOME, CPFCNPJ, "", EMAIL);
-    }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstrutorEmailNulo() {
-        new Autor(NOME, CPFCNPJ, TELEFONE, null);
-    }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstrutorEmailVazio() {
-        new Autor(NOME, CPFCNPJ, TELEFONE, "");
-    }
     
     @Test
     public void testSetId() {

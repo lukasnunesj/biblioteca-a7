@@ -2,7 +2,6 @@ package com.biblioteca.integration.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +54,7 @@ public class LivroServiceIntegrationTest extends IntegrationTestBase {
                 null,
                 "Dom Casmurro",
                 isbnUnico,
-                LocalDate.of(1899, 1, 1),
+                1899,
                 editora.getId(),
                 Arrays.asList(autor.getId()),
                 new java.util.ArrayList<>());
@@ -67,7 +66,7 @@ public class LivroServiceIntegrationTest extends IntegrationTestBase {
         assertThat(livroSalvo.getId()).isNotNull();
         assertThat(livroSalvo.getTitulo()).isEqualTo("Dom Casmurro");
         assertThat(livroSalvo.getIsbn()).isEqualTo(isbnUnico);
-        assertThat(livroSalvo.getDataPublicacao()).isEqualTo(LocalDate.of(1899, 1, 1));
+        assertThat(livroSalvo.getDataPublicacao()).isEqualTo(1899);
         assertThat(livroSalvo.getEditora().getId()).isEqualTo(editora.getId());
         assertThat(livroSalvo.getAutores()).hasSize(1);
         assertThat(livroSalvo.getAutores().iterator().next().getId()).isEqualTo(autor.getId());
@@ -186,7 +185,7 @@ public class LivroServiceIntegrationTest extends IntegrationTestBase {
         // Usar um ISBN único para evitar conflitos
         String isbnUnico = String.format("978%010d", Math.abs(System.nanoTime() % 10000000000L));
 
-        Livro livro = new Livro("Dom Casmurro", isbnUnico, LocalDate.of(1899, 1, 1));
+        Livro livro = new Livro("Dom Casmurro", isbnUnico, 1899);
         livro.setEditora(editora);
         livro.addAutor(autor);
 
@@ -207,7 +206,7 @@ public class LivroServiceIntegrationTest extends IntegrationTestBase {
         // Usar um ISBN único para evitar conflitos
         String isbnUnico = String.format("978%010d", Math.abs((System.nanoTime() + 1) % 10000000000L));
 
-        Livro livro = new Livro("Memórias Póstumas de Brás Cubas", isbnUnico, LocalDate.of(1881, 1, 1));
+        Livro livro = new Livro("Memórias Póstumas de Brás Cubas", isbnUnico, 1881);
         livro.setEditora(editora);
         livro.addAutor(autor);
 

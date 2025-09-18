@@ -2,7 +2,6 @@ package com.biblioteca.domain.entities.livro.DTO;
 
 import static org.junit.Assert.*;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -18,7 +17,7 @@ public class LivroDTOTest {
     private final Long ID = 1L;
     private final String TITULO = "Dom Casmurro";
     private final String ISBN = "9788574801414";
-    private final LocalDate DATA_PUBLICACAO = LocalDate.of(1899, 1, 1);
+    private final Integer DATA_PUBLICACAO = 1899;
     private final Long EDITORA_ID = 1L;
     private final List<Long> AUTORES_IDS = Arrays.asList(1L, 2L);
 
@@ -67,7 +66,7 @@ public class LivroDTOTest {
         Long novoId = 2L;
         String novoTitulo = "Memórias Póstumas de Brás Cubas";
         String novoIsbn = "9788535921182";
-        LocalDate novaData = LocalDate.of(1881, 1, 1);
+        Integer novaData = 1881;
         Long novaEditoraId = 3L;
         List<Long> novosAutoresIds = Arrays.asList(3L, 4L);
 

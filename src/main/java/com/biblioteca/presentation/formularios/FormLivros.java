@@ -4,21 +4,19 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.JTextField;
+import javax.swing.JFormattedTextField;
 import javax.swing.text.MaskFormatter;
 
 import com.biblioteca.domain.entities.autor.DTO.AutorDTO;
@@ -51,8 +49,7 @@ public class FormLivros extends FormPadrao {
     @Override
     protected void salvar() {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            LocalDate dataPublicacao = LocalDate.parse(txtDataPublicacao.getText(), formatter);
+            Integer dataPublicacao = Integer.parseInt(txtDataPublicacao.getText());
 
             EditoraDTO editoraSelecionada = (EditoraDTO) cbEditora.getSelectedItem();
             AutorDTO autorSelecionado = (AutorDTO) cbAutores.getSelectedItem();
@@ -67,7 +64,8 @@ public class FormLivros extends FormPadrao {
             autoresIds.add(autorSelecionado.getId());
 
             Long id = (livroParaEdicao != null) ? livroParaEdicao.getId() : null;
-            List<Long> semelhantesIds = (livroParaEdicao != null) ? livroParaEdicao.getLivrosSemelhantesIds() : new ArrayList<>();
+            List<Long> semelhantesIds = (livroParaEdicao != null) ? livroParaEdicao.getLivrosSemelhantesIds()
+                    : new ArrayList<>();
 
             LivroDTO livroDTO = new LivroDTO(
                     id,
@@ -83,11 +81,13 @@ public class FormLivros extends FormPadrao {
             if (id == null) {
                 // Criação
                 apiClient.post("/livros", livroDTO, LivroDTO.class);
-                JOptionPane.showMessageDialog(this, "Livro salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Livro salvo com sucesso!", "Sucesso",
+                        JOptionPane.INFORMATION_MESSAGE);
             } else {
                 // Atualização
                 apiClient.put("/livros/" + id, livroDTO, LivroDTO.class);
-                JOptionPane.showMessageDialog(this, "Livro atualizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Livro atualizado com sucesso!", "Sucesso",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
 
             dispose();
@@ -125,7 +125,7 @@ public class FormLivros extends FormPadrao {
         painelFormulario.add(new JLabel("ISBN:"), gbc);
 
         gbc.gridx = 1;
-        painelFormulario.add(new JLabel("Data de Publicação:"), gbc);
+        painelFormulario.add(new JLabel("Ano Publicação:"), gbc);
 
         gbc.gridy++;
         gbc.gridx = 0;
@@ -135,9 +135,7 @@ public class FormLivros extends FormPadrao {
 
         gbc.gridx = 1;
         try {
-            MaskFormatter mascaraData = new MaskFormatter("##/##/####");
-            mascaraData.setPlaceholderCharacter('_');
-            txtDataPublicacao = new JFormattedTextField(mascaraData);
+            txtDataPublicacao = new JFormattedTextField(new MaskFormatter("####"));
         } catch (java.text.ParseException e) {
             e.printStackTrace();
             txtDataPublicacao = new JFormattedTextField(); // Fallback
@@ -202,8 +200,7 @@ public class FormLivros extends FormPadrao {
         txtIsbn.setText(livroParaEdicao.getIsbn());
 
         if (livroParaEdicao.getDataPublicacao() != null) {
-            txtDataPublicacao
-                    .setText(livroParaEdicao.getDataPublicacao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            txtDataPublicacao.setText(String.valueOf(livroParaEdicao.getDataPublicacao()));
         }
 
         // Seleciona a editora no ComboBox

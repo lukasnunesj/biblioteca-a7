@@ -78,28 +78,7 @@ public class EditoraServiceTest {
         verify(editoraRepository).findById(ID);
     }
     
-    @Test
-    public void testBuscarPorCnpj() {
-        when(editoraRepository.buscarPorCnpj(CNPJ)).thenReturn(Optional.of(editora));
-        
-        Optional<Editora> resultado = editoraService.buscarPorCnpj(CNPJ);
-        
-        assertTrue(resultado.isPresent());
-        assertEquals(editora, resultado.get());
-        
-        verify(editoraRepository).buscarPorCnpj(CNPJ);
-    }
     
-    @Test
-    public void testBuscarPorCnpjNaoEncontrado() {
-        when(editoraRepository.buscarPorCnpj(CNPJ)).thenReturn(Optional.empty());
-        
-        Optional<Editora> resultado = editoraService.buscarPorCnpj(CNPJ);
-        
-        assertFalse(resultado.isPresent());
-        
-        verify(editoraRepository).buscarPorCnpj(CNPJ);
-    }
     
     @Test
     public void testBuscarTodos() {

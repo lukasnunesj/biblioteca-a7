@@ -51,21 +51,21 @@ public class Editora {
      * CNPJ da editora.
      * Campo obrigatório com tamanho máximo de 14 caracteres.
      */
-    @Column(name = "cnpj", nullable = false, length = 14)
+    @Column(name = "cnpj", length = 14)
     private String cnpj;
 
     /**
      * Telefone de contato da editora.
-     * Campo obrigatório com tamanho máximo de 15 caracteres.
+     * Campo com tamanho máximo de 15 caracteres.
      */
-    @Column(name = "telefone", nullable = false, length = 15)
+    @Column(name = "telefone", length = 15)
     private String telefone;
 
     /**
      * Email de contato da editora.
-     * Campo obrigatório com tamanho máximo de 100 caracteres.
+     * Campo com tamanho máximo de 100 caracteres.
      */
-    @Column(name = "email", nullable = false, length = 100)
+    @Column(name = "email", length = 100)
     private String email;
 
     /**
@@ -96,15 +96,6 @@ public class Editora {
     public Editora(String nome, String cnpj, String telefone, String email) {
         if (nome == null || nome.isBlank()) {
             throw new IllegalArgumentException("Nome não pode ser vazio!");
-        }
-        if (cnpj == null || cnpj.isBlank()) {
-            throw new IllegalArgumentException("CNPJ não pode ser vazio!");
-        }
-        if (telefone == null || telefone.isBlank()) {
-            throw new IllegalArgumentException("Telefone não pode ser vazio!");
-        }
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("Email não pode ser vazio!");
         }
 
         this.nome = nome;

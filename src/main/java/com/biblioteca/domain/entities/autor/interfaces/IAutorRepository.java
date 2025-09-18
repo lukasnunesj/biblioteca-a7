@@ -12,13 +12,14 @@ import com.biblioteca.domain.entities.common.interfaces.IBaseRepository;
  */
 public interface IAutorRepository extends IBaseRepository<Autor, Long> {
 
+
     /**
-     * Busca um autor pelo seu CPF/CNPJ.
+     * Busca um autor pelo seu nome.
      * 
-     * @param cpfcnpj o CPF/CNPJ do autor a ser buscado
+     * @param nome o nome do autor a ser buscado
      * @return um Optional contendo o autor, se encontrado, ou vazio caso contrário
      */
-    Optional<Autor> buscarPorCpfcnpj(String cpfcnpj);
+    Optional<Autor> buscarPorNome(String nome);
 
     /**
      * Método de compatibilidade: Salva um autor no repositório.

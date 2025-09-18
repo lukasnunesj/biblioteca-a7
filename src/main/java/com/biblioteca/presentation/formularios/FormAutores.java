@@ -171,9 +171,7 @@ public class FormAutores extends FormPadrao {
             // Validação centralizada dos campos do formulário
             ValidacaoUtil.ValidadorFormulario validador = ValidacaoUtil.validador(this);
             validador.campo(txtNome, "Nome").obrigatorio();
-            validador.campo(txtCpfCnpj, "CPF/CNPJ").obrigatorio();
-            validador.campo(txtTelefone, "Telefone").obrigatorio();
-            validador.campo(txtEmail, "Email").obrigatorio().email();
+            validador.campo(txtEmail, "Email").email();
 
             if (!validador.validar()) {
                 return;

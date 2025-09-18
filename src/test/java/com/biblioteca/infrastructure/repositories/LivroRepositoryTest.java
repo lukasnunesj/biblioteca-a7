@@ -3,7 +3,6 @@ package com.biblioteca.infrastructure.repositories;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -39,7 +38,7 @@ public class LivroRepositoryTest {
     private final Long LIVRO_ID = 1L;
     private final String TITULO = "Dom Casmurro";
     private final String ISBN = "9788574801414";
-    private final LocalDate DATA_PUBLICACAO = LocalDate.of(1899, 1, 1);
+    private final Integer DATA_PUBLICACAO = 1899;
 
     @Before
     public void setUp() {

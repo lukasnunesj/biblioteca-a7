@@ -3,6 +3,7 @@ package com.biblioteca.api.resources;
 import com.biblioteca.domain.entities.livro.DTO.LivroDTO;
 import com.biblioteca.domain.entities.livro.Livro;
 import com.biblioteca.application.livro.usecases.IImportacaoLivroService;
+import com.biblioteca.application.livro.service.CadastrarLivroPorIsbnService;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroService;
 
 import jakarta.inject.Inject;
@@ -25,6 +26,9 @@ public class LivroResource {
     @Inject
     private IImportacaoLivroService importacaoLivroService;
 
+    @Inject
+    private CadastrarLivroPorIsbnService cadastrarLivroPorIsbnService;
+
     @GET
     public Response listarTodos() {
         List<LivroDTO> livros = livroService.buscarTodos().stream()
@@ -45,7 +49,7 @@ public class LivroResource {
     @Path("/isbn/{isbn}")
     public Response cadastrarPorIsbn(@PathParam("isbn") String isbn) {
         try {
-            return livroService.cadastrarPorIsbn(isbn)
+            return cadastrarLivroPorIsbnService.execute(isbn)
                     .map(livro -> Response.status(Response.Status.CREATED).entity(LivroDTO.fromEntity(livro)).build())
                     .orElse(Response.status(Response.Status.NOT_FOUND).entity("Livro não encontrado na OpenLibrary.").build());
         } catch (Exception e) {

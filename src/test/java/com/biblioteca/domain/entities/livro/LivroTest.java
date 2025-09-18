@@ -7,7 +7,7 @@ import org.junit.Before;
 
 import com.biblioteca.domain.entities.autor.Autor;
 import com.biblioteca.domain.entities.editora.Editora;
-import java.time.LocalDate;
+import java.time.Year;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,7 +16,7 @@ public class LivroTest {
     private Livro livro;
     private final String TITULO = "Dom Casmurro";
     private final String ISBN = "9788574801414";
-    private final LocalDate DATA_PUBLICACAO = LocalDate.of(1899, 1, 1);
+    private final Integer DATA_PUBLICACAO = 1899;
     
     @Before
     public void setUp() {
@@ -56,7 +56,7 @@ public class LivroTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void testConstrutorDataFutura() {
-        LocalDate dataFutura = LocalDate.now().plusDays(1);
+        Integer dataFutura = Year.now().getValue() + 1;
         new Livro(TITULO, ISBN, dataFutura);
     }
     
@@ -100,7 +100,7 @@ public class LivroTest {
     
     @Test
     public void testSetDataPublicacao() {
-        LocalDate novaData = LocalDate.of(1881, 1, 1);
+        Integer novaData = 1881;
         livro.setDataPublicacao(novaData);
         assertEquals(novaData, livro.getDataPublicacao());
     }
@@ -144,7 +144,7 @@ public class LivroTest {
     
     @Test
     public void testAddLivroSemelhante() {
-        Livro livroSemelhante = new Livro("Quincas Borba", "9788535921199", LocalDate.of(1891, 1, 1));
+        Livro livroSemelhante = new Livro("Quincas Borba", "9788535921199", 1891);
         livro.addLivroSemelhante(livroSemelhante);
         assertTrue(livro.getLivrosSemelhantes().contains(livroSemelhante));
         assertEquals(1, livro.getLivrosSemelhantes().size());
@@ -152,7 +152,7 @@ public class LivroTest {
     
     @Test
     public void testRemoveLivroSemelhante() {
-        Livro livroSemelhante = new Livro("Quincas Borba", "9788535921199", LocalDate.of(1891, 1, 1));
+        Livro livroSemelhante = new Livro("Quincas Borba", "9788535921199", 1891);
         livro.addLivroSemelhante(livroSemelhante);
         livro.removeLivroSemelhante(livroSemelhante);
         assertFalse(livro.getLivrosSemelhantes().contains(livroSemelhante));
@@ -162,8 +162,8 @@ public class LivroTest {
     @Test
     public void testSetLivrosSemelhantes() {
         Set<Livro> livrosSemelhantes = new HashSet<>();
-        Livro livro1 = new Livro("Quincas Borba", "9788535921199", LocalDate.of(1891, 1, 1));
-        Livro livro2 = new Livro("Memórias Póstumas de Brás Cubas", "9788535921182", LocalDate.of(1881, 1, 1));
+        Livro livro1 = new Livro("Quincas Borba", "9788535921199", 1891);
+        Livro livro2 = new Livro("Memórias Póstumas de Brás Cubas", "9788535921182", 1881);
         livrosSemelhantes.add(livro1);
         livrosSemelhantes.add(livro2);
         

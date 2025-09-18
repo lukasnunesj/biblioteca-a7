@@ -78,28 +78,7 @@ public class AutorServiceTest {
         verify(autorRepository).findById(ID);
     }
     
-    @Test
-    public void testBuscarPorCpfcnpj() {
-        when(autorRepository.buscarPorCpfcnpj(CPFCNPJ)).thenReturn(Optional.of(autor));
-        
-        Optional<Autor> resultado = autorService.buscarPorCpfcnpj(CPFCNPJ);
-        
-        assertTrue(resultado.isPresent());
-        assertEquals(autor, resultado.get());
-        
-        verify(autorRepository).buscarPorCpfcnpj(CPFCNPJ);
-    }
     
-    @Test
-    public void testBuscarPorCpfcnpjNaoEncontrado() {
-        when(autorRepository.buscarPorCpfcnpj(CPFCNPJ)).thenReturn(Optional.empty());
-        
-        Optional<Autor> resultado = autorService.buscarPorCpfcnpj(CPFCNPJ);
-        
-        assertFalse(resultado.isPresent());
-        
-        verify(autorRepository).buscarPorCpfcnpj(CPFCNPJ);
-    }
     
     @Test
     public void testBuscarTodos() {
