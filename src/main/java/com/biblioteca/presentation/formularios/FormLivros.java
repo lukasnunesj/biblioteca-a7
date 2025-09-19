@@ -6,14 +6,18 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.JTextField;
 import javax.swing.JFormattedTextField;
@@ -29,7 +33,8 @@ import com.biblioteca.presentation.util.ApiClient;
 public class FormLivros extends FormPadrao {
     private JTextField txtTitulo, txtIsbn;
     private JFormattedTextField txtDataPublicacao;
-    private JComboBox<AutorDTO> cbAutores;
+    private JList<AutorDTO> listaAutores;
+    private DefaultListModel<AutorDTO> modeloAutores;
     private JComboBox<EditoraDTO> cbEditora;
     private JButton btnBuscarPorIsbn;
     private JButton btnGerenciarSemelhantes;
@@ -52,16 +57,23 @@ public class FormLivros extends FormPadrao {
             Integer dataPublicacao = Integer.parseInt(txtDataPublicacao.getText());
 
             EditoraDTO editoraSelecionada = (EditoraDTO) cbEditora.getSelectedItem();
-            AutorDTO autorSelecionado = (AutorDTO) cbAutores.getSelectedItem();
+            List<AutorDTO> autoresSelecionados = listaAutores.getSelectedValuesList();
 
-            if (editoraSelecionada == null || autorSelecionado == null) {
-                JOptionPane.showMessageDialog(this, "Selecione uma editora e um autor.", "Erro de Validação",
+            if (editoraSelecionada == null) {
+                JOptionPane.showMessageDialog(this, "Selecione uma editora.", "Erro de Validação",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if (autoresSelecionados.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Selecione pelo menos um autor.", "Erro de Validação",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            List<Long> autoresIds = new ArrayList<>();
-            autoresIds.add(autorSelecionado.getId());
+            List<Long> autoresIds = autoresSelecionados.stream()
+                    .map(AutorDTO::getId)
+                    .collect(Collectors.toList());
 
             Long id = (livroParaEdicao != null) ? livroParaEdicao.getId() : null;
             List<Long> semelhantesIds = (livroParaEdicao != null) ? livroParaEdicao.getLivrosSemelhantesIds()
@@ -157,13 +169,16 @@ public class FormLivros extends FormPadrao {
 
         // Linha 3: Autores
         gbc.gridy++;
-        painelFormulario.add(new JLabel("Autores:"), gbc);
+        painelFormulario.add(new JLabel("Autores (selecione um ou mais):"), gbc);
 
         gbc.gridy++;
-        cbAutores = new JComboBox<>();
+        modeloAutores = new DefaultListModel<>();
+        listaAutores = new JList<>(modeloAutores);
+        listaAutores.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         carregarAutores();
-        cbAutores.setEditable(true);
-        painelFormulario.add(cbAutores, gbc);
+        JScrollPane scrollAutores = new JScrollPane(listaAutores);
+        scrollAutores.setPreferredSize(new java.awt.Dimension(300, 100));
+        painelFormulario.add(scrollAutores, gbc);
 
         // Adiciona um painel espaçador para empurrar o conteúdo para cima
         gbc.gridy++;
@@ -213,15 +228,18 @@ public class FormLivros extends FormPadrao {
             }
         }
 
-        // Seleciona o primeiro autor no ComboBox
+        // Seleciona os autores na lista
         if (livroParaEdicao.getAutoresIds() != null && !livroParaEdicao.getAutoresIds().isEmpty()) {
-            Long primeiroAutorId = livroParaEdicao.getAutoresIds().get(0);
-            for (int i = 0; i < cbAutores.getItemCount(); i++) {
-                if (cbAutores.getItemAt(i).getId().equals(primeiroAutorId)) {
-                    cbAutores.setSelectedIndex(i);
-                    break;
+            List<Integer> indicesSelecionados = new ArrayList<>();
+            for (int i = 0; i < modeloAutores.size(); i++) {
+                AutorDTO autor = modeloAutores.getElementAt(i);
+                if (livroParaEdicao.getAutoresIds().contains(autor.getId())) {
+                    indicesSelecionados.add(i);
                 }
             }
+            
+            int[] indices = indicesSelecionados.stream().mapToInt(Integer::intValue).toArray();
+            listaAutores.setSelectedIndices(indices);
         }
     }
 
@@ -240,9 +258,9 @@ public class FormLivros extends FormPadrao {
     private void carregarAutores() {
         try {
             List<AutorDTO> autores = apiClient.get("/autores", ApiClient.listOf(AutorDTO.class));
-            cbAutores.removeAllItems();
+            modeloAutores.clear();
             for (AutorDTO autor : autores) {
-                cbAutores.addItem(autor);
+                modeloAutores.addElement(autor);
             }
         } catch (Exception e) {
             ExceptionHandler.tratar(e, this);

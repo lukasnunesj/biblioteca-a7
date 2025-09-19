@@ -17,6 +17,7 @@ import com.biblioteca.domain.entities.autor.Autor;
 import com.biblioteca.domain.entities.autor.interfaces.IAutorService;
 import com.biblioteca.domain.entities.editora.Editora;
 import com.biblioteca.domain.entities.editora.interfaces.IEditoraService;
+import com.biblioteca.domain.entities.livro.Livro;
 import com.biblioteca.domain.entities.livro.DTO.LivroDTO;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroService;
 
@@ -92,5 +93,47 @@ public class ImportacaoLivroServiceTest {
 
         verify(autorService, never()).salvar(any());
         verify(livroService, times(1)).salvar(any(LivroDTO.class));
+    }
+    
+    @Test
+    public void deveAtualizarLivroSeIsbnJaExistir() {
+        // Preparar dados de teste
+        String isbn = "978-3-16-148410-0";
+        String csvContent = "titulo,isbn,data_publicacao,editora,autores\n" +
+                            "Livro Atualizado," + isbn + ",2023,Editora Nova,Autor Novo";
+        InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes(StandardCharsets.UTF_8));
+        
+        // Criar livro existente
+        Livro livroExistente = new Livro();
+        livroExistente.setId(123L);
+        livroExistente.setTitulo("Livro Original");
+        livroExistente.setIsbn(isbn);
+        livroExistente.setDataPublicacao(2020);
+        
+        // Configurar mocks
+        Editora editoraNova = new Editora();
+        editoraNova.setId(456L);
+        editoraNova.setNome("Editora Nova");
+        
+        Autor autorNovo = new Autor();
+        autorNovo.setId(789L);
+        autorNovo.setNome("Autor Novo");
+        
+        when(livroService.buscarPorIsbn(isbn)).thenReturn(Optional.of(livroExistente));
+        when(editoraService.buscarPorNome("Editora Nova")).thenReturn(Optional.of(editoraNova));
+        when(autorService.buscarPorNome("Autor Novo")).thenReturn(Optional.of(autorNovo));
+        when(autorService.buscarPorId(789L)).thenReturn(Optional.of(autorNovo));
+        
+        // Executar o método a ser testado
+        importacaoLivroService.importar(inputStream);
+        
+        // Verificar que o método fromEntity e salvar foram chamados
+        verify(livroService).salvar(any(LivroDTO.class));
+        
+        // Verificar que o livro existente foi atualizado com os novos valores
+        verify(livroService).buscarPorIsbn(isbn);
+        verify(editoraService).buscarPorNome("Editora Nova");
+        verify(autorService).buscarPorNome("Autor Novo");
+        verify(autorService).buscarPorId(789L);
     }
 }

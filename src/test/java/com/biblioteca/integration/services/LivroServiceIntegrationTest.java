@@ -71,6 +71,52 @@ public class LivroServiceIntegrationTest extends IntegrationTestBase {
         assertThat(livroSalvo.getAutores()).hasSize(1);
         assertThat(livroSalvo.getAutores().iterator().next().getId()).isEqualTo(autor.getId());
     }
+    
+    @Test
+    public void testSalvarComMultiplosAutores() {
+        // Arrange
+        Editora editora = criarEditora();
+        Autor autor1 = criarAutor();
+        Autor autor2 = criarOutroAutor();
+
+        // Usar um ISBN único para evitar conflitos
+        String isbnUnico = String.format("978%010d", Math.abs(System.nanoTime() % 10000000000L));
+
+        LivroDTO livroDTO = new LivroDTO(
+                null,
+                "Grande Sertão: Veredas",
+                isbnUnico,
+                1956,
+                editora.getId(),
+                Arrays.asList(autor1.getId(), autor2.getId()),
+                new java.util.ArrayList<>());
+
+        // Act
+        Livro livroSalvo = livroService.salvar(livroDTO);
+
+        // Assert
+        assertThat(livroSalvo.getId()).isNotNull();
+        assertThat(livroSalvo.getTitulo()).isEqualTo("Grande Sertão: Veredas");
+        assertThat(livroSalvo.getIsbn()).isEqualTo(isbnUnico);
+        assertThat(livroSalvo.getDataPublicacao()).isEqualTo(1956);
+        assertThat(livroSalvo.getEditora().getId()).isEqualTo(editora.getId());
+        assertThat(livroSalvo.getAutores()).hasSize(2);
+        
+        // Verificar se os dois autores estão presentes
+        boolean autor1Encontrado = false;
+        boolean autor2Encontrado = false;
+        
+        for (Autor autor : livroSalvo.getAutores()) {
+            if (autor.getId().equals(autor1.getId())) {
+                autor1Encontrado = true;
+            } else if (autor.getId().equals(autor2.getId())) {
+                autor2Encontrado = true;
+            }
+        }
+        
+        assertThat(autor1Encontrado).isTrue();
+        assertThat(autor2Encontrado).isTrue();
+    }
 
     @Test
     public void testBuscarPorId() {
@@ -175,6 +221,11 @@ public class LivroServiceIntegrationTest extends IntegrationTestBase {
 
     private Autor criarAutor() {
         Autor autor = new Autor("Machado de Assis", "123.456.789-00", "(21) 99999-9999", "machado@exemplo.com");
+        return autorRepository.save(autor);
+    }
+    
+    private Autor criarOutroAutor() {
+        Autor autor = new Autor("Guimarães Rosa", "987.654.321-00", "(31) 88888-8888", "rosa@exemplo.com");
         return autorRepository.save(autor);
     }
 

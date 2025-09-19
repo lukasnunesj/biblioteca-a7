@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -17,6 +20,7 @@ import com.biblioteca.domain.entities.autor.interfaces.IAutorService;
 import com.biblioteca.domain.entities.editora.Editora;
 import com.biblioteca.domain.entities.editora.DTO.EditoraDTO;
 import com.biblioteca.domain.entities.editora.interfaces.IEditoraService;
+import com.biblioteca.domain.entities.livro.Livro;
 import com.biblioteca.domain.entities.livro.DTO.LivroDTO;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroService;
 import jakarta.ejb.Stateless;
@@ -46,6 +50,10 @@ public class ImportacaoLivroService implements IImportacaoLivroService {
                 CSVParser csvParser = new CSVParser(fileReader, csvFormat)) {
 
             for (CSVRecord csvRecord : csvParser) {
+                String isbn = csvRecord.get("isbn");
+                String titulo = csvRecord.get("titulo");
+                int dataPublicacao = Integer.parseInt(csvRecord.get("data_publicacao"));
+
                 // Processar Editora
                 String nomeEditora = csvRecord.get("editora");
                 Editora editora = buscarOuCriarEditora(nomeEditora);
@@ -58,15 +66,44 @@ public class ImportacaoLivroService implements IImportacaoLivroService {
                         .map(Autor::getId)
                         .collect(Collectors.toList());
 
-                // Criar LivroDTO
-                LivroDTO livroDTO = new LivroDTO();
-                livroDTO.setTitulo(csvRecord.get("titulo"));
-                livroDTO.setIsbn(csvRecord.get("isbn"));
-                livroDTO.setDataPublicacao(Integer.parseInt(csvRecord.get("data_publicacao")));
-                livroDTO.setEditoraId(editora.getId());
-                livroDTO.setAutoresIds(autoresIds);
+                // Verificar se o livro já existe pelo ISBN
+                Optional<Livro> livroExistenteOpt = livroService.buscarPorIsbn(isbn);
 
-                livroService.salvar(livroDTO);
+                System.err.println("Livro existente: " + livroExistenteOpt);
+
+                if (livroExistenteOpt.isPresent()) {
+                    // Se o livro já existe, atualiza os dados
+                    Livro livroExistente = livroExistenteOpt.get();
+
+                    // Atualizar os dados do livro existente
+                    livroExistente.setTitulo(titulo);
+                    livroExistente.setDataPublicacao(dataPublicacao);
+                    livroExistente.setEditora(editora);
+
+                    // Atualizar autores
+                    Set<Autor> autores = new HashSet<>();
+                    for (Long autorId : autoresIds) {
+                        Autor autor = autorService.buscarPorId(autorId)
+                                .orElseThrow(
+                                        () -> new RuntimeException("Autor com ID " + autorId + " não encontrado."));
+                        autores.add(autor);
+                    }
+                    livroExistente.setAutores(autores);
+
+                    // Salvar o livro atualizado diretamente
+                    System.err.println("Livro atualizado: " + livroExistente);
+                    livroService.salvar(LivroDTO.fromEntity(livroExistente));
+                } else {
+                    // Criar um novo livro
+                    LivroDTO livroDTO = new LivroDTO();
+                    livroDTO.setTitulo(titulo);
+                    livroDTO.setIsbn(isbn);
+                    livroDTO.setDataPublicacao(dataPublicacao);
+                    livroDTO.setEditoraId(editora.getId());
+                    livroDTO.setAutoresIds(autoresIds);
+
+                    livroService.salvar(livroDTO);
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException("Falha ao processar o arquivo CSV: " + e.getMessage());

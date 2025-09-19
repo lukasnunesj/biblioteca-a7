@@ -110,11 +110,10 @@ public class LivroRepository extends BaseRepository<Livro, Long> implements ILiv
             String termoLike = "%" + termo.toLowerCase() + "%";
 
             Predicate predicado = cb.or(
-                cb.like(cb.lower(livro.get("titulo")), termoLike),
-                cb.like(cb.lower(livro.get("isbn")), termoLike),
-                cb.like(cb.lower(livro.get("editora").get("nome")), termoLike),
-                cb.like(cb.lower(livro.join("autores").get("nome")), termoLike)
-            );
+                    cb.like(cb.lower(livro.get("titulo")), termoLike),
+                    cb.like(cb.lower(livro.get("isbn")), termoLike),
+                    cb.like(cb.lower(livro.get("editora").get("nome")), termoLike),
+                    cb.like(cb.lower(livro.join("autores").get("nome")), termoLike));
 
             cq.select(livro).where(predicado).distinct(true);
 

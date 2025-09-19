@@ -86,7 +86,7 @@ public class LivroService implements ILivroService {
             }
         }
         livro.setLivrosSemelhantes(livrosSemelhantes);
-
+        System.err.println("Livro salvo: " + livro);
         return livroRepository.save(livro);
     }
 
@@ -99,7 +99,9 @@ public class LivroService implements ILivroService {
     @Override
     public Optional<Livro> buscarPorIsbn(String isbn) {
         LOGGER.info("Buscando livro por ISBN: " + isbn);
-        return livroRepository.buscarPorIsbn(isbn);
+        // Normalizar o ISBN removendo os hífens antes de chamar o repositório
+        String isbnNormalizado = isbn != null ? isbn.replace("-", "") : isbn;
+        return livroRepository.buscarPorIsbn(isbnNormalizado);
     }
 
     @Override

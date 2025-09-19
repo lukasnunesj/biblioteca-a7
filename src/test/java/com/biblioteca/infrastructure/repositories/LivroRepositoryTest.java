@@ -137,6 +137,9 @@ public class LivroRepositoryTest {
         verify(query).setParameter("isbn", ISBN);
         verify(query).getResultStream();
     }
+    
+    // Teste de normalização de ISBN foi movido para o LivroServiceTest
+    // pois a responsabilidade de normalização agora é do serviço
 
     @Test
     public void testBuscarPorIsbnNaoEncontrado() {

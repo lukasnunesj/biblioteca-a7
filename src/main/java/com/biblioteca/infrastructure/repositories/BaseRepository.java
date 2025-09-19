@@ -34,6 +34,7 @@ public abstract class BaseRepository<T, ID> implements IBaseRepository<T, ID> {
     @Transactional
     public T save(T entity) {
         try {
+            System.err.println("Salvando entidade: " + entity);
             return entityManager.merge(entity);
         } catch (Exception e) {
             throw new PersistenciaException("Erro ao salvar entidade: " + entity.getClass().getSimpleName(), e);

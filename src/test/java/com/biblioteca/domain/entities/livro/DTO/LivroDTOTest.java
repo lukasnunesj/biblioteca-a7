@@ -114,4 +114,50 @@ public class LivroDTOTest {
         assertEquals(1, livroDTO.getAutoresIds().size());
         assertEquals(Long.valueOf(1L), livroDTO.getAutoresIds().get(0));
     }
+    
+    @Test
+    public void testFromEntityWithMultiplosAutores() {
+        // Create a Livro with multiple authors
+        Livro livro = new Livro("Grande Sertão: Veredas", "9788535921182", 1956);
+        livro.setId(2L);
+        
+        // Create editora
+        Editora editora = new Editora("Companhia das Letras", "12345678901234", "(11) 99999-9999", "contato@companhia.com");
+        editora.setId(2L);
+        livro.setEditora(editora);
+        
+        // Add multiple authors
+        HashSet<Autor> autores = new HashSet<>();
+        
+        Autor autor1 = new Autor("Guimarães Rosa", "123.456.789-00", "(31) 99999-9999", "rosa@exemplo.com");
+        autor1.setId(2L);
+        autores.add(autor1);
+        
+        Autor autor2 = new Autor("Carlos Drummond", "987.654.321-00", "(31) 88888-8888", "drummond@exemplo.com");
+        autor2.setId(3L);
+        autores.add(autor2);
+        
+        Autor autor3 = new Autor("Clarice Lispector", "111.222.333-44", "(21) 77777-7777", "clarice@exemplo.com");
+        autor3.setId(4L);
+        autores.add(autor3);
+        
+        livro.setAutores(autores);
+        
+        // Convert to DTO
+        LivroDTO livroDTO = LivroDTO.fromEntity(livro);
+        
+        // Verify conversion worked correctly
+        assertNotNull(livroDTO);
+        assertEquals(Long.valueOf(2L), livroDTO.getId());
+        assertEquals("Grande Sertão: Veredas", livroDTO.getTitulo());
+        assertEquals("9788535921182", livroDTO.getIsbn());
+        assertEquals(Integer.valueOf(1956), livroDTO.getDataPublicacao());
+        assertEquals(Long.valueOf(2L), livroDTO.getEditoraId());
+        
+        // Verify all authors were converted correctly
+        assertEquals(3, livroDTO.getAutoresIds().size());
+        assertTrue(livroDTO.getAutoresIds().contains(2L));
+        assertTrue(livroDTO.getAutoresIds().contains(3L));
+        assertTrue(livroDTO.getAutoresIds().contains(4L));
+    }
 }

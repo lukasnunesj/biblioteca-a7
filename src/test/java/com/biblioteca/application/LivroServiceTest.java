@@ -130,6 +130,23 @@ public class LivroServiceTest {
     }
     
     @Test
+    public void testBuscarPorIsbnComHifens() {
+        // ISBN com hífens
+        String isbnComHifens = "978-8574-8014-14";
+        String isbnNormalizado = "9788574801414";
+        
+        when(livroRepository.buscarPorIsbn(isbnNormalizado)).thenReturn(Optional.of(livro));
+        
+        Optional<Livro> resultado = livroService.buscarPorIsbn(isbnComHifens);
+        
+        assertTrue(resultado.isPresent());
+        assertEquals(livro, resultado.get());
+        
+        // Verificar que o repositório foi chamado com o ISBN normalizado
+        verify(livroRepository).buscarPorIsbn(isbnNormalizado);
+    }
+    
+    @Test
     public void testBuscarPorIsbnNaoEncontrado() {
         when(livroRepository.buscarPorIsbn(ISBN)).thenReturn(Optional.empty());
         
