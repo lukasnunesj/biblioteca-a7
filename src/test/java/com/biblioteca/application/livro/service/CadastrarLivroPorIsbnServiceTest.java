@@ -23,6 +23,17 @@ import com.biblioteca.domain.entities.livro.DTO.OpenLibraryResponseDTO;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroRepository;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroService;
 
+/**
+ * Testes para o serviço CadastrarLivroPorIsbnService.
+ * <p>
+ * Esta classe testa o caso de uso de cadastro de livros a partir do ISBN,
+ * verificando diferentes cenários como livro já existente, livro não encontrado
+ * na API externa e cadastro com sucesso.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
+ */
 public class CadastrarLivroPorIsbnServiceTest {
 
     @InjectMocks
@@ -47,6 +58,10 @@ public class CadastrarLivroPorIsbnServiceTest {
     private Editora editora;
     private Autor autor;
 
+    /**
+     * Configura o ambiente de teste antes de cada teste.
+     * Inicializa os mocks e cria objetos de teste para editora, autor e livro.
+     */
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -58,6 +73,10 @@ public class CadastrarLivroPorIsbnServiceTest {
         livro.setId(1L);
     }
 
+    /**
+     * Testa o cenário em que o livro já existe no sistema.
+     * Verifica se o serviço retorna o livro existente sem consultar a API externa.
+     */
     @Test
     public void testExecute_LivroJaExiste() {
         String isbn = "9788574801414";
@@ -71,6 +90,10 @@ public class CadastrarLivroPorIsbnServiceTest {
         verify(openLibraryService, never()).buscarLivroPorIsbn(any());
     }
 
+    /**
+     * Testa o cenário em que o livro não é encontrado na API externa.
+     * Verifica se o serviço retorna um Optional vazio quando o livro não é encontrado.
+     */
     @Test
     public void testExecute_LivroNaoEncontradoNaAPI() {
         String isbn = "9788574801414";
@@ -84,6 +107,10 @@ public class CadastrarLivroPorIsbnServiceTest {
         verify(openLibraryService).buscarLivroPorIsbn(isbn);
     }
 
+    /**
+     * Testa o cenário de sucesso com dados completos da API externa.
+     * Verifica se o serviço cria corretamente o livro, autor e editora a partir dos dados da API.
+     */
     @Test
     public void testExecute_SucessoComDadosCompletos() {
         String isbn = "9788574801414";

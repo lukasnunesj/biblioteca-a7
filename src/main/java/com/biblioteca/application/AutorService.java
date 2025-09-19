@@ -13,6 +13,16 @@ import com.biblioteca.domain.entities.autor.interfaces.IAutorRepository;
 import com.biblioteca.domain.entities.autor.interfaces.IAutorService;
 import com.biblioteca.infrastructure.exceptions.RecursoNaoEncontradoException;
 
+/**
+ * Serviço para gerenciamento de autores.
+ * <p>
+ * Esta classe implementa a interface IAutorService e fornece
+ * funcionalidades para criar, buscar, atualizar e remover autores.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
+ */
 @Stateless
 public class AutorService implements IAutorService {
 
@@ -25,7 +35,6 @@ public class AutorService implements IAutorService {
      * Construtor padrão para CDI
      */
     public AutorService() {
-        // Construtor vazio para CDI
     }
     
     /**
@@ -42,10 +51,8 @@ public class AutorService implements IAutorService {
     public Autor salvar(AutorDTO autorDTO) {
         LOGGER.info("Salvando autor: " + autorDTO.getNome());
 
-        // Valida os dados do DTO antes de prosseguir
         autorDTO.validar();
 
-        // Valida duplicidade por nome
         Optional<Autor> autorPorNome = autorRepository.buscarPorNome(autorDTO.getNome());
         if (autorPorNome.isPresent() && (autorDTO.getId() == null || !autorDTO.getId().equals(autorPorNome.get().getId()))) {
             throw new IllegalArgumentException("Já existe um autor cadastrado com este nome.");
@@ -66,6 +73,9 @@ public class AutorService implements IAutorService {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Autor> buscarPorNome(String nome) {
         LOGGER.info("Buscando autor por nome: " + nome);
@@ -101,6 +111,9 @@ public class AutorService implements IAutorService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Autor> findByTermo(String termo) {
         LOGGER.info("Buscando autores por termo: " + termo);

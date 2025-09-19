@@ -19,6 +19,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
+/**
+ * Serviço para gerenciamento de livros.
+ * <p>
+ * Esta classe implementa a interface ILivroService e fornece
+ * funcionalidades para criar, buscar, atualizar e remover livros.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
+ */
 @Stateless
 public class LivroService implements ILivroService {
 
@@ -36,9 +46,20 @@ public class LivroService implements ILivroService {
     @Inject
     private OpenLibraryService openLibraryService;
 
+    /**
+     * Construtor padrão para CDI
+     */
     public LivroService() {
     }
 
+    /**
+     * Construtor para testes com injeção manual
+     * 
+     * @param livroRepository repositório de livros
+     * @param editoraService serviço de editoras
+     * @param autorService serviço de autores
+     * @param openLibraryService serviço da OpenLibrary
+     */
     public LivroService(ILivroRepository livroRepository, IEditoraService editoraService, IAutorService autorService, OpenLibraryService openLibraryService) {
         this.livroRepository = livroRepository;
         this.editoraService = editoraService;
@@ -46,6 +67,9 @@ public class LivroService implements ILivroService {
         this.openLibraryService = openLibraryService;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Livro salvar(LivroDTO livroDTO) {
         LOGGER.info("Salvando livro: " + livroDTO.getTitulo());
@@ -86,30 +110,40 @@ public class LivroService implements ILivroService {
             }
         }
         livro.setLivrosSemelhantes(livrosSemelhantes);
-        System.err.println("Livro salvo: " + livro);
         return livroRepository.save(livro);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Livro> buscarPorId(Long id) {
         LOGGER.info("Buscando livro por ID: " + id);
         return livroRepository.findById(id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Livro> buscarPorIsbn(String isbn) {
         LOGGER.info("Buscando livro por ISBN: " + isbn);
-        // Normalizar o ISBN removendo os hífens antes de chamar o repositório
         String isbnNormalizado = isbn != null ? isbn.replace("-", "") : isbn;
         return livroRepository.buscarPorIsbn(isbnNormalizado);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Livro> buscarTodos() {
         LOGGER.info("Buscando todos os livros.");
         return livroRepository.findAll();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void remover(LivroDTO livroDTO) {
         LOGGER.info("Removendo livro com ID: " + livroDTO.getId());
@@ -125,6 +159,9 @@ public class LivroService implements ILivroService {
         LOGGER.info("Livro removido com sucesso.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Livro> findByTermo(String termo) {
         LOGGER.info("Buscando livros por termo: " + termo);

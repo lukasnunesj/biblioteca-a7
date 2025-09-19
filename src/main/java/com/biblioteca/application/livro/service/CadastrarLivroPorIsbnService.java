@@ -21,6 +21,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
+/**
+ * Serviço responsável por cadastrar livros a partir de um ISBN.
+ * <p>
+ * Esta classe utiliza o serviço OpenLibrary para buscar informações de livros
+ * pelo ISBN e cadastrá-los no sistema, incluindo seus autores e editora.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
+ */
 @Stateless
 public class CadastrarLivroPorIsbnService {
 
@@ -41,6 +51,16 @@ public class CadastrarLivroPorIsbnService {
     @Inject
     private ILivroService livroService;
 
+    /**
+     * Executa o caso de uso para cadastrar um livro a partir do ISBN.
+     * <p>
+     * Verifica se o livro já existe no sistema. Se não existir, busca as informações
+     * na OpenLibrary e cadastra o livro, incluindo seus autores e editora.
+     * </p>
+     *
+     * @param isbn o ISBN do livro a ser cadastrado
+     * @return um Optional contendo o livro cadastrado, ou vazio se não foi possível cadastrar
+     */
     public Optional<Livro> execute(String isbn) {
         LOGGER.info("Executando caso de uso para cadastrar livro por ISBN: " + isbn);
 
@@ -89,6 +109,16 @@ public class CadastrarLivroPorIsbnService {
         });
     }
 
+    /**
+     * Converte uma string de data para o ano de publicação.
+     * <p>
+     * Tenta converter a string de data em vários formatos diferentes.
+     * Se não conseguir, tenta interpretar a string como um número inteiro.
+     * </p>
+     *
+     * @param dataString a string contendo a data de publicação
+     * @return o ano de publicação como Integer, ou null se não for possível converter
+     */
     private Integer parseDataPublicacao(String dataString) {
         String[] formatos = {"MMM yyyy", "MMMM yyyy", "dd MMM yyyy", "yyyy-MM-dd", "MM/dd/yyyy"};
         for (String formato : formatos) {
@@ -96,7 +126,6 @@ public class CadastrarLivroPorIsbnService {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formato);
                 return java.time.LocalDate.parse(dataString, formatter).getYear();
             } catch (DateTimeParseException e) {
-                // Continua
             }
         }
         try {
@@ -107,6 +136,12 @@ public class CadastrarLivroPorIsbnService {
         return null;
     }
 
+    /**
+     * Busca uma editora pelo nome ou cria uma nova se não existir.
+     *
+     * @param nomeEditora o nome da editora a ser buscada ou criada
+     * @return a editora encontrada ou criada
+     */
     private Editora buscarOuCriarEditora(String nomeEditora) {
         return editoraService.buscarPorNome(nomeEditora).orElseGet(() -> {
             EditoraDTO novaEditoraDTO = new EditoraDTO();
@@ -115,6 +150,12 @@ public class CadastrarLivroPorIsbnService {
         });
     }
 
+    /**
+     * Busca um autor pelo nome ou cria um novo se não existir.
+     *
+     * @param nomeAutor o nome do autor a ser buscado ou criado
+     * @return o autor encontrado ou criado
+     */
     private Autor buscarOuCriarAutor(String nomeAutor) {
         return autorService.buscarPorNome(nomeAutor).orElseGet(() -> {
             AutorDTO novoAutorDTO = new AutorDTO();

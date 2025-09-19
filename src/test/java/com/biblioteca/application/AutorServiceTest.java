@@ -17,6 +17,16 @@ import com.biblioteca.domain.entities.autor.Autor;
 import com.biblioteca.domain.entities.autor.DTO.AutorDTO;
 import com.biblioteca.domain.entities.autor.interfaces.IAutorRepository;
 
+/**
+ * Testes unitários para a classe AutorService.
+ * <p>
+ * Esta classe testa as funcionalidades do serviço de autores,
+ * utilizando mocks para simular o comportamento do repositório.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
+ */
 public class AutorServiceTest {
 
     @InjectMocks
@@ -33,6 +43,10 @@ public class AutorServiceTest {
     private final String TELEFONE = "(31) 99999-9999";
     private final String EMAIL = "carlos@exemplo.com";
     
+    /**
+     * Configura o ambiente de teste antes de cada método de teste.
+     * Inicializa os mocks e cria objetos de teste.
+     */
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -43,6 +57,10 @@ public class AutorServiceTest {
         autorDTO = new AutorDTO(ID, NOME, CPFCNPJ, TELEFONE, EMAIL);
     }
     
+    /**
+     * Testa o método de salvar autor.
+     * Verifica se o autor é salvo corretamente e se o repositório é chamado.
+     */
     @Test
     public void testSalvar() {
         when(autorRepository.save(any(Autor.class))).thenReturn(autor);
@@ -55,6 +73,10 @@ public class AutorServiceTest {
         verify(autorRepository).save(any(Autor.class));
     }
     
+    /**
+     * Testa o método de buscar autor por ID quando o autor existe.
+     * Verifica se o autor correto é retornado.
+     */
     @Test
     public void testBuscarPorId() {
         when(autorRepository.findById(ID)).thenReturn(Optional.of(autor));
@@ -67,6 +89,10 @@ public class AutorServiceTest {
         verify(autorRepository).findById(ID);
     }
     
+    /**
+     * Testa o método de buscar autor por ID quando o autor não existe.
+     * Verifica se um Optional vazio é retornado.
+     */
     @Test
     public void testBuscarPorIdNaoEncontrado() {
         when(autorRepository.findById(ID)).thenReturn(Optional.empty());
@@ -80,6 +106,10 @@ public class AutorServiceTest {
     
     
     
+    /**
+     * Testa o método de buscar todos os autores.
+     * Verifica se a lista de autores é retornada corretamente.
+     */
     @Test
     public void testBuscarTodos() {
         List<Autor> autores = Arrays.asList(autor);
@@ -93,6 +123,10 @@ public class AutorServiceTest {
         verify(autorRepository).findAll();
     }
     
+    /**
+     * Testa o método de remover autor.
+     * Verifica se o autor é removido corretamente e se o repositório é chamado.
+     */
     @Test
     public void testRemover() {
         when(autorRepository.findById(ID)).thenReturn(Optional.of(autor));

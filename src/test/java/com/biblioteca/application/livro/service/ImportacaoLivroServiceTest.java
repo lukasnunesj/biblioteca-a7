@@ -21,6 +21,17 @@ import com.biblioteca.domain.entities.livro.Livro;
 import com.biblioteca.domain.entities.livro.DTO.LivroDTO;
 import com.biblioteca.domain.entities.livro.interfaces.ILivroService;
 
+/**
+ * Testes unitários para o serviço ImportacaoLivroService.
+ * <p>
+ * Esta classe testa o processo de importação de livros a partir de arquivos CSV,
+ * verificando diferentes cenários como criação de novos registros, reutilização
+ * de entidades existentes e atualização de livros.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
+ */
 public class ImportacaoLivroServiceTest {
 
     @Mock
@@ -35,11 +46,19 @@ public class ImportacaoLivroServiceTest {
     @InjectMocks
     private ImportacaoLivroService importacaoLivroService;
 
+    /**
+     * Configura o ambiente de teste antes de cada teste.
+     * Inicializa os mocks para simular as dependências.
+     */
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * Testa o cenário em que novos livros são importados e todos os registros
+     * relacionados (editora e autor) precisam ser criados.
+     */
     @Test
     public void deveImportarNovosLivrosECriarRegistros() {
         String csvContent = "titulo,isbn,data_publicacao,editora,autores\n" +
@@ -59,6 +78,10 @@ public class ImportacaoLivroServiceTest {
         verify(livroService, times(1)).salvar(any(LivroDTO.class));
     }
 
+    /**
+     * Testa o cenário em que uma editora com o mesmo nome já existe no sistema.
+     * Verifica se o serviço reutiliza a editora existente em vez de criar uma nova.
+     */
     @Test
     public void deveReutilizarEditoraSeNomeExistir() {
         String csvContent = "titulo,isbn,data_publicacao,editora,autores\n" +
@@ -77,6 +100,10 @@ public class ImportacaoLivroServiceTest {
         verify(livroService, times(1)).salvar(any(LivroDTO.class));
     }
 
+    /**
+     * Testa o cenário em que um autor com o mesmo nome já existe no sistema.
+     * Verifica se o serviço reutiliza o autor existente em vez de criar um novo.
+     */
     @Test
     public void deveReutilizarAutorSeNomeExistir() {
         String csvContent = "titulo,isbn,data_publicacao,editora,autores\n" +
@@ -95,22 +122,23 @@ public class ImportacaoLivroServiceTest {
         verify(livroService, times(1)).salvar(any(LivroDTO.class));
     }
     
+    /**
+     * Testa o cenário em que um livro com o mesmo ISBN já existe no sistema.
+     * Verifica se o serviço atualiza o livro existente em vez de criar um novo.
+     */
     @Test
     public void deveAtualizarLivroSeIsbnJaExistir() {
-        // Preparar dados de teste
         String isbn = "978-3-16-148410-0";
         String csvContent = "titulo,isbn,data_publicacao,editora,autores\n" +
                             "Livro Atualizado," + isbn + ",2023,Editora Nova,Autor Novo";
         InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes(StandardCharsets.UTF_8));
         
-        // Criar livro existente
         Livro livroExistente = new Livro();
         livroExistente.setId(123L);
         livroExistente.setTitulo("Livro Original");
         livroExistente.setIsbn(isbn);
         livroExistente.setDataPublicacao(2020);
         
-        // Configurar mocks
         Editora editoraNova = new Editora();
         editoraNova.setId(456L);
         editoraNova.setNome("Editora Nova");
@@ -124,13 +152,10 @@ public class ImportacaoLivroServiceTest {
         when(autorService.buscarPorNome("Autor Novo")).thenReturn(Optional.of(autorNovo));
         when(autorService.buscarPorId(789L)).thenReturn(Optional.of(autorNovo));
         
-        // Executar o método a ser testado
         importacaoLivroService.importar(inputStream);
         
-        // Verificar que o método fromEntity e salvar foram chamados
         verify(livroService).salvar(any(LivroDTO.class));
         
-        // Verificar que o livro existente foi atualizado com os novos valores
         verify(livroService).buscarPorIsbn(isbn);
         verify(editoraService).buscarPorNome("Editora Nova");
         verify(autorService).buscarPorNome("Autor Novo");

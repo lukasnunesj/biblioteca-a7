@@ -8,7 +8,14 @@ import com.biblioteca.domain.entities.autor.DTO.AutorDTO;
 
 /**
  * Interface para o serviço de autores.
- * Define operações de negócio relacionadas à entidade Autor.
+ * <p>
+ * Define operações de negócio relacionadas à entidade Autor,
+ * incluindo criação, busca, atualização e remoção de autores.
+ * Serve como contrato para implementações concretas do serviço.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
  */
 public interface IAutorService {
 

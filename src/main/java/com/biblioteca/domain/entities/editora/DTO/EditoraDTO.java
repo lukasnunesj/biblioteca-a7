@@ -16,10 +16,7 @@ import com.biblioteca.infrastructure.exceptions.ValidacaoException;
  * @version 1.0
  */
 public class EditoraDTO extends BaseDTO {
-    /**
-     * Nome da editora.
-     */
-    
+
     /**
      * Nome da editora.
      */
@@ -191,7 +188,6 @@ public class EditoraDTO extends BaseDTO {
             throw new ValidacaoException("O email da editora é inválido");
         }
         
-        // Validação específica para CNPJ
         if (cnpj != null && !cnpj.matches("^\\d{14}$")) {
             throw new ValidacaoException("O CNPJ deve conter exatamente 14 dígitos numéricos");
         }

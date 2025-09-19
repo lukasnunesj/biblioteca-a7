@@ -9,6 +9,4 @@ import jakarta.ws.rs.core.Application;
  */
 @ApplicationPath("/api")
 public class JaxRsConfig extends Application {
-    // Nenhuma implementação é necessária aqui, a configuração é feita pela
-    // anotação.
 }

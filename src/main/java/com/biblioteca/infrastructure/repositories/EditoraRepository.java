@@ -14,15 +14,36 @@ import java.util.List;
 import com.biblioteca.domain.entities.editora.Editora;
 import com.biblioteca.domain.entities.editora.interfaces.IEditoraRepository;
 
+/**
+ * Implementação do repositório de editoras.
+ * <p>
+ * Esta classe fornece a implementação concreta das operações de persistência
+ * para a entidade Editora, estendendo o repositório base e implementando a interface
+ * IEditoraRepository.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
+ */
 @Stateless
 public class EditoraRepository extends BaseRepository<Editora, Long> implements IEditoraRepository {
 
     private static final Logger LOGGER = Logger.getLogger(EditoraRepository.class.getName());
 
+    /**
+     * Construtor padrão.
+     * Inicializa o repositório com a classe da entidade Editora.
+     */
     public EditoraRepository() {
         super(Editora.class);
     }
 
+    /**
+     * Construtor com injeção manual do EntityManager.
+     * Útil para testes e casos especiais.
+     *
+     * @param entityManager o EntityManager a ser utilizado pelo repositório
+     */
     public EditoraRepository(jakarta.persistence.EntityManager entityManager) {
         super(Editora.class);
         this.entityManager = entityManager;
@@ -45,6 +66,9 @@ public class EditoraRepository extends BaseRepository<Editora, Long> implements 
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Editora> buscarPorNome(String nome) {
         try {
@@ -59,6 +83,9 @@ public class EditoraRepository extends BaseRepository<Editora, Long> implements 
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Editora> findByTermo(String termo) {
         try {

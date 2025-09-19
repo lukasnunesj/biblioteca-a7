@@ -13,6 +13,16 @@ import com.biblioteca.domain.entities.editora.DTO.EditoraDTO;
 import com.biblioteca.domain.entities.editora.interfaces.IEditoraRepository;
 import com.biblioteca.domain.entities.editora.interfaces.IEditoraService;
 
+/**
+ * Serviço para gerenciamento de editoras.
+ * <p>
+ * Esta classe implementa a interface IEditoraService e fornece
+ * funcionalidades para criar, buscar, atualizar e remover editoras.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
+ */
 @Stateless
 public class EditoraService implements IEditoraService {
 
@@ -22,10 +32,9 @@ public class EditoraService implements IEditoraService {
     private IEditoraRepository editoraRepository;
 
     /**
-     * Construtor para testes
+     * Construtor padrão para CDI
      */
     public EditoraService() {
-        // Construtor vazio para testes
     }
     
     /**
@@ -43,7 +52,6 @@ public class EditoraService implements IEditoraService {
         LOGGER.info("Salvando editora: " + editoraDTO.getNome());
         editoraDTO.validar();
 
-        // Valida duplicidade por nome
         Optional<Editora> editoraPorNome = editoraRepository.buscarPorNome(editoraDTO.getNome());
         if (editoraPorNome.isPresent() && (editoraDTO.getId() == null || !editoraDTO.getId().equals(editoraPorNome.get().getId()))) {
             throw new IllegalArgumentException("Já existe uma editora cadastrada com este nome.");
@@ -64,6 +72,9 @@ public class EditoraService implements IEditoraService {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Editora> buscarPorNome(String nome) {
         LOGGER.info("Buscando editora por nome: " + nome);
@@ -97,6 +108,9 @@ public class EditoraService implements IEditoraService {
         LOGGER.info("Editora removida com sucesso.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Editora> findByTermo(String termo) {
         LOGGER.info("Buscando editoras por termo: " + termo);

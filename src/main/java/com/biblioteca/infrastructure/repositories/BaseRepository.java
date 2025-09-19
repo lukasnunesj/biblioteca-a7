@@ -14,18 +14,37 @@ import java.util.Optional;
 
 /**
  * Implementação base para repositórios JPA.
+ * <p>
+ * Esta classe abstrata fornece implementações padrão para as operações
+ * definidas na interface IBaseRepository, utilizando JPA para persistência.
+ * Todas as implementações concretas de repositórios devem estender esta classe.
+ * </p>
  * 
- * @param <T>  Tipo da entidade
- * @param <ID> Tipo do identificador da entidade
+ * @param <T>  Tipo da entidade gerenciada pelo repositório
+ * @param <ID> Tipo do identificador único da entidade
+ *
+ * @author Biblioteca A7
+ * @version 1.0
  */
 @Stateless
 public abstract class BaseRepository<T, ID> implements IBaseRepository<T, ID> {
 
+    /**
+     * EntityManager injetado pelo container para operações de persistência.
+     */
     @PersistenceContext
     protected EntityManager entityManager;
 
+    /**
+     * Classe da entidade gerenciada por este repositório.
+     */
     protected final Class<T> entityClass;
 
+    /**
+     * Construtor que inicializa o repositório com a classe da entidade.
+     *
+     * @param entityClass a classe da entidade gerenciada por este repositório
+     */
     protected BaseRepository(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
@@ -34,7 +53,6 @@ public abstract class BaseRepository<T, ID> implements IBaseRepository<T, ID> {
     @Transactional
     public T save(T entity) {
         try {
-            System.err.println("Salvando entidade: " + entity);
             return entityManager.merge(entity);
         } catch (Exception e) {
             throw new PersistenciaException("Erro ao salvar entidade: " + entity.getClass().getSimpleName(), e);

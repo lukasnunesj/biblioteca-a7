@@ -3,7 +3,14 @@ package com.biblioteca.application.livro.usecases;
 import java.io.InputStream;
 
 /**
- * Caso de uso para a importação de livros a partir de um arquivo.
+ * Interface que define o caso de uso para a importação de livros a partir de um arquivo.
+ * <p>
+ * Esta interface define o contrato para serviços que implementam a funcionalidade
+ * de importação de livros a partir de arquivos externos, como CSV.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
  */
 public interface IImportacaoLivroService {
 

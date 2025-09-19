@@ -19,10 +19,6 @@ public class AutorDTO extends BaseDTO {
     /**
      * Nome do autor.
      */
-    
-    /**
-     * Nome do autor.
-     */
     private String nome;
     
     /**

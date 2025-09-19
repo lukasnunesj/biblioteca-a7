@@ -7,9 +7,20 @@ import java.util.logging.Logger;
 
 /**
  * Classe responsável por centralizar o tratamento de exceções da aplicação.
+ * <p>
+ * Fornece métodos para tratar diferentes tipos de exceções, exibindo mensagens
+ * apropriadas ao usuário e registrando os erros em log. Lida com exceções específicas
+ * da aplicação (BibliotecaException) de forma diferenciada, baseando-se no tipo de erro.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
  */
 public class ExceptionHandler {
 
+    /**
+     * Logger para registrar informações e erros.
+     */
     private static final Logger logger = Logger.getLogger(ExceptionHandler.class.getName());
 
     /**
@@ -29,6 +40,14 @@ public class ExceptionHandler {
 
     /**
      * Trata exceções específicas da aplicação Biblioteca.
+     * <p>
+     * Determina o tipo de mensagem e título adequados com base no tipo de erro
+     * da exceção, e exibe uma mensagem de diálogo ao usuário. Também registra
+     * o erro no log com o nível apropriado.
+     * </p>
+     *
+     * @param e a exceção específica da aplicação a ser tratada
+     * @param componentePai o componente pai para exibir o diálogo
      */
     private static void tratarBibliotecaException(BibliotecaException e, JComponent componentePai) {
         String titulo;
@@ -71,6 +90,13 @@ public class ExceptionHandler {
 
     /**
      * Trata exceções genéricas não específicas da aplicação.
+     * <p>
+     * Registra a exceção no log como um erro grave e exibe uma mensagem
+     * de erro genérica ao usuário.
+     * </p>
+     *
+     * @param e a exceção genérica a ser tratada
+     * @param componentePai o componente pai para exibir o diálogo
      */
     private static void tratarExcecaoGenerica(Throwable e, JComponent componentePai) {
         logger.log(Level.SEVERE, "Erro inesperado", e);

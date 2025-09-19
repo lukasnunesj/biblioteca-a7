@@ -5,9 +5,17 @@ import java.util.Optional;
 
 /**
  * Interface base para todos os repositórios da aplicação.
+ * <p>
+ * Define operações comuns de persistência que todos os repositórios
+ * devem implementar, como salvar, buscar, listar, excluir e contar entidades.
+ * Fornece um contrato genérico para acesso a dados independente da implementação.
+ * </p>
  * 
- * @param <T> Tipo da entidade
- * @param <ID> Tipo do identificador da entidade
+ * @param <T> Tipo da entidade gerenciada pelo repositório
+ * @param <ID> Tipo do identificador único da entidade
+ *
+ * @author Biblioteca A7
+ * @version 1.0
  */
 public interface IBaseRepository<T, ID> {
     

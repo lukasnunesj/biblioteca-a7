@@ -11,6 +11,16 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Recurso REST para operações relacionadas a autores.
+ * <p>
+ * Esta classe fornece endpoints para gerenciar autores no sistema,
+ * incluindo listagem, busca, criação, atualização e remoção.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
+ */
 @Path("/autores")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -19,6 +29,12 @@ public class AutorResource {
     @Inject
     private IAutorService autorService;
 
+    /**
+     * Busca autores por um termo de pesquisa.
+     *
+     * @param termo o termo a ser pesquisado
+     * @return Response contendo a lista de autores que correspondem ao termo
+     */
     @GET
     @Path("/search")
     public Response search(@QueryParam("termo") String termo) {
@@ -28,6 +44,11 @@ public class AutorResource {
         return Response.ok(autores).build();
     }
 
+    /**
+     * Lista todos os autores cadastrados no sistema.
+     *
+     * @return Response contendo a lista de autores em formato DTO
+     */
     @GET
     public Response listarTodos() {
         List<AutorDTO> autores = autorService.buscarTodos().stream()
@@ -36,6 +57,12 @@ public class AutorResource {
         return Response.ok(autores).build();
     }
 
+    /**
+     * Busca um autor pelo seu ID.
+     *
+     * @param id o ID do autor a ser buscado
+     * @return Response contendo o autor encontrado ou 404 se não encontrado
+     */
     @GET
     @Path("/{id}")
     public Response buscarPorId(@PathParam("id") Long id) {
@@ -44,6 +71,12 @@ public class AutorResource {
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
 
+    /**
+     * Cria um novo autor no sistema.
+     *
+     * @param autorDTO o DTO contendo os dados do autor a ser criado
+     * @return Response contendo o autor criado ou mensagem de erro
+     */
     @POST
     public Response criar(AutorDTO autorDTO) {
         try {
@@ -54,11 +87,18 @@ public class AutorResource {
         }
     }
 
+    /**
+     * Atualiza um autor existente.
+     *
+     * @param id o ID do autor a ser atualizado
+     * @param autorDTO o DTO contendo os novos dados do autor
+     * @return Response contendo o autor atualizado ou mensagem de erro
+     */
     @PUT
     @Path("/{id}")
     public Response atualizar(@PathParam("id") Long id, AutorDTO autorDTO) {
         try {
-            autorDTO.setId(id); // Garante que o ID do DTO é o mesmo da URL
+            autorDTO.setId(id);
             Autor autorAtualizado = autorService.salvar(autorDTO);
             return Response.ok(AutorDTO.fromEntity(autorAtualizado)).build();
         } catch (Exception e) {
@@ -66,6 +106,12 @@ public class AutorResource {
         }
     }
 
+    /**
+     * Remove um autor do sistema.
+     *
+     * @param id o ID do autor a ser removido
+     * @return Response indicando sucesso ou erro na remoção
+     */
     @DELETE
     @Path("/{id}")
     public Response deletar(@PathParam("id") Long id) {

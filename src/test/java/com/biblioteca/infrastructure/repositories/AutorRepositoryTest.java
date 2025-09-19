@@ -19,6 +19,16 @@ import org.mockito.MockitoAnnotations;
 import com.biblioteca.domain.entities.autor.Autor;
 import com.biblioteca.infrastructure.exceptions.PersistenciaException;
 
+/**
+ * Testes unitários para a classe AutorRepository.
+ * <p>
+ * Esta classe testa as funcionalidades do repositório de autores,
+ * utilizando mocks para simular o comportamento do EntityManager.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
+ */
 public class AutorRepositoryTest {
 
     private AutorRepository autorRepository;
@@ -39,6 +49,10 @@ public class AutorRepositoryTest {
     private final String TELEFONE = "(31) 99999-9999";
     private final String EMAIL = "carlos@exemplo.com";
 
+    /**
+     * Configura o ambiente de teste antes de cada método de teste.
+     * Inicializa os mocks e cria objetos de teste.
+     */
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -54,6 +68,10 @@ public class AutorRepositoryTest {
         autor.setId(ID);
     }
 
+    /**
+     * Testa o método de salvar autor.
+     * Verifica se o autor é salvo corretamente e se o EntityManager é chamado.
+     */
     @Test
     public void testSalvar() {
         when(entityManager.merge(any(Autor.class))).thenReturn(autor);
@@ -70,6 +88,10 @@ public class AutorRepositoryTest {
         verify(entityManager).merge(any(Autor.class));
     }
 
+    /**
+     * Testa o comportamento do método de salvar autor quando ocorre um erro.
+     * Verifica se a exceção PersistenciaException é lançada corretamente.
+     */
     @Test(expected = PersistenciaException.class)
     public void testSalvarComErro() {
         when(entityManager.merge(any(Autor.class))).thenThrow(new RuntimeException("Erro simulado"));
@@ -77,6 +99,10 @@ public class AutorRepositoryTest {
         autorRepository.save(autor);
     }
 
+    /**
+     * Testa o método de buscar autor por ID quando o autor existe.
+     * Verifica se o autor correto é retornado.
+     */
     @Test
     public void testBuscarPorId() {
         when(entityManager.find(Autor.class, ID)).thenReturn(autor);
@@ -89,6 +115,10 @@ public class AutorRepositoryTest {
         verify(entityManager).find(Autor.class, ID);
     }
 
+    /**
+     * Testa o método de buscar autor por ID quando o autor não existe.
+     * Verifica se um Optional vazio é retornado.
+     */
     @Test
     public void testBuscarPorIdNaoEncontrado() {
         when(entityManager.find(Autor.class, ID)).thenReturn(null);
@@ -100,6 +130,10 @@ public class AutorRepositoryTest {
         verify(entityManager).find(Autor.class, ID);
     }
 
+    /**
+     * Testa o comportamento do método de buscar autor por ID quando ocorre um erro.
+     * Verifica se a exceção PersistenciaException é lançada corretamente.
+     */
     @Test(expected = PersistenciaException.class)
     public void testBuscarPorIdComErro() {
         when(entityManager.find(Autor.class, ID)).thenThrow(new RuntimeException("Erro simulado"));
@@ -110,6 +144,10 @@ public class AutorRepositoryTest {
 
 
 
+    /**
+     * Testa o método de buscar todos os autores.
+     * Verifica se a lista de autores é retornada corretamente.
+     */
     @Test
     public void testBuscarTodos() {
         List<Autor> autores = Arrays.asList(autor);
@@ -126,6 +164,10 @@ public class AutorRepositoryTest {
         assertEquals(autor, resultado.get(0));
     }
 
+    /**
+     * Testa o comportamento do método de buscar todos os autores quando ocorre um erro.
+     * Verifica se a exceção PersistenciaException é lançada corretamente.
+     */
     @Test(expected = PersistenciaException.class)
     public void testBuscarTodosComErro() {
         // Configurar o mock para lançar exceção quando findAll for chamado
@@ -134,6 +176,10 @@ public class AutorRepositoryTest {
         autorRepository.findAll();
     }
 
+    /**
+     * Testa o método de remover autor.
+     * Verifica se o autor é removido corretamente e se o EntityManager é chamado.
+     */
     @Test
     public void testRemover() {
         when(entityManager.contains(any(Autor.class))).thenReturn(true);
@@ -144,6 +190,10 @@ public class AutorRepositoryTest {
         verify(entityManager).remove(any(Autor.class));
     }
 
+    /**
+     * Testa o comportamento do método de remover autor quando ocorre um erro.
+     * Verifica se a exceção PersistenciaException é lançada corretamente.
+     */
     @Test(expected = PersistenciaException.class)
     public void testRemoverComErro() {
         when(entityManager.contains(any(Autor.class))).thenReturn(true);

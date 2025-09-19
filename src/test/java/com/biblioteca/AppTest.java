@@ -5,28 +5,39 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * Unit test for simple App.
+ * Classe de teste básica para a aplicação.
+ * <p>
+ * Esta classe contém testes unitários simples para verificar
+ * a configuração do ambiente de testes.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
  */
 public class AppTest
         extends TestCase {
     /**
-     * Create the test case
+     * Cria um novo caso de teste com o nome especificado.
      *
-     * @param testName name of the test case
+     * @param testName nome do caso de teste
      */
     public AppTest(String testName) {
         super(testName);
     }
 
     /**
-     * @return the suite of tests being tested
+     * Cria e retorna uma suíte de testes contendo todos os métodos
+     * de teste desta classe.
+     *
+     * @return a suíte de testes a ser executada
      */
     public static Test suite() {
         return new TestSuite(AppTest.class);
     }
 
     /**
-     * Rigourous Test :-)
+     * Teste simples para verificar se o ambiente de testes está configurado corretamente.
+     * Este teste sempre passa, pois apenas verifica se true é true.
      */
     public void testApp() {
         assertTrue(true);

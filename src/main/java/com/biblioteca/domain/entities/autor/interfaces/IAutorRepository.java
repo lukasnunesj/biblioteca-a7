@@ -8,7 +8,14 @@ import java.util.Optional;
 
 /**
  * Interface para o repositório de autores.
- * Define operações básicas de persistência para a entidade Autor.
+ * <p>
+ * Define operações básicas de persistência para a entidade Autor,
+ * estendendo a interface base de repositório e adicionando operações
+ * específicas para autores como busca por nome, CPF/CNPJ e termo.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
  */
 public interface IAutorRepository extends IBaseRepository<Autor, Long> {
 

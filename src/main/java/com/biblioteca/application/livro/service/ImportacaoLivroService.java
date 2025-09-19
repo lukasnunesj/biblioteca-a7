@@ -27,6 +27,16 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import java.util.stream.Collectors;
 
+/**
+ * Serviço responsável pela importação de livros a partir de arquivos CSV.
+ * <p>
+ * Esta classe implementa a interface IImportacaoLivroService e fornece
+ * funcionalidades para importar livros, autores e editoras a partir de um arquivo CSV.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
+ */
 @Stateless
 public class ImportacaoLivroService implements IImportacaoLivroService {
 
@@ -39,6 +49,16 @@ public class ImportacaoLivroService implements IImportacaoLivroService {
     @Inject
     private IAutorService autorService;
 
+    /**
+     * Importa livros a partir de um arquivo CSV.
+     * <p>
+     * O arquivo CSV deve conter as colunas: titulo, isbn, data_publicacao, editora, autores.
+     * Os autores devem ser separados por vírgula.
+     * </p>
+     *
+     * @param inputStream o stream de entrada contendo o arquivo CSV
+     * @throws RuntimeException se ocorrer um erro durante a importação
+     */
     @Override
     public void importar(InputStream inputStream) {
         CSVFormat csvFormat = CSVFormat.Builder.create(CSVFormat.DEFAULT)
@@ -54,11 +74,9 @@ public class ImportacaoLivroService implements IImportacaoLivroService {
                 String titulo = csvRecord.get("titulo");
                 int dataPublicacao = Integer.parseInt(csvRecord.get("data_publicacao"));
 
-                // Processar Editora
                 String nomeEditora = csvRecord.get("editora");
                 Editora editora = buscarOuCriarEditora(nomeEditora);
 
-                // Processar Autores
                 String[] nomesAutores = csvRecord.get("autores").split(",");
 
                 List<Long> autoresIds = java.util.stream.Stream.of(nomesAutores)
@@ -66,21 +84,14 @@ public class ImportacaoLivroService implements IImportacaoLivroService {
                         .map(Autor::getId)
                         .collect(Collectors.toList());
 
-                // Verificar se o livro já existe pelo ISBN
                 Optional<Livro> livroExistenteOpt = livroService.buscarPorIsbn(isbn);
 
-                System.err.println("Livro existente: " + livroExistenteOpt);
-
                 if (livroExistenteOpt.isPresent()) {
-                    // Se o livro já existe, atualiza os dados
                     Livro livroExistente = livroExistenteOpt.get();
 
-                    // Atualizar os dados do livro existente
                     livroExistente.setTitulo(titulo);
                     livroExistente.setDataPublicacao(dataPublicacao);
                     livroExistente.setEditora(editora);
-
-                    // Atualizar autores
                     Set<Autor> autores = new HashSet<>();
                     for (Long autorId : autoresIds) {
                         Autor autor = autorService.buscarPorId(autorId)
@@ -90,11 +101,8 @@ public class ImportacaoLivroService implements IImportacaoLivroService {
                     }
                     livroExistente.setAutores(autores);
 
-                    // Salvar o livro atualizado diretamente
-                    System.err.println("Livro atualizado: " + livroExistente);
                     livroService.salvar(LivroDTO.fromEntity(livroExistente));
                 } else {
-                    // Criar um novo livro
                     LivroDTO livroDTO = new LivroDTO();
                     livroDTO.setTitulo(titulo);
                     livroDTO.setIsbn(isbn);
@@ -110,6 +118,12 @@ public class ImportacaoLivroService implements IImportacaoLivroService {
         }
     }
 
+    /**
+     * Busca uma editora pelo nome ou cria uma nova se não existir.
+     *
+     * @param nomeEditora o nome da editora a ser buscada ou criada
+     * @return a editora encontrada ou criada
+     */
     private Editora buscarOuCriarEditora(String nomeEditora) {
         return editoraService.buscarPorNome(nomeEditora).orElseGet(() -> {
             EditoraDTO novaEditoraDTO = new EditoraDTO();
@@ -118,6 +132,12 @@ public class ImportacaoLivroService implements IImportacaoLivroService {
         });
     }
 
+    /**
+     * Busca um autor pelo nome ou cria um novo se não existir.
+     *
+     * @param nomeAutor o nome do autor a ser buscado ou criado
+     * @return o autor encontrado ou criado
+     */
     private Autor buscarOuCriarAutor(String nomeAutor) {
         return autorService.buscarPorNome(nomeAutor).orElseGet(() -> {
             AutorDTO novoAutorDTO = new AutorDTO();

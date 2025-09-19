@@ -32,10 +32,20 @@ public class LivroRepository extends BaseRepository<Livro, Long> implements ILiv
      */
     private static final Logger LOGGER = Logger.getLogger(LivroRepository.class.getName());
 
+    /**
+     * Construtor padrão.
+     * Inicializa o repositório com a classe da entidade Livro.
+     */
     public LivroRepository() {
         super(Livro.class);
     }
 
+    /**
+     * Construtor com injeção manual do EntityManager.
+     * Útil para testes e casos especiais.
+     *
+     * @param entityManager o EntityManager a ser utilizado pelo repositório
+     */
     public LivroRepository(jakarta.persistence.EntityManager entityManager) {
         super(Livro.class);
         this.entityManager = entityManager;
@@ -81,6 +91,13 @@ public class LivroRepository extends BaseRepository<Livro, Long> implements ILiv
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Esta implementação utiliza carregamento antecipado (eager loading) para
+     * evitar problemas de LazyInitializationException.
+     * </p>
+     */
     @Override
     public List<Livro> findAll() {
         try {
@@ -96,6 +113,13 @@ public class LivroRepository extends BaseRepository<Livro, Long> implements ILiv
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Esta implementação busca por correspondências no título, ISBN, nome da editora
+     * e nomes dos autores, utilizando carregamento antecipado para relacionamentos.
+     * </p>
+     */
     @Override
     public List<Livro> findByTermo(String termo) {
         try {

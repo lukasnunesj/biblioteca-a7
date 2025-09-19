@@ -15,7 +15,14 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
- * Serviço para integração com a API OpenLibrary
+ * Serviço para integração com a API OpenLibrary.
+ * <p>
+ * Esta classe fornece funcionalidades para buscar informações de livros
+ * a partir da API pública da OpenLibrary usando o ISBN como identificador.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
  */
 @Stateless
 public class OpenLibraryService {
@@ -27,6 +34,11 @@ public class OpenLibraryService {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
+    /**
+     * Construtor que inicializa o cliente HTTP e o ObjectMapper.
+     * Configura o timeout de conexão e registra o módulo JavaTimeModule para
+     * suporte a classes do Java 8 Date/Time API.
+     */
     public OpenLibraryService() {
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
@@ -36,7 +48,14 @@ public class OpenLibraryService {
     }
 
     /**
-     * Busca informações de um livro pelo ISBN na API OpenLibrary
+     * Busca informações de um livro pelo ISBN na API OpenLibrary.
+     * <p>
+     * Realiza uma requisição HTTP para a API da OpenLibrary e processa a resposta JSON
+     * para extrair os dados do livro correspondente ao ISBN fornecido.
+     * </p>
+     *
+     * @param isbn o ISBN do livro a ser buscado (sem hífens)
+     * @return um Optional contendo os dados do livro, ou vazio se não encontrado ou em caso de erro
      */
     public Optional<OpenLibraryResponseDTO> buscarLivroPorIsbn(String isbn) {
         try {
@@ -52,7 +71,6 @@ public class OpenLibraryService {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {
-                // A resposta é um objeto com a chave "ISBN:...". Precisamos extrair o valor.
                 String responseBody = response.body();
                 if (responseBody == null || responseBody.trim().equals("{}")) {
                     LOGGER.warning("Resposta vazia da OpenLibrary para ISBN: " + isbn);

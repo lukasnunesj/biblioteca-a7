@@ -20,15 +20,40 @@ import com.biblioteca.presentation.telasAcoes.TelaImportacaoLivros;
 import com.biblioteca.presentation.telasListagem.TelaListagemLivros;
 import com.formdev.flatlaf.FlatDarculaLaf;
 
+/**
+ * Tela principal da aplicação Biblioteca.
+ * <p>
+ * Esta classe implementa a janela principal da aplicação, contendo o menu
+ * de navegação e o desktop pane onde as telas internas são exibidas.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
+ */
 public class TelaPrincipal {
 
+    /**
+     * Frame principal da aplicação.
+     */
     private final JFrame frame = new JFrame();
+    
+    /**
+     * Desktop pane para exibição de janelas internas.
+     */
     private JDesktopPane desktopPane;
 
+    /**
+     * Construtor da tela principal.
+     * Inicializa os componentes da interface.
+     */
     public TelaPrincipal() {
         initComponents();
     }
 
+    /**
+     * Inicializa os componentes da interface gráfica.
+     * Configura a tela, o menu e o desktop pane.
+     */
     private void initComponents() {
         configTela();
         configMenu();
@@ -40,6 +65,10 @@ public class TelaPrincipal {
 
     }
 
+    /**
+     * Configura as propriedades da tela principal.
+     * Define título, tamanho, comportamento de fechamento e visibilidade.
+     */
     private void configTela() {
         frame.setTitle("Biblioteca");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -56,6 +85,10 @@ public class TelaPrincipal {
         frame.setVisible(true);
     }
 
+    /**
+     * Configura o menu da aplicação.
+     * Cria os menus e submenus com seus respectivos listeners.
+     */
     private void configMenu() {
         JMenuBar menuBar = new JMenuBar();
 
@@ -120,6 +153,10 @@ public class TelaPrincipal {
         frame.setJMenuBar(menuBar);
     }
 
+    /**
+     * Configura o evento de fechamento da janela.
+     * Intercepta o evento de fechamento para exibir confirmação.
+     */
     private void configFecharEvent() {
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -129,6 +166,10 @@ public class TelaPrincipal {
         });
     }
 
+    /**
+     * Exibe diálogo de confirmação para sair da aplicação.
+     * Se confirmado, encerra a aplicação.
+     */
     private void sairAplicacao() {
         int opcao = JOptionPane.showConfirmDialog(
                 this.frame,
@@ -142,6 +183,12 @@ public class TelaPrincipal {
         }
     }
 
+    /**
+     * Método principal que inicia a aplicação.
+     * Configura o tema Darcula e inicia a tela principal.
+     *
+     * @param args argumentos da linha de comando (não utilizados)
+     */
     public static void main(String[] args) {
         // Set up the Darcula theme before creating any UI components
         FlatDarculaLaf.setup();

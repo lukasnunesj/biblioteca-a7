@@ -15,20 +15,44 @@ import com.biblioteca.domain.entities.autor.Autor;
 import com.biblioteca.domain.entities.autor.interfaces.IAutorRepository;
 import com.biblioteca.infrastructure.exceptions.PersistenciaException;
 
+/**
+ * Implementação do repositório de autores.
+ * <p>
+ * Esta classe fornece a implementação concreta das operações de persistência
+ * para a entidade Autor, estendendo o repositório base e implementando a interface
+ * IAutorRepository.
+ * </p>
+ *
+ * @author Biblioteca A7
+ * @version 1.0
+ */
 @Stateless
 public class AutorRepository extends BaseRepository<Autor, Long> implements IAutorRepository {
 
     private static final Logger LOGGER = Logger.getLogger(AutorRepository.class.getName());
 
+    /**
+     * Construtor padrão.
+     * Inicializa o repositório com a classe da entidade Autor.
+     */
     public AutorRepository() {
         super(Autor.class);
     }
 
+    /**
+     * Construtor com injeção manual do EntityManager.
+     * Útil para testes e casos especiais.
+     *
+     * @param entityManager o EntityManager a ser utilizado pelo repositório
+     */
     public AutorRepository(jakarta.persistence.EntityManager entityManager) {
         super(Autor.class);
         this.entityManager = entityManager;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Autor> buscarPorNome(String nome) {
         try {
@@ -43,6 +67,9 @@ public class AutorRepository extends BaseRepository<Autor, Long> implements IAut
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Autor> buscarPorCpfcnpj(String cpfcnpj) {
         try {
@@ -57,6 +84,9 @@ public class AutorRepository extends BaseRepository<Autor, Long> implements IAut
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Autor> findByTermo(String termo) {
         try {
