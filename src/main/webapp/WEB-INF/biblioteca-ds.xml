@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <datasources xmlns="http://www.jboss.org/ironjacamar/schema">
     <datasource jndi-name="java:jboss/datasources/BibliotecaDS" pool-name="BibliotecaDS" enabled="true" use-java-context="true">
+        <!-- Exemplo de desenvolvimento: ajuste host, usuário e senha para o seu PostgreSQL local. -->
         <connection-url>jdbc:postgresql://localhost:5432/biblioteca</connection-url>
         <driver>postgresql</driver>
         <security>
